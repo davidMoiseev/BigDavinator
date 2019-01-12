@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class Robot extends TimedRobot {
     DriveTrain driveTrain = new DriveTrain();
     
@@ -42,13 +40,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-      // double forward = stickDrive.getRawAxis(1);
-      // double turn = stickDrive.getRawAxis(4);
+      double forward = stickDrive.getRawAxis(1);
+      double turn = stickDrive.getRawAxis(4);
 
-      // driveTrain.arcadeDrive((Math.abs(forward) < .05 ? 0 : forward ), (Math.abs(turn) < .05 ? 0 : turn ));
-
-      driveTrain.driveManualTank(1, 1, 0.5);
-    //driveTrain.driveManualH(1, 1, 0.5, 1);
+      driveTrain.arcadeDrive((Math.abs(forward) < .05 ? 0 : forward ), (Math.abs(turn) < .05 ? 0 : turn ));
     }
     
     @Override

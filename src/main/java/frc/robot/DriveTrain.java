@@ -7,27 +7,17 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 public class DriveTrain {
-
-    public static final int TALON_LF = 100;
-    public static final int TALON_PIGEON = 200;
-    public static final int TALON_RF = 400;
-    public static final int TALON_RB = 67;
-    public static final int TALON_LB = 33;
-    public static final int TALON_H = 3707;
-
-
-    WPI_TalonSRX LFTalon = new WPI_TalonSRX(TALON_LF);
-    WPI_TalonSRX RFTalon = new WPI_TalonSRX(TALON_RF);
-    WPI_TalonSRX RBTalon = new WPI_TalonSRX(TALON_RB);
-    WPI_TalonSRX LBTalon = new WPI_TalonSRX(TALON_LB);
-    WPI_TalonSRX HTalon = new WPI_TalonSRX(TALON_H);
-    public PigeonIMU pigeon = new PigeonIMU(TALON_PIGEON);
-
-    Joystick joystick;
+	
+    public static final int TALON_LEFT = 1;
+    public static final int TALON_PIGEON = 2;
+    public static final int TALON_RIGHT = 4;
+    
+    WPI_TalonSRX leftTalon = new WPI_TalonSRX(TALON_LEFT);
+    WPI_TalonSRX rightTalon = new WPI_TalonSRX(TALON_RIGHT);
+    WPI_TalonSRX pigeonTalon = new WPI_TalonSRX(TALON_PIGEON);
+    
+    public PigeonIMU pigeon = new PigeonIMU(pigeonTalon);
     
 	private double leftEncoder;
 	private double rightEncoder;
@@ -35,44 +25,19 @@ public class DriveTrain {
 	private double currentYaw = 0;
     
     public DriveTrain() {
-
-        LFTalon.setSensorPhase(true);
-        LBTalon.setSensorPhase(true);
-        LFTalon.setInverted(true);
-        LBTalon.setInverted(true);
-
+        rightTalon.setSensorPhase(true);
+        rightTalon.setInverted(true);
         
-        // leftTalon.selectProfileSlot(0, 0);
-        // rightTalon.selectProfileSlot(0, 0);
+        leftTalon.selectProfileSlot(0, 0);
+        rightTalon.selectProfileSlot(0, 0);
         
-        LFTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        RFTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        LBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        RBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        HTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        
-        LFTalon.setSelectedSensorPosition(0); 
-        RFTalon.setSelectedSensorPosition(0);
-        LBTalon.setSelectedSensorPosition(0); 
-        RBTalon.setSelectedSensorPosition(0);
-        HTalon.setSelectedSensorPosition(0);
-        
-        LFTalon.set(ControlMode.PercentOutput, 0.0);
-        RFTalon.set(ControlMode.PercentOutput, 0.0);
-        LBTalon.set(ControlMode.PercentOutput, 0.0);
-        RBTalon.set(ControlMode.PercentOutput, 0.0);
-        HTalon.set(ControlMode.PercentOutput, 0.0);
-        
-
-        pigeon.setYaw(0);
-        
-        
-        LFTalon.selectProfileSlot(0, 0);
-        RFTalon.selectProfileSlot(0, 0);
-        LBTalon.selectProfileSlot(0, 0);
-        RBTalon.selectProfileSlot(0, 0);
+        leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+        rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
         
         this.zeroSensors();
+        
+        leftTalon.set(ControlMode.PercentOutput, 0.0);
+        rightTalon.set(ControlMode.PercentOutput, 0.0);
 	}
 		
 	
