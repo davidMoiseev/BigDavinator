@@ -1,0 +1,9 @@
+[
+  {
+    "name": "bigdavinator",
+    "file": "C:\\frc\\Big Dave\\bigdavinator\\build\\libs\\bigdavinator.jar",
+    "extensions": [],
+    "librarydir": "C:\\frc\\Big Dave\\bigdavinator\\build\\tmp\\jniExtractDir",
+    "mainclass": "frc.robot.Main"
+  }
+]
