@@ -22,11 +22,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+      
       driveTrain.readSensors();
     }
 
     @Override
     public void autonomousInit() {
+      driveTrain.zeroSensors();
     }
 
 
