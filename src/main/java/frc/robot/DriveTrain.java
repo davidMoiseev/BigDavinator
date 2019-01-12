@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Drivetrain {
+public class DriveTrain {
     public static final int TALON_LF = 100;
     public static final int TALON_PIGEON = 200;
     public static final int TALON_RF = 400;
