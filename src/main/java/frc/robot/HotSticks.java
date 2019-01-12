@@ -37,7 +37,6 @@ public class HotSticks extends Joystick{
     public void SetDeadBandLY(double Band){
         LYDB = Band;
     }
-    
     public void SetDeadBandRX(double Band){
         RXDB = Band;
     }
