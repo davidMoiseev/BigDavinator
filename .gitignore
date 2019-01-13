@@ -15,6 +15,7 @@
 *.bin
 *.lock
 build\libs\
+bin\
 
 # Package Files #
 *.war
