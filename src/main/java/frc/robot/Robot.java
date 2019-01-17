@@ -7,10 +7,14 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class Robot extends TimedRobot {
+
+    String deployPath = Filesystem.getDeployDirectory().getAbsolutePath();
+
     DriveTrain driveTrain = new DriveTrain();
     
     Joystick stickDrive = new Joystick(0);
@@ -30,8 +34,6 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
       driveTrain.zeroSensors();
     }
-
-
     
     @Override
     public void autonomousPeriodic() {
