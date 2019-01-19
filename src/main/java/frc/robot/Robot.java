@@ -24,11 +24,13 @@ public class Robot extends TimedRobot {
 
   DriveTrain driveTrain = new DriveTrain();
   Joystick stickDrive = new Joystick(0);
-
+  HotSticks operator;
+  Intake intake;
 
   @Override
   public void robotInit() {
-    
+    operator = new HotSticks(0);
+    intake = new Intake(operator);
   }
 
   @Override
@@ -44,6 +46,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.driveManualTank(1, 1, 0.5);
+    intake.Update();
     //driveTrain.driveManualH(1, 1, 0.5, 1);
   }
 

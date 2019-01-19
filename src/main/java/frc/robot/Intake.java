@@ -4,43 +4,60 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
+//Made By: Nicholas Stankovich 2019
+//         Donovan Porter
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 public class Intake {
+    double Outspeed = 0.25;
+    double Inputspeed = -0.25;
+    HotSticks joystick;
+    public static final int TALON_INTAKE_BELT = 1;
 
-    Joystick joystick;
-    public static final int TALON_INTAKE_TOP = 2337;
-    public static final int TALON_INTAKE_BOTTOM = 4362;
 
-    WPI_TalonSRX TopTalon = new WPI_TalonSRX(TALON_INTAKE_TOP);
-    WPI_TalonSRX BottomTalon = new WPI_TalonSRX(TALON_INTAKE_BOTTOM);
-
-    public void intake(){
-        TopTalon.set(ControlMode.PercentOutput, 0.0);
-        BottomTalon.set(ControlMode.PercentOutput, 0.0);
-    }
-
-    public void allOff() {
-        TopTalon.set(ControlMode.PercentOutput, 0.0);
-        BottomTalon.set(ControlMode.PercentOutput, 0.0);
-    }
+    WPI_TalonSRX BeltTalon = new WPI_TalonSRX(TALON_INTAKE_BELT);
     
-    public void runIntake(){
-        double speed = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
-        /*ideally if joystick is forward, then intake spits out, if joystick is backward, intake pulls in */
-        TopTalon.set(ControlMode.PercentOutput, speed);
-        BottomTalon.set(ControlMode.PercentOutput, -speed);
+    public Intake(HotSticks joystick) {
+    this.joystick = joystick;      
     }
+    public void Update()
+    {
+        if(joystick.getButtonA()) {
+            runIntake(Outspeed);
+        
+        }
+        if(joystick.getButtonB()) {
+            runIntake(Inputspeed);
+        }
+        if(!joystick.getButtonA() && !joystick.getButtonB()) {
+            allOff();
+        }
+    }
+    public void allOff() {
+
+        BeltTalon.set(ControlMode.PercentOutput, 0.0);
+    }
+    public void runIntake(double Shootspeed)
+    {
+        BeltTalon.set(ControlMode.PercentOutput, Shootspeed);  
+    }
+     // double Tspeed = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
+      /*ideally if joystick is forward, then intake spits out, if joystick is backward, intake pulls in */
+    public void writeDashboard(){
+        SmartDashboard.putNumber("Outputspeed", Outspeed);
+        SmartDashboard.putNumber("Inputspeed", Inputspeed);
+        SmartDashboard.putBoolean("ButtonAValue", joystick.getButtonA());
+        SmartDashboard.putBoolean("ButtonBValue", joystick.getButtonB());
+       
+     //   SmartDashboard.putBoolean("valueA", valueA);
+        //SmartDashboard.putBoolean("valueB", valueB);
+        //SmartDashboard.putNumber("speedR", );
+        //SmartDashboard.putNumber("JoystickL", ());
+        //SmartDashboard.putNumber("JoystickR", ());
+        }
 
 }
