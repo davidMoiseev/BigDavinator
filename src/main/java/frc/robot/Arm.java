@@ -11,53 +11,63 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
  * Add your docs here.
  */
 public class Arm {
 
-  public static final int TALON_LEFT = 1;
+  public static final int arm = 1;
+  public static final int armfollow = 4;
+  private static final int UpperLimit = 6767;
+  private static final int LowerLimit = 2727;
+  private double Position;
+  WPI_TalonSRX Arm = new WPI_TalonSRX(arm);
+  WPI_TalonSRX Follow = new WPI_TalonSRX(armfollow);
+  
 
-  WPI_TalonSRX Arm = new WPI_TalonSRX(TALON_LEFT);
-  Joystick joystick = new Joystick(0);
-  StringBuilder stringbuilder = new StringBuilder();
-
-  void setArmPos(double Arm, double Wrist){
-
-
-
+  void setPosition(double pos) {
+    Arm.set(ControlMode.MotionMagic, pos);
+    if (GetPosition() > UpperLimit) {
+      Arm.configPeakOutputForward(0, 0);
+    } else {
+      Arm.configPeakOutputForward(1, 100);
+    }
+    if (GetPosition() < LowerLimit) {
+      Arm.configPeakOutputReverse(0, 0);
+    } else {
+      Arm.configPeakOutputReverse(-1, 100);
+    }
+  }
+  void ReadSensor() {
+    Position = Arm.getSelectedSensorPosition();
   }
 
-
-  private void RunArm(){
-
-  
+  double GetPosition() {   
+    return Position;
+  }
    
+  void Config(){
+    //Arm.configFactoryDefault();
+    //Follow.configFactoryDefault();
 
-  } 
-   
-  void ArmConfig(){
-    
-    Arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,2, 100);
+
+    Arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,1, 100);
     Arm.setSensorPhase(true);
-		Arm.setInverted(false);
-    Arm.selectProfileSlot(1, 2);
+    Arm.setInverted(false);
+    
+    Arm.selectProfileSlot(2, 1);
     Arm.configNominalOutputForward(0, 100);
 		Arm.configNominalOutputReverse(0, 100);
 		Arm.configPeakOutputForward(1, 100);
-		Arm.configPeakOutputReverse(-1, 100);
-
+    Arm.configPeakOutputReverse(-1, 100);
+    
     Arm.configMotionCruiseVelocity(15000, 100);
     Arm.configMotionAcceleration(6000, 100);
-    
 
-    
+    Follow.setInverted(true);
+    Follow.follow(Arm);
   }
 
 }
