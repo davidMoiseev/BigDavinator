@@ -30,6 +30,7 @@ public class Robot extends TimedRobot
     public void robotInit()
     {
         driveTrain = new DriveTrain();
+        Elevator.Setup();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
                 "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y",
@@ -79,6 +80,7 @@ public class Robot extends TimedRobot
         driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft));
         driveTrain.readSensors();
         driveTrain.writeLogs();
+        Elevator.Movement();
     }
 
     @Override
