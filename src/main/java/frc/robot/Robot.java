@@ -9,7 +9,6 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 public class Robot extends TimedRobot {
     DriveTrain driveTrain = new DriveTrain();
     
