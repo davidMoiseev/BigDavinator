@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Add your docs here.
@@ -51,6 +52,7 @@ public class HotLog {
     public static void Setup(String... valsToLog) {
         logMap = new LinkedHashMap<>();
         StringBuilder s = new StringBuilder();
+        s.append("TimeStep").append(DELIMITER);
         for (int i = 0; i < valsToLog.length; ++i) {
             logMap.put(valsToLog[i], "");
             s.append(valsToLog[i]).append(DELIMITER);
@@ -75,13 +77,18 @@ public class HotLog {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        timer.start();
     }
 
+    private static Timer timer = new Timer();
     public static void WriteToFile() {
         if (!changed)
             return;
+        double timeStep = timer.get();
+        timer.reset();
         try {
             StringBuilder s = new StringBuilder();
+            s.append(String.valueOf(timeStep)).append(DELIMITER);
 
             for (Map.Entry<String, String> entry : logMap.entrySet()) {
                 s.append(entry.getValue()).append(DELIMITER);
