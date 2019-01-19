@@ -54,12 +54,12 @@ public class DriveTrain {
         public static final double P = .02;
         public static final double I = 0;
         public static final double D = 0;
-        public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
+        public static final double V = 1.0 / 2; // Velocity feed forward
         public static final double A = 0; // Acceleration gain
     }
 
     public static final class ANGLE_PID {
-        public static final double P = 0;
+        public static final double P = 0.0;
         public static final double I = 0;
         public static final double D = 0;
     }
@@ -133,10 +133,12 @@ public class DriveTrain {
         SmartDashboard.putNumber("Desired Heading", desired_heading);
 
         double angleError = Pathfinder.boundHalfDegrees(desired_heading - heading);
-        double turn = ANGLE_PID.P * angleError;
+        double turn = -ANGLE_PID.P * angleError;
+
 
         SmartDashboard.putNumber("Left Output", l - turn);
         SmartDashboard.putNumber("Right Output", r + turn);
+        SmartDashboard.putNumber("Turn", turn);
 
         leftTalon.set(ControlMode.PercentOutput, l - turn);
         rightTalon.set(ControlMode.PercentOutput, r + turn);

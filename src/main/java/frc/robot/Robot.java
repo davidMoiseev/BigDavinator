@@ -29,8 +29,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        driveTrain = new DriveTrain();
         driveTrain.zeroSensors();
         driveTrain.zeroTalons();
+        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight");
         profileFinished = false;
     }
 
@@ -38,6 +40,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
+        // May have to invert driveturn/drivespeed
+        driveTrain.readSensors();
+        driveTrain.writeDashBoard();
+        HotLog.WriteToFile();
+
         if (!profileFinished)
             profileFinished = driveTrain.FollowPath();
         else
@@ -50,17 +57,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight");
         driveTrain.zeroSensors();
     }
 
     boolean first = true;
+
     @Override
     public void teleopPeriodic() {
-        if (first)
-        {
-            first = false;
-            HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight");
-        }
         // May have to invert driveturn/drivespeed
         driveTrain.arcadeDrive(driver.getRawAxis(JOYSTICK_RX), driver.getRawAxis(JOYSTICK_LY));
         driveTrain.readSensors();
