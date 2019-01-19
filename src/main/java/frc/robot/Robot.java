@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
         driveTrain = new DriveTrain();
         driveTrain.zeroSensors();
         driveTrain.zeroTalons();
-        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight");
+        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight", "LeftOutput", "RightOutput");
         profileFinished = false;
     }
 
@@ -43,12 +43,13 @@ public class Robot extends TimedRobot {
         // May have to invert driveturn/drivespeed
         driveTrain.readSensors();
         driveTrain.writeDashBoard();
-        HotLog.WriteToFile();
 
         if (!profileFinished)
             profileFinished = driveTrain.FollowPath();
         else
             driveTrain.zeroTalons();
+            
+        HotLog.WriteToFile();
     }
 
     @Override
