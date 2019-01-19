@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         driveTrain = new DriveTrain();
+        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight");
     }
 
     @Override
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
     }
 
     boolean profileFinished = false;
+
     @Override
     public void autonomousPeriodic() {
         if (!profileFinished)
@@ -46,13 +48,12 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         driveTrain.readSensors();
-
         driveTrain.writeDashBoard();
+        HotLog.WriteToFile();
     }
 
     @Override
-    public void teleopInit()
-    {
+    public void teleopInit() {
         driveTrain.zeroSensors();
     }
 
@@ -64,5 +65,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
+    }
+
+    @Override
+    public void disabledInit() {
+        HotLog.WriteToFile();
     }
 }

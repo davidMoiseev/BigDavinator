@@ -70,6 +70,9 @@ public class DriveTrain {
 
     public DriveTrain() 
     {
+        leftTalon.configFactoryDefault();
+        rightTalon.configFactoryDefault();
+
         leftTalon.setInverted(true);
         leftTalon.setSensorPhase(true);
         rightTalon.setSensorPhase(true);
@@ -92,9 +95,8 @@ public class DriveTrain {
         setupMotionProfiling();
     }
 
-    private void setupMotionProfiling() 
+    private void setupMotionProfiling()
     {
-
         try
         {
             File left = new File(Filesystem.getDeployDirectory() + Paths.testLeft);
@@ -152,6 +154,11 @@ public class DriveTrain {
 
     public void writeDashBoard() 
     {
+        HotLog.LogValue("leftEncoder", leftEncoder);
+        HotLog.LogValue("rightEncoder", rightEncoder);
+        HotLog.LogValue("currentYaw", xyz_dps[0]);
+        HotLog.LogValue("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
+        HotLog.LogValue("currentVelocityRight", rightTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("leftEncoder", leftEncoder);
         SmartDashboard.putNumber("rightEncoder", rightEncoder);
         SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
@@ -174,7 +181,7 @@ public class DriveTrain {
         rightEncoderFollower.reset();
     }
 
-    public void arcadeDrive(double x, double y) 
+    public void arcadeDrive(double x, double y)
     {
         SmartDashboard.putNumber("Turn Input", x);
         SmartDashboard.putNumber("Forward Input", y);
