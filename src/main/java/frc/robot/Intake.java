@@ -48,17 +48,16 @@ public class Intake {
     }
      // double Tspeed = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
       /*ideally if joystick is forward, then intake spits out, if joystick is backward, intake pulls in */
-    public void writeDashboard(){
+
+      public void writeDashboard(){
         SmartDashboard.putNumber("Outputspeed", Outspeed);
         SmartDashboard.putNumber("Inputspeed", Inputspeed);
         SmartDashboard.putBoolean("ButtonAValue", joystick.getButtonA());
         SmartDashboard.putBoolean("ButtonBValue", joystick.getButtonB());
-       
+      }
      //   SmartDashboard.putBoolean("valueA", valueA);
         //SmartDashboard.putBoolean("valueB", valueB);
         //SmartDashboard.putNumber("speedR", );
         //SmartDashboard.putNumber("JoystickL", ());
         //SmartDashboard.putNumber("JoystickR", ());
-        }
-
 }
