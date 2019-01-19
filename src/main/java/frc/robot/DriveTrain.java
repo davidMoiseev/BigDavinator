@@ -27,8 +27,10 @@ public class DriveTrain {
     public static final double WHEEL_DIAMETER = 0.05436;
     public static final double TICKS_PER_REVOLUTION = 3600.0;
     // 21,080.986
-    // Recorded max velocity: 3000 units
+    // Recorded max velocity: 3000 units per 100 ms
     public static final double TICKS_PER_METER = (TICKS_PER_REVOLUTION / (Math.PI * WHEEL_DIAMETER));
+    // m/s
+    public static final double MAX_VELOCITY = 1.4231;
 
     public static final int TALON_LEFT = 1;
     public static final int TALON_PIGEON = 2;
@@ -52,7 +54,7 @@ public class DriveTrain {
         public static final double P = .02;
         public static final double I = 0;
         public static final double D = 0;
-        public static final double V = 1.0 / 2.0; // Velocity feed forward
+        public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
         public static final double A = 0; // Acceleration gain
     }
 
@@ -110,8 +112,8 @@ public class DriveTrain {
             return;
         }
 
-        leftEncoderFollower.configureEncoder(0, 3600, 0.05436);
-        rightEncoderFollower.configureEncoder(0, 3600, 0.05436);
+        leftEncoderFollower.configureEncoder(0, (int)TICKS_PER_REVOLUTION, WHEEL_DIAMETER);
+        rightEncoderFollower.configureEncoder(0, (int)TICKS_PER_REVOLUTION, WHEEL_DIAMETER);
 
         leftEncoderFollower.configurePIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
         rightEncoderFollower.configurePIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
