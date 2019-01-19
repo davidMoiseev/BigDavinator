@@ -13,8 +13,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake {
-    double Outspeed = 0.25;
-    double Inputspeed = -0.25;
+    double Outspeed = 0.75;
+    double Inputspeed = -0.75;
     HotSticks joystick;
     public static final int TALON_INTAKE_BELT = 1;
 
@@ -36,6 +36,7 @@ public class Intake {
         if(!joystick.getButtonA() && !joystick.getButtonB()) {
             allOff();
         }
+        writeDashboard();
     }
     public void allOff() {
 
