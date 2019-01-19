@@ -23,7 +23,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class Robot extends TimedRobot {
 
   DriveTrain driveTrain = new DriveTrain();
-  Joystick stickDrive = new Joystick(0);
+  HotSticks hotDrive = new HotSticks(0);
+  HotSticks hotOp = new HotSticks(1);
 
 
   @Override
@@ -43,7 +44,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    driveTrain.driveManualTank(1, 1, 0.5);
+    driveTrain.driveManualTank(1.0, 1.0, 1.0);
+    // driveTrain.writeDashboard();
     //driveTrain.driveManualH(1, 1, 0.5, 1);
   }
 

@@ -17,30 +17,42 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain {
-    public static final int TALON_LF = 100;
-    public static final int TALON_PIGEON = 200;
-    public static final int TALON_RF = 400;
-    public static final int TALON_RB = 67;
-    public static final int TALON_LB = 33;
-    public static final int TALON_H = 3707;
-
-
+    public static final int TALON_LF = 1;
+    public static final int TALON_PIGEON = 2;
+    public static final int TALON_RF = 4;
+    // public static final int TALON_RB = 0;
+    // public static final int TALON_LB = 0;
+    // public static final int TALON_H = 0;
     WPI_TalonSRX LFTalon = new WPI_TalonSRX(TALON_LF);
     WPI_TalonSRX RFTalon = new WPI_TalonSRX(TALON_RF);
-    WPI_TalonSRX RBTalon = new WPI_TalonSRX(TALON_RB);
-    WPI_TalonSRX LBTalon = new WPI_TalonSRX(TALON_LB);
-    WPI_TalonSRX HTalon = new WPI_TalonSRX(TALON_H);
+    // WPI_TalonSRX RBTalon = new WPI_TalonSRX(TALON_RB);
+    // WPI_TalonSRX LBTalon = new WPI_TalonSRX(TALON_LB);
+    // WPI_TalonSRX HTalon = new WPI_TalonSRX(TALON_H);
     public PigeonIMU pigeon = new PigeonIMU(TALON_PIGEON);
 
-    Joystick joystick;
+    HotSticks hotDrive = new HotSticks(0);
+    HotSticks hotOp = new HotSticks(1);
+    // Solenoid solenoidH = new Solenoid(5228);
+
+    public double turn;
+    public double h;
+    public double forward;
+    public double speedR;
+    public double speedL;
+    public double speedH;
+
+    //Joystick Mapping
+    public double x;
+    public double y;
 
     public void Drivetrain(){
         LFTalon.setSensorPhase(true);
-        LBTalon.setSensorPhase(true);
+        // LBTalon.setSensorPhase(true);
 
         
         // leftTalon.selectProfileSlot(0, 0);
@@ -48,32 +60,37 @@ public class DriveTrain {
         
         LFTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         RFTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        LBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        RBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        HTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        // LBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        // RBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        // HTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         
         LFTalon.setSelectedSensorPosition(0); 
         RFTalon.setSelectedSensorPosition(0);
-        LBTalon.setSelectedSensorPosition(0); 
-        RBTalon.setSelectedSensorPosition(0);
-        HTalon.setSelectedSensorPosition(0);
+        // LBTalon.setSelectedSensorPosition(0); 
+        // RBTalon.setSelectedSensorPosition(0);
+        // HTalon.setSelectedSensorPosition(0);
         
         LFTalon.set(ControlMode.PercentOutput, 0.0);
         RFTalon.set(ControlMode.PercentOutput, 0.0);
-        LBTalon.set(ControlMode.PercentOutput, 0.0);
-        RBTalon.set(ControlMode.PercentOutput, 0.0);
-        HTalon.set(ControlMode.PercentOutput, 0.0);
-        
+        // LBTalon.set(ControlMode.PercentOutput, 0.0);
+        // RBTalon.set(ControlMode.PercentOutput, 0.0);
+        // HTalon.set(ControlMode.PercentOutput, 0.0);
+    
 
         pigeon.setYaw(0);
     }
 
+    public void dropH(boolean state){
+        // solenoidH.set(state);
+    }
+
     public void driveManualTank(double kFwd, double kTurn, double kSpeed){
+        hotDrive.setDeadBandLY(0.1);
+        hotDrive.setDeadBandRX(0.1);
+        double forward = hotDrive.getStickLY();
+        double turn =  hotDrive.getStickRX();
 
-        double forward = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
-        double turn = /*HotSticks.DriverRX()*/ joystick.getRawAxis(4);
-
-        double speedR = (forward * kFwd) - (turn * kTurn);
+        double speedR = -(forward * kFwd) + (turn * kTurn);
         double speedL = (forward * kFwd) + (turn * kTurn);
 
         if(speedR > 1){
@@ -84,22 +101,24 @@ public class DriveTrain {
 
         if((speedR <= 1) && (speedL <= 1)){
             RFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            RBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            LFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            LBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
+            // RBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
+            LFTalon.set(ControlMode.PercentOutput, (speedL * kSpeed));
+            // LBTalon.set(ControlMode.PercentOutput, (speedL * kSpeed));
         }
 
     }
     
     public void driveManualH(double kFwd, double kTurn, double kSpeed, double kH){
+        hotDrive.setDeadBandLY(0.1);
+        hotDrive.setDeadBandRX(0.1);
+        hotDrive.setDeadBandLX(0.1);
+        turn =  hotDrive.getStickRX();
+        h = hotDrive.getStickLX();
+        forward = hotDrive.getStickLY();
 
-        double forward = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
-        double turn = /*HotSticks.DriverRX()*/ joystick.getRawAxis(4);
-        double h = /*HotSticks.DriverLX()*/ joystick.getRawAxis(0);
-
-        double speedR = (forward * kFwd) - (turn * kTurn);
-        double speedL = (forward * kFwd) + (turn * kTurn);
-        double speedH = (h * kH);
+        speedR = (forward * kFwd) - (turn * kTurn);
+        speedL = (forward * kFwd) + (turn * kTurn);
+        speedH = (h * kH);
 
         if(speedR > 1){
             speedR = 1;
@@ -107,14 +126,29 @@ public class DriveTrain {
             speedL = 1;
         }
 
-        if((speedR <= 1) && (speedL <= 1) && (speedH <= 1)){
-            RFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            RBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            LFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            LBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            HTalon.set(ControlMode.PercentOutput, (speedH));
+        if(speedH > 0.05){
+            this.dropH(true);
+        }else{
+            this.dropH(false);
         }
 
+        if((speedR <= 1) && (speedL <= 1) && (speedH <= 1)){
+            RFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
+            // RBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
+            LFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
+        //     LBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
+        //    HTalon.set(ControlMode.PercentOutput, (speedH));
+        }
     }
+
+    public void writeDashboard(){
+        SmartDashboard.putNumber("turn", turn);
+        SmartDashboard.putNumber("forward", forward);
+        SmartDashboard.putNumber("speedL", speedL);
+        SmartDashboard.putNumber("speedR", speedR);
+        SmartDashboard.putNumber("JoystickL", hotDrive.getStickLY());
+        SmartDashboard.putNumber("JoystickR", hotDrive.getStickRX());
+        }
+
 
 }

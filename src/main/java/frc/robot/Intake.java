@@ -10,14 +10,14 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
+//import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
-public class Intake {
+/*public class Intake {
 
     Joystick joystick;
     public static final int TALON_INTAKE_TOP = 2337;
@@ -36,11 +36,12 @@ public class Intake {
         BottomTalon.set(ControlMode.PercentOutput, 0.0);
     }
     
-    public void runIntake(){
-        double speed = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
+      public void runIntake(){
+        double speed = /*HotSticks.DriverLY() joystick.getRawAxis(1);
         /*ideally if joystick is forward, then intake spits out, if joystick is backward, intake pulls in */
-        TopTalon.set(ControlMode.PercentOutput, speed);
+       /*TopTalon.set(ControlMode.PercentOutput, speed);
         BottomTalon.set(ControlMode.PercentOutput, -speed);
     }
 
 }
+*/
