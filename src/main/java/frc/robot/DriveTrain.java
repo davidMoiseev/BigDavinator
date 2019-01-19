@@ -22,22 +22,26 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain {
-    public static final int TALON_LF = 1;
-    public static final int TALON_PIGEON = 2;
+    public static final int TALON_LF = 7;
+    public static final int TALON_PIGEON = 6;
     public static final int TALON_RF = 4;
-    // public static final int TALON_RB = 0;
-    // public static final int TALON_LB = 0;
-    // public static final int TALON_H = 0;
+    public static final int TALON_RB = 3;
+    public static final int TALON_LB = 6;
+    public static final int TALON_LM = 5;
+    public static final int TALON_RM = 4;
+    public static final int TALON_H = 1;
     WPI_TalonSRX LFTalon = new WPI_TalonSRX(TALON_LF);
     WPI_TalonSRX RFTalon = new WPI_TalonSRX(TALON_RF);
-    // WPI_TalonSRX RBTalon = new WPI_TalonSRX(TALON_RB);
-    // WPI_TalonSRX LBTalon = new WPI_TalonSRX(TALON_LB);
-    // WPI_TalonSRX HTalon = new WPI_TalonSRX(TALON_H);
+    WPI_TalonSRX RBTalon = new WPI_TalonSRX(TALON_RB);
+    WPI_TalonSRX LBTalon = new WPI_TalonSRX(TALON_LB);
+    WPI_TalonSRX HTalon = new WPI_TalonSRX(TALON_H);
+    WPI_TalonSRX LMTalon = new WPI_TalonSRX(TALON_LM);
+    WPI_TalonSRX RMTalon = new WPI_TalonSRX(TALON_RM);
     public PigeonIMU pigeon = new PigeonIMU(TALON_PIGEON);
 
     HotSticks hotDrive = new HotSticks(0);
     HotSticks hotOp = new HotSticks(1);
-    // Solenoid solenoidH = new Solenoid(5228);
+    Solenoid solenoidH = new Solenoid(0);
 
     public double turn;
     public double h;
@@ -50,38 +54,37 @@ public class DriveTrain {
     public double x;
     public double y;
 
-    public void Drivetrain(){
-        LFTalon.setSensorPhase(true);
-        // LBTalon.setSensorPhase(true);
+    LMTalon.follow(LFTalon);
+    LBTalon.follow(LFTalon);
+    RMTalon.follow(RFTalon);
+    RBTalon.follow(RFTalon);
 
-        
+    public void Drivetrain(){
+    
+        LFTalon.setSensorPhase(true);
+
         // leftTalon.selectProfileSlot(0, 0);
         // rightTalon.selectProfileSlot(0, 0);
         
         LFTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         RFTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        // LBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        // RBTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        // HTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        HTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         
         LFTalon.setSelectedSensorPosition(0); 
         RFTalon.setSelectedSensorPosition(0);
-        // LBTalon.setSelectedSensorPosition(0); 
-        // RBTalon.setSelectedSensorPosition(0);
-        // HTalon.setSelectedSensorPosition(0);
+        HTalon.setSelectedSensorPosition(0);
         
         LFTalon.set(ControlMode.PercentOutput, 0.0);
         RFTalon.set(ControlMode.PercentOutput, 0.0);
-        // LBTalon.set(ControlMode.PercentOutput, 0.0);
-        // RBTalon.set(ControlMode.PercentOutput, 0.0);
-        // HTalon.set(ControlMode.PercentOutput, 0.0);
-    
+        HTalon.set(ControlMode.PercentOutput, 0.0);
 
         pigeon.setYaw(0);
+
+
     }
 
     public void dropH(boolean state){
-        // solenoidH.set(state);
+        solenoidH.set(state);
     }
 
     public void driveManualTank(double kFwd, double kTurn, double kSpeed){
@@ -101,9 +104,7 @@ public class DriveTrain {
 
         if((speedR <= 1) && (speedL <= 1)){
             RFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            // RBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
             LFTalon.set(ControlMode.PercentOutput, (speedL * kSpeed));
-            // LBTalon.set(ControlMode.PercentOutput, (speedL * kSpeed));
         }
 
     }
@@ -126,18 +127,16 @@ public class DriveTrain {
             speedL = 1;
         }
 
-        if(speedH > 0.05){
-            this.dropH(true);
-        }else{
-            this.dropH(false);
-        }
+        // if(speedH > 0.05){
+        //     this.dropH(true);
+        // }else{
+        //     this.dropH(false);
+        // }
 
         if((speedR <= 1) && (speedL <= 1) && (speedH <= 1)){
             RFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            // RBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-            LFTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-        //     LBTalon.set(ControlMode.PercentOutput, (speedR * kSpeed));
-        //    HTalon.set(ControlMode.PercentOutput, (speedH));
+            LFTalon.set(ControlMode.PercentOutput, (speedL * kSpeed));
+            HTalon.set(ControlMode.PercentOutput, (speedH));
         }
     }
 

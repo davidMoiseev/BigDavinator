@@ -45,6 +45,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.driveManualTank(1.0, 1.0, 1.0);
+
+    // if(hotDrive.getButtonA() == true){
+    //   driveTrain.dropH(true);
+    // }else{
+    //   driveTrain.dropH(false);
+    // }
     // driveTrain.writeDashboard();
     //driveTrain.driveManualH(1, 1, 0.5, 1);
   }
