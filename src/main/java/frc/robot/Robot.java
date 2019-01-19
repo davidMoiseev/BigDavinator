@@ -1,60 +1,68 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
-
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot {
 
-    String deployPath = Filesystem.getDeployDirectory().getAbsolutePath();
+    public static final double ticksPerSecond = 27000;
 
-    DriveTrain driveTrain = new DriveTrain();
-    
-    Joystick stickDrive = new Joystick(0);
+    public static final int JOYSTICK_DRIVER = 0;
+    public static final int JOYSTICK_LY = 1;
+    public static final int JOYSTICK_RX = 4;
+
+    Joystick driver = new Joystick(JOYSTICK_DRIVER);
+
+    DriveTrain driveTrain;
 
     @Override
     public void robotInit() {
-    	driveTrain.zeroSensors();
-    }
-
-    @Override
-    public void robotPeriodic() {
-      
-      driveTrain.readSensors();
+        driveTrain = new DriveTrain();
     }
 
     @Override
     public void autonomousInit() {
-      driveTrain.zeroSensors();
+        driveTrain.zeroSensors();
+        driveTrain.zeroTalons();
+        profileFinished = false;
     }
-    
+
+    boolean profileFinished = false;
     @Override
     public void autonomousPeriodic() {
+        if (!profileFinished)
+            profileFinished = driveTrain.FollowPath();
+        else
+            driveTrain.zeroTalons();
+    }
 
+    @Override
+    public void robotPeriodic() {
+        driveTrain.readSensors();
+
+        driveTrain.writeDashBoard();
+    }
+
+    @Override
+    public void teleopInit()
+    {
+        driveTrain.zeroSensors();
     }
 
     @Override
     public void teleopPeriodic() {
-      double forward = stickDrive.getRawAxis(1);
-      double turn = stickDrive.getRawAxis(4);
-
-      driveTrain.arcadeDrive((Math.abs(forward) < .05 ? 0 : forward ), (Math.abs(turn) < .05 ? 0 : turn ));
-    }
-    
-    @Override
-    public void teleopInit() {
-    	driveTrain.zeroSensors();
+        // May have to invert driveturn/drivespeed
+        driveTrain.arcadeDrive(driver.getRawAxis(JOYSTICK_RX), driver.getRawAxis(JOYSTICK_LY));
     }
 
     @Override
     public void testPeriodic() {
-    	
     }
 }
