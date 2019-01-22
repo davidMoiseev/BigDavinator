@@ -15,8 +15,7 @@ void Intake::NeutralClaw(bool open){
 	m_neutralClaw.Set(neutralClawOpen);
 }
 
-void Intake::FastShoot(bool on){
-	fastShoot = on;
+
 }
 
 boolean Intake::GetShoot(){
