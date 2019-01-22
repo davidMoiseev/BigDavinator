@@ -45,8 +45,10 @@ public class HotLog {
 
     public static void LogValue(String key, String value) {
         if (logMap.keySet().contains(key))
+        {
             logMap.put(key, value);
-        changed = true;
+            changed = true;
+        }
     }
 
     public static void Setup(String... valsToLog) {
