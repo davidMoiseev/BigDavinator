@@ -46,11 +46,11 @@ Joystick HotJoystick = new Joystick(1);
 private double desiredElevatorPosition;
 private boolean firstElevator;
 
-public double CloseLoopError(){
+public double ClosedLoopError(){
     return ELEVATOR1.getClosedLoopError(0);
 }
 public boolean CurrentElevatorPosition() {
-    if (Math.abs(CloseLoopError()) < 40){
+    if (Math.abs(ClosedLoopError()) < 40){
         return true;
     }else{
         return false;
