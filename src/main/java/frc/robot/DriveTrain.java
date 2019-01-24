@@ -26,11 +26,12 @@ public class DriveTrain {
 
     public static final double WHEEL_DIAMETER = 0.05436;
     public static final double TICKS_PER_REVOLUTION = 3600.0;
-    // 21,080.986
     // Recorded max velocity: 3000 units per 100 ms
+    // 21,080.986
     public static final double TICKS_PER_METER = (TICKS_PER_REVOLUTION / (Math.PI * WHEEL_DIAMETER));
     // m/s
-    public static final double MAX_VELOCITY = 1.4231;
+    public static final double MAX_VELOCITY = 2.6; //1.4231;
+    public static final double MAX_ACCEL = 5.821;
 
     public static final int TALON_LEFT = 1;
     public static final int TALON_PIGEON = 2;
@@ -51,7 +52,7 @@ public class DriveTrain {
      */
 
     public static final class POS_PIDVA {
-        public static final double P = .02;
+        public static final double P = 0;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
@@ -59,7 +60,7 @@ public class DriveTrain {
     }
 
     public static final class ANGLE_PID {
-        public static final double P = 0.001;
+        public static final double P = 0.02;
         public static final double I = 0;
         public static final double D = 0;
     }
@@ -121,8 +122,12 @@ public class DriveTrain {
         rightEncoderFollower.configurePIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
 
+    int followIterations = 0;
     public boolean FollowPath() 
     {
+        HotLog.LogValue("Path Points", followIterations);
+        ++followIterations;
+
         double l = leftEncoderFollower.calculate((int) leftEncoder);
         double r = rightEncoderFollower.calculate((int) rightEncoder);
 
@@ -142,6 +147,11 @@ public class DriveTrain {
 
         HotLog.LogValue("LeftOutput", l - turn);
         HotLog.LogValue("RightOutput", r + turn);
+        Segment s  = leftEncoderFollower.getSegment();
+        HotLog.LogValue("velocity", s.velocity);
+        HotLog.LogValue("acceleration", s.acceleration);
+        HotLog.LogValue("position", s.position);
+        HotLog.LogValue("x", s.x);
 
         leftTalon.set(ControlMode.PercentOutput, l - turn);
         rightTalon.set(ControlMode.PercentOutput, r + turn);

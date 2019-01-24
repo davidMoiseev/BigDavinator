@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot {
 
-    public static final double ticksPerSecond = 27000;
-
     public static final int JOYSTICK_DRIVER = 0;
     public static final int JOYSTICK_LY = 1;
     public static final int JOYSTICK_RX = 4;
@@ -32,7 +30,8 @@ public class Robot extends TimedRobot {
         driveTrain = new DriveTrain();
         driveTrain.zeroSensors();
         driveTrain.zeroTalons();
-        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight", "LeftOutput", "RightOutput");
+        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
+                "Left Output", "Right Output", "Path Points", "velocity", "acceleration", "position", "x");
         profileFinished = false;
     }
 
@@ -48,7 +47,7 @@ public class Robot extends TimedRobot {
             profileFinished = driveTrain.FollowPath();
         else
             driveTrain.zeroTalons();
-            
+
         HotLog.WriteToFile();
     }
 

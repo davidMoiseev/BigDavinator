@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class HotLog {
     public static final String LOGS_DIRECTORY = "/home/lvuser/logs/";
 
-    public static final Date LoggerStartDate = new Date();
+    public static Date LoggerStartDate = new Date();
 
     public static final String DELIMITER = "\t";
 
@@ -45,6 +45,7 @@ public class HotLog {
     }
 
     public static void Setup(String... valsToLog) {
+        LoggerStartDate = new Date();
         logMap = new LinkedHashMap<>();
         StringBuilder s = new StringBuilder();
         s.append("TimeStep").append(DELIMITER);
