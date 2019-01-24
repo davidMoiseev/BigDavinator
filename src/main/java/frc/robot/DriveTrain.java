@@ -30,7 +30,7 @@ public class DriveTrain {
     // 21,080.986
     public static final double TICKS_PER_METER = (TICKS_PER_REVOLUTION / (Math.PI * WHEEL_DIAMETER));
     // m/s
-    public static final double MAX_VELOCITY = 2.6; //1.4231;
+    public static final double MAX_VELOCITY = 2.95; //1.4231;
     public static final double MAX_ACCEL = 5.821;
 
     public static final int TALON_LEFT = 1;
@@ -50,7 +50,6 @@ public class DriveTrain {
     /*
      * Motion Profiling Constants
      */
-
     public static final class POS_PIDVA {
         public static final double P = 0;
         public static final double I = 0;
@@ -94,6 +93,9 @@ public class DriveTrain {
         rightTalon.setNeutralMode(NeutralMode.Brake);
 
         setupMotionProfiling();
+
+        leftEncoderFollower.reset();
+        rightEncoderFollower.reset();
     }
 
     private void setupMotionProfiling()
@@ -140,21 +142,31 @@ public class DriveTrain {
         double angleError = Pathfinder.boundHalfDegrees(desired_heading - heading);
         double turn = -ANGLE_PID.P * angleError;
 
+        leftTalon.set(ControlMode.PercentOutput, l - turn);
+        rightTalon.set(ControlMode.PercentOutput, r + turn);
+
 
         SmartDashboard.putNumber("Left Output", l - turn);
         SmartDashboard.putNumber("Right Output", r + turn);
         SmartDashboard.putNumber("Turn", turn);
 
-        HotLog.LogValue("LeftOutput", l - turn);
-        HotLog.LogValue("RightOutput", r + turn);
-        Segment s  = leftEncoderFollower.getSegment();
-        HotLog.LogValue("velocity", s.velocity);
-        HotLog.LogValue("acceleration", s.acceleration);
-        HotLog.LogValue("position", s.position);
-        HotLog.LogValue("x", s.x);
-
-        leftTalon.set(ControlMode.PercentOutput, l - turn);
-        rightTalon.set(ControlMode.PercentOutput, r + turn);
+        HotLog.LogValue("Left Output", l - turn);
+        HotLog.LogValue("Right Output", r + turn);
+        try
+        {
+            Segment s  = leftEncoderFollower.getSegment();
+            HotLog.LogValue("velocity", s.velocity);
+            HotLog.LogValue("acceleration", s.acceleration);
+            HotLog.LogValue("position", s.position);
+            HotLog.LogValue("x", s.x);
+        }
+        catch (Exception e)
+        {
+            HotLog.LogValue("velocity", " ");
+            HotLog.LogValue("acceleration", " ");
+            HotLog.LogValue("position", " ");
+            HotLog.LogValue("x", " ");
+        }
 
         return (leftEncoderFollower.isFinished() && rightEncoderFollower.isFinished());
     }

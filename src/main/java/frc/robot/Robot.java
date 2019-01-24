@@ -27,11 +27,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        driveTrain = new DriveTrain();
         driveTrain.zeroSensors();
         driveTrain.zeroTalons();
+        /*
         HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Left Output", "Right Output", "Path Points", "velocity", "acceleration", "position", "x");
+        */
         profileFinished = false;
     }
 
@@ -57,11 +58,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight");
+        // HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw",
+        // "currentVelocityLeft", "currentVelocityRight");
         driveTrain.zeroSensors();
     }
-
-    boolean first = true;
 
     @Override
     public void teleopPeriodic() {
@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
         driveTrain.arcadeDrive(driver.getRawAxis(JOYSTICK_RX), driver.getRawAxis(JOYSTICK_LY));
         driveTrain.readSensors();
         driveTrain.writeDashBoard();
-        HotLog.WriteToFile();
+        // HotLog.WriteToFile();
     }
 
     @Override
@@ -78,6 +78,5 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        first = true;
     }
 }

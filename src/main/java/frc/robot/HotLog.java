@@ -45,15 +45,16 @@ public class HotLog {
     }
 
     public static void Setup(String... valsToLog) {
-        LoggerStartDate = new Date();
         logMap = new LinkedHashMap<>();
         StringBuilder s = new StringBuilder();
         s.append("TimeStep").append(DELIMITER);
+
         for (int i = 0; i < valsToLog.length; ++i) {
             logMap.put(valsToLog[i], "");
             s.append(valsToLog[i]).append(DELIMITER);
         }
         s.append("\n");
+        
         String output = s.toString();
         System.out.println(output);
 
