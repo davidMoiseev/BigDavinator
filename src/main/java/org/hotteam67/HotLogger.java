@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ public class HotLogger {
     public static final String EMPTY = "";
     public static final Double ROW_TIMEOUT_SECONDS = .02;
     public static final Double LOG_PERIOD_SECONDS = 1.0;
+    public static final Integer ALLOWED_LOG_FILES = 10;
 
     private static boolean onNewRow = true;
     private static Map<String, String> currentRow = new LinkedHashMap<String, String>();
@@ -104,19 +107,44 @@ public class HotLogger {
     }
 
     private static class LogThread {
+        private static FileWriter fileWriter = null;
+
         /**
          * Function called only by logging thread
          */
         public static synchronized void WriteToFile() {
             try {
-                FileWriter fileWriter = null;
                 String fileName = LOGS_DIRECTORY
                         + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LogQueue.GetDate()) + ".txt";
 
                 File f = new File(fileName);
                 if (!f.exists()) {
-                    new File(LOGS_DIRECTORY).mkdirs();
+                    File directory = new File(LOGS_DIRECTORY);
+
+                    directory.mkdirs();
+                    File[] files = directory.listFiles();
+
+                    if (files.length > ALLOWED_LOG_FILES) {
+                        Arrays.sort(files, new Comparator<File>() {
+
+                            @Override
+                            public int compare(File arg0, File arg1) {
+                                if (arg0.lastModified() < arg1.lastModified())
+                                    return 1;
+                                else if (arg0.lastModified() > arg1.lastModified())
+                                    return -1;
+                                else
+                                    return 0;
+                            }
+                        });
+                        for (int i = ALLOWED_LOG_FILES - 1; i < files.length; ++i) {
+                            files[i].delete();
+                        }
+                    }
+
                     f.createNewFile();
+                    if (fileWriter != null)
+                        fileWriter.close();
 
                     fileWriter = new FileWriter(f);
                 }
@@ -125,11 +153,24 @@ public class HotLogger {
                     fileWriter = new FileWriter(f);
                 fileWriter.append(LogQueue.FlushQueue());
                 fileWriter.flush();
-                fileWriter.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        public static synchronized void CloseStream() {
+            if (fileWriter != null)
+                try {
+                    fileWriter.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        }
+    }
+
+    public static void CloseStream() {
+        LogThread.CloseStream();
+        logScheduler.stop();
     }
 
     private static class LogQueue {
