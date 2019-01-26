@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import org.hotteam67.HotLogger;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
