@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
@@ -29,7 +27,7 @@ public class HotLog {
     private static Map<String, String> currentRow = new LinkedHashMap<String, String>();
     private static double currentRowTime;
 
-    private static Notifier logScheduler = new Notifier(LoggerThread::WriteToFile);
+    private static Notifier logScheduler = new Notifier(LogThread::WriteToFile);
 
     public static void LogValue(String key, Integer value) {
         LogValue(key, Double.valueOf(value));
@@ -67,7 +65,7 @@ public class HotLog {
     private static void PushCurrentRow() {
         try {
             LogRow row = new LogRow(currentRow, String.valueOf(currentRowTime));
-            LoggerThread.PushToQueue(row);
+            LogQueue.PushToQueue(row);
         } catch (Exception ignored) {
         }
         for (Map.Entry<String, String> entry : currentRow.entrySet())
@@ -89,7 +87,7 @@ public class HotLog {
         headerBuilder.append("\n");
 
         logScheduler.stop();
-        LoggerThread.RestartQueue(headerBuilder.toString());
+        LogQueue.RestartQueue(headerBuilder.toString());
         logScheduler.startPeriodic(LOG_PERIOD_SECONDS);
     }
 
@@ -103,8 +101,7 @@ public class HotLog {
         }
     }
 
-    private static class LoggerThread {
-
+    private static class LogThread {
         private static FileWriter fileWriter;
 
         /**
@@ -112,7 +109,7 @@ public class HotLog {
          */
         public static void WriteToFile() {
             try {
-                String fileName = LOGS_DIRECTORY + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(GetDate()) + ".txt";
+                String fileName = LOGS_DIRECTORY + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LogQueue.GetDate()) + ".txt";
 
                 File f = new File(fileName);
                 if (!f.exists()) {
@@ -127,12 +124,15 @@ public class HotLog {
 
                 if (fileWriter == null)
                     fileWriter = new FileWriter(f);
-                fileWriter.append(FlushQueue());
+                fileWriter.append(LogQueue.FlushQueue());
+                fileWriter.flush();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
 
+    private static class LogQueue {
         /**
          * Log structures shared between threads
          */

@@ -23,16 +23,14 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         driveTrain = new DriveTrain();
+        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
+                "Left Output", "Right Output", "Path Points", "velocity", "acceleration", "position", "x");
     }
 
     @Override
     public void autonomousInit() {
         driveTrain.zeroSensors();
         driveTrain.zeroTalons();
-        /*
-        HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
-                "Left Output", "Right Output", "Path Points", "velocity", "acceleration", "position", "x");
-        */
         profileFinished = false;
     }
 
@@ -48,8 +46,6 @@ public class Robot extends TimedRobot {
             profileFinished = driveTrain.FollowPath();
         else
             driveTrain.zeroTalons();
-
-        HotLog.WriteToFile();
     }
 
     @Override
