@@ -64,12 +64,15 @@ public class HotLog {
 
     private static void PushCurrentRow() {
         try {
-            LogRow row = new LogRow(currentRow, String.valueOf(currentRowTime));
+            LinkedHashMap<String, String> newMap = new LinkedHashMap<>();
+            for (Map.Entry<String, String> currentEntry : currentRow.entrySet()) {
+                newMap.put(currentEntry.getKey(), currentEntry.getValue());
+            }
+            LogRow row = new LogRow(newMap, String.valueOf(currentRowTime));
             LogQueue.PushToQueue(row);
         } catch (Exception ignored) {
         }
-        for (Map.Entry<String, String> entry : currentRow.entrySet())
-        {
+        for (Map.Entry<String, String> entry : currentRow.entrySet()) {
             entry.setValue(EMPTY);
         }
         onNewRow = true;
@@ -79,12 +82,11 @@ public class HotLog {
 
         currentRow.clear();
         StringBuilder headerBuilder = new StringBuilder();
-        for (int i = 0; i < valsToLog.length; ++i)
-        {
+        headerBuilder.append("Time Step").append(DELIMITER);
+        for (int i = 0; i < valsToLog.length; ++i) {
             currentRow.put(valsToLog[i], EMPTY);
             headerBuilder.append(valsToLog[i]).append(DELIMITER);
         }
-        headerBuilder.append("\n");
 
         logScheduler.stop();
         LogQueue.RestartQueue(headerBuilder.toString());
@@ -102,22 +104,19 @@ public class HotLog {
     }
 
     private static class LogThread {
-        private static FileWriter fileWriter;
-
         /**
          * Function called only by logging thread
          */
-        public static void WriteToFile() {
+        public static synchronized void WriteToFile() {
             try {
-                String fileName = LOGS_DIRECTORY + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LogQueue.GetDate()) + ".txt";
+                FileWriter fileWriter = null;
+                String fileName = LOGS_DIRECTORY
+                        + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LogQueue.GetDate()) + ".txt";
 
                 File f = new File(fileName);
                 if (!f.exists()) {
                     new File(LOGS_DIRECTORY).mkdirs();
                     f.createNewFile();
-
-                    if (fileWriter != null)
-                        fileWriter.close();
 
                     fileWriter = new FileWriter(f);
                 }
@@ -126,6 +125,7 @@ public class HotLog {
                     fileWriter = new FileWriter(f);
                 fileWriter.append(LogQueue.FlushQueue());
                 fileWriter.flush();
+                fileWriter.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -142,12 +142,16 @@ public class HotLog {
 
         private static synchronized String FlushQueue() {
             StringBuilder output = new StringBuilder(headerToOutput);
-            for (LogRow row : logQueue) {
-                output.append(DELIMITER).append(row.TimeStamp).append(DELIMITER);
+            output.append("\n");
+
+            for (int i = 0; i < logQueue.size(); ++i) {
+                LogRow row = logQueue.get(i);
+                output.append(row.TimeStamp).append(DELIMITER);
                 for (Map.Entry<String, String> e : row.Values.entrySet()) {
                     output.append(e.getValue()).append(DELIMITER);
                 }
-                output.append("\n");
+                if (i + 1 < logQueue.size())
+                    output.append("\n");
             }
             headerToOutput = "";
             logQueue.clear();

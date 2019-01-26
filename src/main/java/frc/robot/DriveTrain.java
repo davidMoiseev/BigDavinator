@@ -2,7 +2,6 @@ package frc.robot;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;

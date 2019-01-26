@@ -54,18 +54,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        // HotLog.Setup("leftEncoder", "rightEncoder", "currentYaw",
-        // "currentVelocityLeft", "currentVelocityRight");
         driveTrain.zeroSensors();
     }
 
     @Override
     public void teleopPeriodic() {
-        // May have to invert driveturn/drivespeed
         driveTrain.arcadeDrive(driver.getRawAxis(JOYSTICK_RX), driver.getRawAxis(JOYSTICK_LY));
         driveTrain.readSensors();
         driveTrain.writeDashBoard();
-        // HotLog.WriteToFile();
     }
 
     @Override
