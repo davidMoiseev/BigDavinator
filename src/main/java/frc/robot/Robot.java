@@ -71,6 +71,7 @@ public class Robot extends TimedRobot
     public void teleopInit()
     {
         driveTrain.zeroSensors();
+        Elevator.ElevatorINIT();
     }
 
     boolean rumble = false;
@@ -81,7 +82,15 @@ public class Robot extends TimedRobot
         driveTrain.readSensors();
         driveTrain.writeLogs();
         Elevator.Movement();
-    }
+        if (stickDrive. {
+          Elevator.MotionMagicElevator();
+        } else if (){
+
+        } else{
+
+        }
+
+      }
 
     @Override
     public void testPeriodic()

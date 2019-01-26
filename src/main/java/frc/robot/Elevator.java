@@ -16,14 +16,14 @@ import edu.wpi.first.wpilibj.Joystick;
  * Add your docs here.
  */
 public class Elevator {
-    TalonSRX ELEVATOR1 = new TalonSRX(5);
-    TalonSRX ELEVATOR2 = new TalonSRX(6);
+    static TalonSRX ELEVATOR1 = new TalonSRX(5);
+    /*static TalonSRX ELEVATOR2 = new TalonSRX(6);*/
     public final static int TOP_AUTO = 1;
     public final static int LOW_AUTO = 2;
     public final static int TOP = 3;
     public final static int LOW = 4;
 
-    public void ElevatorINIT(){
+    public static void ElevatorINIT(){
         ELEVATOR1.selectProfileSlot(1, 2);
         ELEVATOR1.configNominalOutputForward(0, 100);
         ELEVATOR1.configNominalOutputReverse(0, 100);
@@ -31,41 +31,41 @@ public class Elevator {
         ELEVATOR1.configPeakOutputReverse(-1, 100);
         ELEVATOR1.configMotionCruiseVelocity(15000, 100);
         ELEVATOR1.configMotionAcceleration(6700, 100);
-        ELEVATOR2.selectProfileSlot(1, 2);
+        /*ELEVATOR2.selectProfileSlot(1, 2);
         ELEVATOR2.configNominalOutputForward(0, 100);
         ELEVATOR2.configNominalOutputReverse(0, 100);
         ELEVATOR2.configPeakOutputForward(1, 100);
         ELEVATOR2.configPeakOutputReverse(-1, 100);
         ELEVATOR2.configMotionCruiseVelocity(15000, 100);
-        ELEVATOR2.configMotionAcceleration(6700, 100);
+        ELEVATOR2.configMotionAcceleration(6700, 100);*/
     }
-Joystick HotJoystick = new Joystick(1);
-private double desiredElevatorPosition;
-private boolean firstElevator;
+static Joystick HotJoystick = new Joystick(1);
+private static double desiredElevatorPosition;
+private static boolean firstElevator;
 
-public double ClosedLoopError(){
+public static double ClosedLoopError(){
     return ELEVATOR1.getClosedLoopError(0);
 }
-public boolean CurrentElevatorPosition() {
+public static boolean CurrentElevatorPosition() {
     if (Math.abs(ClosedLoopError()) < 40){
         return true;
     }else{
         return false;
     }
 }
-public void MotionMagicElevator(){
+public static void MotionMagicElevator(){
     int AUTON_STATE = 1;
     switch(AUTON_STATE){
     case TOP_AUTO:
         desiredElevatorPosition = 3000;
         ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-        ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);
+        /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
         AUTON_STATE = AUTON_STATE + 1;
         break;
     case LOW_AUTO:
         desiredElevatorPosition = 1500;
         ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-        ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);
+        /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
         AUTON_STATE = AUTON_STATE + 1;
         break;
     case TOP:
@@ -80,7 +80,7 @@ public void MotionMagicElevator(){
             }
         }
             ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-            ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);
+            /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
             AUTON_STATE = AUTON_STATE + 1;
             break;
     case LOW:
@@ -95,13 +95,13 @@ public void MotionMagicElevator(){
             }
         }
         ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-        ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);
+        /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
         AUTON_STATE = AUTON_STATE + 1;
         break;
     }
 }
-    public void ZeroElevator(){
+    public static void ZeroElevator(){
         ELEVATOR1.setSelectedSensorPosition(0, 0, 0);
-        ELEVATOR2.setSelectedSensorPosition(0, 0, 0);
+        /*ELEVATOR2.setSelectedSensorPosition(0, 0, 0);*/
     }
 }
