@@ -25,7 +25,11 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         driveTrain = new DriveTrain();
-        HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight", "Left Output", "Right Output", "Path Points", "velocity", "acceleration", "position", "x");
+        HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
+                "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
+                "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y", "Left Output",
+                "Right Path Position", "Right Path Velocity", "Right Path Acceleration", "Right Path X", "Right Path Y",
+                "Right Output");
     }
 
     @Override

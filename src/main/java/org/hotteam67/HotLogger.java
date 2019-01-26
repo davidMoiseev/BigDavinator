@@ -114,6 +114,9 @@ public class HotLogger {
          */
         public static synchronized void WriteToFile() {
             try {
+                String output = LogQueue.FlushQueue();
+
+                if (output.trim().isEmpty()) return;
                 String fileName = LOGS_DIRECTORY
                         + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LogQueue.GetDate()) + ".txt";
 
@@ -151,7 +154,7 @@ public class HotLogger {
 
                 if (fileWriter == null)
                     fileWriter = new FileWriter(f);
-                fileWriter.append(LogQueue.FlushQueue());
+                fileWriter.append(output);
                 fileWriter.flush();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -182,6 +185,8 @@ public class HotLogger {
         private static Date logDate = new Date();
 
         private static synchronized String FlushQueue() {
+            if (logQueue.size() == 0) return "";
+
             StringBuilder output = new StringBuilder(headerToOutput);
             output.append("\n");
 
