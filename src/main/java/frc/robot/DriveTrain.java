@@ -28,8 +28,11 @@ public class DriveTrain {
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
     public static final double TICKS_PER_METER = (TICKS_PER_REVOLUTION / (Math.PI * WHEEL_DIAMETER));
-    // m/s
-    public static final double MAX_VELOCITY = 2.95; //1.4231;
+    
+    // Ticks per 100 ms, as read from getSelectedSensorVelocity(0)
+    public static final double MAX_VELOCITY_TICKS = 5960;
+    // Max velocity in m/s
+    public static final double MAX_VELOCITY = MAX_VELOCITY_TICKS * 10 / TICKS_PER_METER; //1.4231;
     public static final double MAX_ACCEL = 5.821;
 
     public static final int TALON_LEFT = 1;
@@ -50,7 +53,7 @@ public class DriveTrain {
      * Motion Profiling Constants
      */
     public static final class POS_PIDVA {
-        public static final double P = 0;
+        public static final double P = 1.2;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
@@ -58,7 +61,7 @@ public class DriveTrain {
     }
 
     public static final class ANGLE_PID {
-        public static final double P = 0.02;
+        public static final double P = 0.8 * (1.0/80.0);
         public static final double I = 0;
         public static final double D = 0;
     }
@@ -126,7 +129,7 @@ public class DriveTrain {
     int followIterations = 0;
     public boolean FollowPath() 
     {
-        HotLog.LogValue("Path Points", followIterations);
+        HotLogger.Log("Path Points", followIterations);
         ++followIterations;
 
         double l = leftEncoderFollower.calculate((int) leftEncoder);
@@ -149,22 +152,22 @@ public class DriveTrain {
         SmartDashboard.putNumber("Right Output", r + turn);
         SmartDashboard.putNumber("Turn", turn);
 
-        HotLog.LogValue("Left Output", l - turn);
-        HotLog.LogValue("Right Output", r + turn);
+        HotLogger.Log("Left Output", l - turn);
+        HotLogger.Log("Right Output", r + turn);
         try
         {
             Segment s  = leftEncoderFollower.getSegment();
-            HotLog.LogValue("velocity", s.velocity);
-            HotLog.LogValue("acceleration", s.acceleration);
-            HotLog.LogValue("position", s.position);
-            HotLog.LogValue("x", s.x);
+            HotLogger.Log("velocity", s.velocity);
+            HotLogger.Log("acceleration", s.acceleration);
+            HotLogger.Log("position", s.position);
+            HotLogger.Log("x", s.x);
         }
         catch (Exception e)
         {
-            HotLog.LogValue("velocity", " ");
-            HotLog.LogValue("acceleration", " ");
-            HotLog.LogValue("position", " ");
-            HotLog.LogValue("x", " ");
+            HotLogger.Log("velocity", " ");
+            HotLogger.Log("acceleration", " ");
+            HotLogger.Log("position", " ");
+            HotLogger.Log("x", " ");
         }
 
         return (leftEncoderFollower.isFinished() && rightEncoderFollower.isFinished());
@@ -180,11 +183,11 @@ public class DriveTrain {
 
     public void writeDashBoard() 
     {
-        HotLog.LogValue("leftEncoder", leftEncoder);
-        HotLog.LogValue("rightEncoder", rightEncoder);
-        HotLog.LogValue("currentYaw", xyz_dps[0]);
-        HotLog.LogValue("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
-        HotLog.LogValue("currentVelocityRight", rightTalon.getSelectedSensorVelocity());
+        HotLogger.Log("leftEncoder", leftEncoder);
+        HotLogger.Log("rightEncoder", rightEncoder);
+        HotLogger.Log("currentYaw", xyz_dps[0]);
+        HotLogger.Log("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
+        HotLogger.Log("currentVelocityRight", rightTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("leftEncoder", leftEncoder);
         SmartDashboard.putNumber("rightEncoder", rightEncoder);
         SmartDashboard.putNumber("currentYaw", xyz_dps[0]);

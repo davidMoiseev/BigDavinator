@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 /**
  * Add your docs here.
  */
-public class HotLog {
+public class HotLogger {
     public static final String LOGS_DIRECTORY = "/home/lvuser/logs/";
 
     public static final String DELIMITER = "\t";
@@ -29,20 +29,35 @@ public class HotLog {
 
     private static Notifier logScheduler = new Notifier(LogThread::WriteToFile);
 
-    public static void LogValue(String key, Integer value) {
-        LogValue(key, Double.valueOf(value));
+    public static void Setup(String... valsToLog) {
+
+        currentRow.clear();
+        StringBuilder headerBuilder = new StringBuilder();
+        headerBuilder.append("Time Step").append(DELIMITER);
+        for (int i = 0; i < valsToLog.length; ++i) {
+            currentRow.put(valsToLog[i], EMPTY);
+            headerBuilder.append(valsToLog[i]).append(DELIMITER);
+        }
+
+        logScheduler.stop();
+        LogQueue.RestartQueue(headerBuilder.toString());
+        logScheduler.startPeriodic(LOG_PERIOD_SECONDS);
     }
 
-    public static void LogValue(String key, Double value) {
+    public static void Log(String key, Integer value) {
+        Log(key, Double.valueOf(value));
+    }
+
+    public static void Log(String key, Double value) {
         String stringValue = " ";
         try {
             stringValue = String.valueOf(value);
         } catch (Exception ignored) {
         }
-        LogValue(key, stringValue);
+        Log(key, stringValue);
     }
 
-    public static void LogValue(String key, String value) {
+    public static void Log(String key, String value) {
         if (!currentRow.containsKey(key))
             return;
 
@@ -52,7 +67,7 @@ public class HotLog {
 
         if (!currentRow.get(key).equals(EMPTY)) {
             PushCurrentRow();
-            LogValue(key, value);
+            Log(key, value);
             return;
         } else
             currentRow.put(key, value);
@@ -76,21 +91,6 @@ public class HotLog {
             entry.setValue(EMPTY);
         }
         onNewRow = true;
-    }
-
-    public static void Setup(String... valsToLog) {
-
-        currentRow.clear();
-        StringBuilder headerBuilder = new StringBuilder();
-        headerBuilder.append("Time Step").append(DELIMITER);
-        for (int i = 0; i < valsToLog.length; ++i) {
-            currentRow.put(valsToLog[i], EMPTY);
-            headerBuilder.append(valsToLog[i]).append(DELIMITER);
-        }
-
-        logScheduler.stop();
-        LogQueue.RestartQueue(headerBuilder.toString());
-        logScheduler.startPeriodic(LOG_PERIOD_SECONDS);
     }
 
     private static class LogRow {
