@@ -9,21 +9,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain {
 	
-    public static final int TALON_LEFT = 1;
-    public static final int TALON_PIGEON = 2;
-    public static final int TALON_RIGHT = 4;
+    public static final int TALON_LEFT = 7;
+    public static final int TALON_PIGEON = 6;
+    public static final int TALON_RIGHT = 5;
     
+
+
     WPI_TalonSRX leftTalon = new WPI_TalonSRX(TALON_LEFT);
     WPI_TalonSRX rightTalon = new WPI_TalonSRX(TALON_RIGHT);
     WPI_TalonSRX pigeonTalon = new WPI_TalonSRX(TALON_PIGEON);
     
     public PigeonIMU pigeon = new PigeonIMU(pigeonTalon);
-    
+    private double speed;
 	private double leftEncoder;
 	private double rightEncoder;
 	private double[] xyz_dps = new double [3];
 	private double currentYaw = 0;
-    
+    private double prev;
+    private double now;
+
     public DriveTrain() {
         rightTalon.setSensorPhase(true);
         rightTalon.setInverted(true);
@@ -79,10 +83,16 @@ public class DriveTrain {
 		}	
 	}
 	
-	public void writeDashBoard() {
+    public void writeDashBoard() {
+        //now = leftTalon.getSelectedSensorVelocity();
+
+        if (now > speed) {
+            speed = now;
+        } 
         SmartDashboard.putNumber("leftEncoder", leftEncoder);
         SmartDashboard.putNumber("rightEncoder", rightEncoder);
         SmartDashboard.putNumber("currentYaw", currentYaw);
+        SmartDashboard.putNumber("Speed", speed);
     } 
     
     public void arcadeDrive(double f, double t)

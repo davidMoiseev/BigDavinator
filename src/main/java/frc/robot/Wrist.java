@@ -11,10 +11,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 /**
  * Add your docs here.
  */
@@ -22,27 +18,35 @@ public class Wrist {
 
   public static final int arm = 1;
   WPI_TalonSRX Wrist = new WPI_TalonSRX(arm);
-  
+  private double Position;
 
   void SetPos(double pos) {
     Wrist.set(ControlMode.MotionMagic, pos);
   }
 
-  double GetPos() {   
-    double pos = Wrist.getSelectedSensorPosition();
-    return pos;
+  void ReadSensor() {
+    double Positon = Wrist.getSelectedSensorPosition();
+  }
+
+  double GetPosition() {   
+    return Position;
   }
   
   void wristConfig() {
-    Wrist.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,3, 100);
+    Wrist.configFactoryDefault();
+    Wrist.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,100);
+    Wrist.setSelectedSensorPosition(0);
     Wrist.setSensorPhase(true);
-		Wrist.setInverted(false);
-    Wrist.selectProfileSlot(1, 3);
+    Wrist.setInverted(false);
+    Wrist.selectProfileSlot(0, 0);
     Wrist.configNominalOutputForward(0, 100);
 		Wrist.configNominalOutputReverse(0, 100);
 		Wrist.configPeakOutputForward(1, 100);
-		Wrist.configPeakOutputReverse(-1, 100);
-    Wrist.configMotionCruiseVelocity(15000, 100);
-    Wrist.configMotionAcceleration(6000, 100);
+    Wrist.configPeakOutputReverse(-1, 100);
+    Wrist.config_kP(0, 0.05);
+    Wrist.config_kI(0, 0);
+    Wrist.config_kD(0, 0);
+    Wrist.config_kF(0, 0.163);
+    Wrist.configMotionCruiseVelocity(5000, 100);
   }
 }

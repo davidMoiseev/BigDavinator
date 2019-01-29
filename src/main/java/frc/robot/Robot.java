@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends TimedRobot {
     DriveTrain driveTrain = new DriveTrain();
     Arm arm = new Arm();
-  HotSticks Driver = new HotSticks(0);
+    HotSticks Driver = new HotSticks(0);
     
     public double target = 0;
-    
+  public double is = 0;
     @Override
     public void robotInit() {
     driveTrain.zeroSensors();
@@ -33,7 +33,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-      driveTrain.zeroSensors();
+    driveTrain.zeroSensors();
+      arm.Config();
     }
 
 
@@ -41,16 +42,20 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
       if (Driver.ButtonA() == true) {
-            arm.setPosition(10000);
+          arm.setPosition(15000);
+      is = 1;  
           }
           if (Driver.ButtonB() == true) {
-            arm.setPosition(0);
+      arm.setPosition(0);
+      is = 2;
           }
           if (Driver.ButtonX() == true) {
-            arm.setPosition(5000);
+      arm.setPosition(-15000);
+      is = 3;
           }
           
-          SmartDashboard.putNumber("Pos", arm.GetPosition());
+    SmartDashboard.putNumber("Pos", arm.GetPosition());
+    SmartDashboard.putNumber("S", is);
       }
     
 
@@ -58,20 +63,29 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    target = target + Driver.StickRY();
-
-    arm.setPosition(target);
-    SmartDashboard.putNumber("Targ", target * 10);
-     SmartDashboard.putNumber("Pos", arm.GetPosition());
     
+    double turn = Driver.StickRX();
+
+    double foward = Driver.StickLY();
+
+    //driveTrain.arcadeDrive(foward * 0.5, turn * 0.5);
+    arm.manual(foward);
+
+    driveTrain.readSensors();
+    driveTrain.writeDashBoard();
+    
+
   }
 
     @Override
-    public void teleopInit() {
+  public void teleopInit() {
+      Driver.SetDeadBandLY(0.1);
+      Driver.SetDeadBandRX(0.1); 
       driveTrain.zeroSensors();
       arm.Config();
+      
     }
-
+                           
     @Override
   public void testPeriodic() {
        
