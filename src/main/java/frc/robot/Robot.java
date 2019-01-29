@@ -26,6 +26,8 @@ public class Robot extends TimedRobot {
   HotSticks hotDrive = new HotSticks(0);
   HotSticks hotOp = new HotSticks(1);
 
+  int state;
+
   @Override
   public void robotInit() {
     
@@ -33,12 +35,30 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-   
+   driveTrain.zeroEncoders();
+  driveTrain.DrivetrainConfig();
   }
 
   @Override
   public void autonomousPeriodic() {
-  
+    //driveTrain.driveStraightMagically(670.0, 6000, 6000, 2.0, 0.03, 0.000008, 0.0);
+
+  switch(state){
+    case 0:
+      if(driveTrain.driveStraightMagically(100000.0, 3000, 21000, 1, 0.0, 0.0, 0.0) == true){
+        state++;
+      }
+    }
+
+    //driveTrain.driveStraightMagically(670.0, 6000, 6000, feed forward, proportional, integral, derivative); 
+    //0.345813685
+    driveTrain.writeDashboard();
+
+  }
+
+  @Override
+  public void teleopInit(){
+    driveTrain.DrivetrainConfig();
   }
 
   @Override
@@ -46,8 +66,7 @@ public class Robot extends TimedRobot {
     driveTrain.driveManualH(1.0, 1.0, 1.0, 1.0);
 
 
-    // driveTrain.writeDashboard();
-    //driveTrain.driveManualH(1, 1, 0.5, 1);
+    driveTrain.writeDashboard();
   }
 
   @Override
