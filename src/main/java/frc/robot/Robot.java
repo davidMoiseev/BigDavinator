@@ -12,7 +12,8 @@ import org.hotteam67.HotLogger;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot
+{
 
     public static final int JOYSTICK_DRIVER = 0;
     public static final int JOYSTICK_LY = 1;
@@ -23,7 +24,8 @@ public class Robot extends TimedRobot {
     DriveTrain driveTrain;
 
     @Override
-    public void robotInit() {
+    public void robotInit()
+    {
         driveTrain = new DriveTrain();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
@@ -33,7 +35,8 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousInit() {
+    public void autonomousInit()
+    {
         driveTrain.zeroSensors();
         driveTrain.zeroTalons();
         profileFinished = false;
@@ -42,7 +45,8 @@ public class Robot extends TimedRobot {
     boolean profileFinished = false;
 
     @Override
-    public void autonomousPeriodic() {
+    public void autonomousPeriodic()
+    {
         // May have to invert driveturn/drivespeed
         driveTrain.readSensors();
         driveTrain.writeDashBoard();
@@ -54,26 +58,31 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void robotPeriodic() {
+    public void robotPeriodic()
+    {
     }
 
     @Override
-    public void teleopInit() {
+    public void teleopInit()
+    {
         driveTrain.zeroSensors();
     }
 
     @Override
-    public void teleopPeriodic() {
+    public void teleopPeriodic()
+    {
         driveTrain.arcadeDrive(driver.getRawAxis(JOYSTICK_RX), driver.getRawAxis(JOYSTICK_LY));
         driveTrain.readSensors();
         driveTrain.writeDashBoard();
     }
 
     @Override
-    public void testPeriodic() {
+    public void testPeriodic()
+    {
     }
 
     @Override
-    public void disabledInit() {
+    public void disabledInit()
+    {
     }
 }

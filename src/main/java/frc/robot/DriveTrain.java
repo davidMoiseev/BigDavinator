@@ -13,17 +13,14 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.Trajectory.Segment;
 import jaci.pathfinder.followers.EncoderFollower;
-import jaci.pathfinder.modifiers.TankModifier;
 
-public class DriveTrain {
+public class DriveTrain
+{
 
     public static final double ALLOWED_ERROR_POSITION = 1000;
     public static final double ALLOWED_ERROR_HEADING = .5;
@@ -57,7 +54,8 @@ public class DriveTrain {
     /*
      * Motion Profiling Constants
      */
-    public static final class POS_PIDVA {
+    public static final class POS_PIDVA
+    {
         public static final double P = .8;
         public static final double I = 0;
         public static final double D = 0;
@@ -65,7 +63,8 @@ public class DriveTrain {
         public static final double A = 0; // Acceleration gain
     }
 
-    public static final class ANGLE_PID {
+    public static final class ANGLE_PID
+    {
         public static final double P = .8 * (-1.0 / 80.0);
         public static final double I = 0;
         public static final double D = 0;
@@ -75,7 +74,8 @@ public class DriveTrain {
     private EncoderFollower leftEncoderFollower;
     private EncoderFollower rightEncoderFollower;
 
-    public DriveTrain() {
+    public DriveTrain()
+    {
         leftTalon.configFactoryDefault();
         rightTalon.configFactoryDefault();
 
@@ -104,8 +104,10 @@ public class DriveTrain {
         rightEncoderFollower.reset();
     }
 
-    private void setupMotionProfiling() {
-        try {
+    private void setupMotionProfiling()
+    {
+        try
+        {
             File left = new File(Filesystem.getDeployDirectory() + Paths.testLeft);
             File right = new File(Filesystem.getDeployDirectory() + Paths.testRight);
 
@@ -114,7 +116,9 @@ public class DriveTrain {
 
             leftEncoderFollower = new EncoderFollower(Pathfinder.readFromCSV(left));
             rightEncoderFollower = new EncoderFollower(Pathfinder.readFromCSV(right));
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
             System.out.println("Failed to load motion profile files");
             return;
@@ -132,43 +136,64 @@ public class DriveTrain {
     private Segment lastTargetRight = null;
     private double lastTargetHeading = 0;
 
-    public boolean FollowPath() {
+    public boolean FollowPath()
+    {
         HotLogger.Log("Path Points", followIterations);
         ++followIterations;
 
         double l = leftEncoderFollower.calculate((int) leftEncoder);
         double r = rightEncoderFollower.calculate((int) rightEncoder);
 
-        try {
-            lastTargetLeft = leftEncoderFollower.getSegment();
-            lastTargetRight = rightEncoderFollower.getSegment();
-            lastTargetHeading = leftEncoderFollower.getHeading();
-        } catch (Exception e) {
+        // Try-catch because the follower gradually increments current segment and can
+        // IndexOutOfBounds
+        try
+        {
+            if (!leftEncoderFollower.isFinished())
+            {
+                lastTargetLeft = leftEncoderFollower.getSegment();
+                lastTargetHeading = Pathfinder.r2d(leftEncoderFollower.getHeading());
+            }
+            if (!rightEncoderFollower.isFinished())
+            {
+                lastTargetRight = rightEncoderFollower.getSegment();
+                lastTargetHeading = Pathfinder.r2d(rightEncoderFollower.getHeading());
+            }
+
+            // Headings are the same for both followers
         }
+        catch (Exception e)
+        {
+        }
+
         double heading = xyz_dps[0];
-        double angleError = Pathfinder.boundHalfDegrees(Pathfinder.r2d(lastTargetHeading) - heading);
+        double angleError = Pathfinder.boundHalfDegrees(lastTargetHeading - heading);
         double turn = ANGLE_PID.P * angleError;
 
         if (lastTargetLeft != null && lastTargetRight != null && leftEncoderFollower.isFinished()
-                && rightEncoderFollower.isFinished()) {
+                && rightEncoderFollower.isFinished())
+        {
+
             double leftError = lastTargetLeft.position - (leftEncoder / TICKS_PER_METER);
             double rightError = lastTargetRight.position - (rightEncoder / TICKS_PER_METER);
+
             if (Math.abs(leftError) < ALLOWED_ERROR_POSITION && Math.abs(rightError) < ALLOWED_ERROR_POSITION
                     && Math.abs(angleError) < ALLOWED_ERROR_HEADING)
                 return true;
 
-            if (l == 0 || r == 0) {
-
+            if (l == 0 || r == 0)
+            {
                 l = manualPV(leftError, lastTargetLeft.velocity);
                 r = manualPV(leftError, lastTargetLeft.velocity);
 
                 return true;
             }
-        } else if (leftEncoderFollower.isFinished() && rightEncoderFollower.isFinished())
+        }
+        else if (leftEncoderFollower.isFinished() && rightEncoderFollower.isFinished())
             return true;
 
         Log("Left", lastTargetLeft, l);
         Log("Right", lastTargetRight, r);
+
         HotLogger.Log("Path Heading", lastTargetHeading);
         HotLogger.Log("Heading Error", angleError);
         HotLogger.Log("Turn Output", turn);
@@ -179,11 +204,16 @@ public class DriveTrain {
         return false;
     }
 
-    private double manualPV(double error, double v) {
+    // Same thing as what is calculated in Pathfinder, used after follower finishes
+    // to hold the last point
+    // No I or D for simplicity
+    private double manualPV(double error, double v)
+    {
         return POS_PIDVA.P * error + POS_PIDVA.V * v;
     }
 
-    private void Log(String motorName, Segment s, double output) {
+    private void Log(String motorName, Segment s, double output)
+    {
         if (s == null)
             return;
         HotLogger.Log(motorName + " Path Position", s.position);
@@ -194,14 +224,16 @@ public class DriveTrain {
         HotLogger.Log(motorName + " Output", output);
     }
 
-    public void readSensors() {
+    public void readSensors()
+    {
         leftEncoder = leftTalon.getSelectedSensorPosition(0);
         rightEncoder = rightTalon.getSelectedSensorPosition(0);
 
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
-    public void writeDashBoard() {
+    public void writeDashBoard()
+    {
         HotLogger.Log("leftEncoder", leftEncoder);
         HotLogger.Log("rightEncoder", rightEncoder);
         HotLogger.Log("currentYaw", xyz_dps[0]);
@@ -214,13 +246,15 @@ public class DriveTrain {
         SmartDashboard.putNumber("currentVelocityRight", rightTalon.getSelectedSensorVelocity());
     }
 
-    public void zeroSensors() {
+    public void zeroSensors()
+    {
         leftTalon.setSelectedSensorPosition(0, 0, 20);
         rightTalon.setSelectedSensorPosition(0, 0, 20);
         pigeon.setYaw(0, 0);
     }
 
-    public void zeroTalons() {
+    public void zeroTalons()
+    {
         leftTalon.set(ControlMode.PercentOutput, 0);
         rightTalon.set(ControlMode.PercentOutput, 0);
         leftEncoderFollower.reset();
@@ -231,7 +265,8 @@ public class DriveTrain {
         lastTargetRight = null;
     }
 
-    public void arcadeDrive(double x, double y) {
+    public void arcadeDrive(double x, double y)
+    {
         SmartDashboard.putNumber("Turn Input", x);
         SmartDashboard.putNumber("Forward Input", y);
         x = deadband(x, .02);
@@ -240,7 +275,8 @@ public class DriveTrain {
         rightTalon.set(ControlMode.PercentOutput, y, DemandType.ArbitraryFeedForward, x);
     }
 
-    public double deadband(double input, double deadband) {
+    public double deadband(double input, double deadband)
+    {
         if ((deadband > input) && (input > -deadband))
             return 0;
         else
