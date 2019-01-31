@@ -1,107 +1,103 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * Add your docs here.
+ * List of PI Gains that work:
+ * P = .7; I = .0016 (Alright)
+ * P = .71; I = .0016 (Best)
+ * 
  */
 public class Elevator {
-    static TalonSRX ELEVATOR1 = new TalonSRX(5);
-    /*static TalonSRX ELEVATOR2 = new TalonSRX(6);*/
-    public final static int TOP_AUTO = 1;
-    public final static int LOW_AUTO = 2;
-    public final static int TOP = 3;
-    public final static int LOW = 4;
+    TalonSRX ElevatorTalon = new TalonSRX(5);
 
-    public static void ElevatorINIT(){
-        ELEVATOR1.selectProfileSlot(1, 2);
-        ELEVATOR1.configNominalOutputForward(0, 100);
-        ELEVATOR1.configNominalOutputReverse(0, 100);
-        ELEVATOR1.configPeakOutputForward(1, 100);
-        ELEVATOR1.configPeakOutputReverse(-1, 100);
-        ELEVATOR1.configMotionCruiseVelocity(15000, 100);
-        ELEVATOR1.configMotionAcceleration(6700, 100);
-        /*ELEVATOR2.selectProfileSlot(1, 2);
-        ELEVATOR2.configNominalOutputForward(0, 100);
-        ELEVATOR2.configNominalOutputReverse(0, 100);
-        ELEVATOR2.configPeakOutputForward(1, 100);
-        ELEVATOR2.configPeakOutputReverse(-1, 100);
-        ELEVATOR2.configMotionCruiseVelocity(15000, 100);
-        ELEVATOR2.configMotionAcceleration(6700, 100);*/
+    public void elevatorINIT(){
+        ElevatorTalon.configFactoryDefault();
+        ElevatorTalon.selectProfileSlot(0, 0);
+        ElevatorTalon.config_kF(0, .2378);
+        ElevatorTalon.config_kP(0, .71);
+        ElevatorTalon.config_kI(0, .0016);
+        ElevatorTalon.config_kD(0, 0);
+        ElevatorTalon.configNominalOutputForward(0, 100);
+        ElevatorTalon.configNominalOutputReverse(0, 100);
+        ElevatorTalon.configForwardSoftLimitThreshold(MAX_LIMIT);
+        ElevatorTalon.configReverseSoftLimitThreshold(MIN_LIMIT);
+        ElevatorTalon.configPeakOutputForward(1, 100);
+        ElevatorTalon.configPeakOutputReverse(-1, 100);
+        ElevatorTalon.configMotionCruiseVelocity(10000, 100);
+        ElevatorTalon.configMotionAcceleration(10000, 100);
+        ElevatorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 100);
+        ElevatorTalon.setSensorPhase(true);
     }
-static Joystick HotJoystick = new Joystick(1);
-private static double desiredElevatorPosition;
-private static boolean firstElevator;
+public static int MAX_LIMIT = 20000;
+public static int MIN_LIMIT = 1000;
+public static double RAISE_CMD = 0.5;
+public static double LOWER_CMD = -0.5;
+public double TargetHeight = 0;
 
-public static double ClosedLoopError(){
-    return ELEVATOR1.getClosedLoopError(0);
+public double position = 0;
+
+public double getElevatorPosition() {
+    position = ElevatorTalon.getSelectedSensorPosition();
+    return position;
 }
-public static boolean CurrentElevatorPosition() {
-    if (Math.abs(ClosedLoopError()) < 40){
-        return true;
-    }else{
-        return false;
+public void getElevatorPower() {
+    SmartDashboard.putNumber("Motor Power", ElevatorTalon.getMotorOutputPercent());
+}
+
+public void disableElevator(){
+    ElevatorTalon.set(ControlMode.PercentOutput, 0);
+}
+
+public void zeroElevatorPosition() {
+    ElevatorTalon.setSelectedSensorPosition(0);
+}
+
+public double getClosedLoopError(){
+    return ElevatorTalon.getClosedLoopError(0);
+}
+
+public void raiseElevator(){
+    if (ElevatorTalon.getSelectedSensorPosition() < MAX_LIMIT){
+        ElevatorTalon.set(ControlMode.PercentOutput, RAISE_CMD);
+    } else{
+        ElevatorTalon.set(ControlMode.PercentOutput, 0);
     }
 }
-public static void MotionMagicElevator(){
-    int AUTON_STATE = 1;
-    switch(AUTON_STATE){
-    case TOP_AUTO:
-        desiredElevatorPosition = 3000;
-        ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-        /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
-        AUTON_STATE = AUTON_STATE + 1;
-        break;
-    case LOW_AUTO:
-        desiredElevatorPosition = 1500;
-        ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-        /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
-        AUTON_STATE = AUTON_STATE + 1;
-        break;
-    case TOP:
-        if (firstElevator == false){
-            desiredElevatorPosition = 3000;
-            firstElevator = true;
-        }else{
-            if(HotJoystick.getPOV() == 315 || HotJoystick.getPOV() == 0 || HotJoystick.getPOV() == 45){
-                desiredElevatorPosition = desiredElevatorPosition + 250;
-            } else if(HotJoystick.getPOV() == 225 || HotJoystick.getPOV() == 180 || HotJoystick.getPOV() == 135){
-                desiredElevatorPosition = desiredElevatorPosition - 250;
-            }
-        }
-            ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-            /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
-            AUTON_STATE = AUTON_STATE + 1;
-            break;
-    case LOW:
-        if (firstElevator == false){
-            desiredElevatorPosition = 1500;
-            firstElevator = true;
-        }else{
-            if(HotJoystick.getPOV() == 315 || HotJoystick.getPOV() == 0 || HotJoystick.getPOV() == 45){
-                desiredElevatorPosition = desiredElevatorPosition + 250;
-            }else if(HotJoystick.getPOV() == 225 || HotJoystick.getPOV() == 180 || HotJoystick.getPOV() == 135){
-                desiredElevatorPosition = desiredElevatorPosition - 250;
-            }
-        }
-        ELEVATOR1.set(ControlMode.MotionMagic, desiredElevatorPosition);
-        /*ELEVATOR2.set(ControlMode.MotionMagic, desiredElevatorPosition);*/
-        AUTON_STATE = AUTON_STATE + 1;
-        break;
+
+public void lowerElevator(){
+    if (ElevatorTalon.getSelectedSensorPosition() > MIN_LIMIT){
+        ElevatorTalon.set(ControlMode.PercentOutput, LOWER_CMD);
+    } else{
+        ElevatorTalon.set(ControlMode.PercentOutput, 0);
     }
 }
-    public static void ZeroElevator(){
-        ELEVATOR1.setSelectedSensorPosition(0, 0, 0);
-        /*ELEVATOR2.setSelectedSensorPosition(0, 0, 0);*/
+
+public void motionMagicElevatorTop(){
+        TargetHeight = 15000;
+        ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
+}
+
+public void motionMagicElevatorPrettyLow(){
+    TargetHeight = 2000;
+    ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
+}
+
+public void motionMagicElevatorMid(){
+    TargetHeight = 10000;
+    ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
+}
+
+public void motionMagicElevatorLow(){
+        TargetHeight = 1000;
+        ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
+}
+
+public void zeroElevator(){
+        ElevatorTalon.setSelectedSensorPosition(0, 0, 0);
     }
 }

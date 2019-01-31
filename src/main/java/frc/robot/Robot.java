@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot
 {
@@ -30,7 +31,6 @@ public class Robot extends TimedRobot
     public void robotInit()
     {
         driveTrain = new DriveTrain();
-        Elevator.Setup();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
                 "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y",
@@ -48,6 +48,8 @@ public class Robot extends TimedRobot
     }
 
     boolean profileFinished = false;
+
+    Elevator elevator = new Elevator();
 
     @Override
     public void autonomousPeriodic()
@@ -71,7 +73,8 @@ public class Robot extends TimedRobot
     public void teleopInit()
     {
         driveTrain.zeroSensors();
-        Elevator.ElevatorINIT();
+        elevator.elevatorINIT();
+        elevator.zeroElevator();
     }
 
     boolean rumble = false;
@@ -81,16 +84,38 @@ public class Robot extends TimedRobot
         driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft));
         driveTrain.readSensors();
         driveTrain.writeLogs();
-        Elevator.Movement();
-        if (stickDrive. {
-          Elevator.MotionMagicElevator();
-        } else if (){
 
-        } else{
+        /*if (hotstick.ButtonA() == true) {
+          elevator.lowerElevator();
+        } else if (hotstick.ButtonB() == true) {
+          elevator.raiseElevator();
+        } else if (hotstick.ButtonY() == true) {
+          elevator.motionMagicElevatorTop();
+        } else if (hotstick.ButtonX() == true) {
+          elevator.motionMagicElevatorLow();
+        } else {
+          elevator.disableElevator();
+        }*/
 
+        if (driver.getAButton() == true) {
+          elevator.motionMagicElevatorLow();
+        } else if (driver.getBButton() == true) {
+          elevator.motionMagicElevatorPrettyLow();
+        } else if (driver.getXButton() == true) {
+          elevator.motionMagicElevatorMid();
+        } else if (driver.getYButton() == true) {
+          elevator.motionMagicElevatorTop();
+        } else {
+          elevator.disableElevator();
         }
 
-      }
+        SmartDashboard.putNumber("Position", elevator.getElevatorPosition());
+        SmartDashboard.putNumber("Error", elevator.getClosedLoopError());
+        SmartDashboard.putBoolean("ButtonA", driver.getAButton());
+        SmartDashboard.putBoolean("ButtonB", driver.getBButton());
+        SmartDashboard.putBoolean("ButtonY", driver.getYButton());
+        SmartDashboard.putBoolean("ButtonX", driver.getXButton());
+    }
 
     @Override
     public void testPeriodic()
