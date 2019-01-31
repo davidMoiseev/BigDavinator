@@ -56,7 +56,7 @@ public class HotSticks extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
+        return (temp*temp);
     }
     
 	public double getStickLY() {
@@ -69,7 +69,7 @@ public class HotSticks extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
+        return (temp*temp);
     }
     
 	public double getStickRX() {
@@ -107,7 +107,7 @@ public class HotSticks extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp*temp;
+        return temp;
     }
     
 
