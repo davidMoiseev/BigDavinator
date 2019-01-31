@@ -237,7 +237,6 @@ public class DriveTrain
     {
         rightEncoder = rightTalon.getSelectedSensorPosition(0);
         leftEncoder = leftTalon.getSelectedSensorPosition(0);
-
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
@@ -260,7 +259,9 @@ public class DriveTrain
         rightTalon.setSelectedSensorPosition(0, 0, 20);
         leftTalon.setSelectedSensorPosition(0, 0, 20);
         pigeon.setYaw(0, 0);
-        readSensors();
+        leftEncoder = 0;
+        rightEncoder = 0;
+        xyz_dps = new double[] { 0, 0, 0 };
     }
 
     public void zeroTalons()

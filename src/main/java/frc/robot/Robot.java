@@ -84,5 +84,7 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
+        driveTrain.zeroSensors();
+        driveTrain.zeroTalons();
     }
 }
