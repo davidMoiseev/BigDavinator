@@ -100,4 +100,114 @@ public class DriveTrain {
         leftTalon.set(ControlMode.PercentOutput, f + t);
         rightTalon.set(ControlMode.PercentOutput, f - t);
     }
+
+
+    public boolean SweetTurnFinished(double target, double MinErrorToExit, double maxSpeed) {
+
+        bool complete = false;
+        double absError = fabs(target - YawPitchRoll[0]);
+        double maxPct;
+        double rampDownStart;
+        double remainingAngleAtStartRampDown = 360;
+        double xyz_dps[3];
+    
+        m_gyro.GetRawGyro(xyz_dps);
+    
+        if (sweetTurnIterateCounter > SWEET_TURN_ITERATE_MAX) {
+            sweetTurnState = sweetTurn_reset;
+            sweetTurnIterateCounter = 0;
+            complete = true;
+        }
+    
+        if (sweetTurnState != sweetTurn_reset &&
+            ((sweetTurnDirection == 1 && YawPitchRoll[0] > target) ||
+             (sweetTurnDirection == -1 && YawPitchRoll[0] < target))) {
+            sweetTurnState = sweetTurn_reset;
+            sweetTurnIterateCounter++;
+        }
+    
+        if (sweetTurnState == sweetTurn_reset) {
+            sweetTurnRate = 0;
+            sweetTurnTimer = 0;
+            sweetTurnState = sweetTurn_RampIn;
+            sweetTurnTotalAngleTravel = absError;
+            sweetTurnDirection = target > YawPitchRoll[0] ? 1 : -1;
+        }
+    
+        maxPct = sweetTurnMaxPct->GetMappedValue(sweetTurnTotalAngleTravel);
+        if (maxPct > maxSpeed) {
+            maxPct = maxSpeed;
+        }
+    
+        rampDownStart = sweetTurnRampDownStart->GetMappedValue(fabs(xyz_dps[2]));
+    
+        if (sweetTurnState == sweetTurn_RampIn) {
+            sweetTurnRate += SWEET_TURN_RAMP_UP_RATE;
+    
+            if (absError <= MinErrorToExit && fabs(xyz_dps[2]) <= SWEET_TURN_MAX_EXIT_VELOCITY) {
+                sweetTurnRate = 0;
+                sweetTurnTimer = 0;
+                sweetTurnIterateCounter = 0;
+                complete = true;
+                sweetTurnState = sweetTurn_reset;
+            }
+            else if (absError <= rampDownStart) {
+                sweetTurnState = sweetTurn_RampDown;
+                remainingAngleAtStartRampDown = absError;
+            }
+            else if (sweetTurnRate >= maxPct) {
+                sweetTurnState = sweetTurn_Max;
+            }
+        }
+    
+        if (sweetTurnState == sweetTurn_Max) {
+    
+            sweetTurnRate = maxPct;
+    
+            if (absError <= MinErrorToExit) {
+                sweetTurnRate = 0;
+                sweetTurnTimer = 0;
+                sweetTurnIterateCounter = 0;
+                complete = true;
+                sweetTurnState = sweetTurn_reset;
+            }
+            else if (absError <= rampDownStart) {
+                sweetTurnState = sweetTurn_RampDown;
+                remainingAngleAtStartRampDown = absError;
+            }
+            else if (sweetTurnRate >= maxPct) {
+                sweetTurnState = sweetTurn_Max;
+            }
+        }
+    
+        if (sweetTurnState == sweetTurn_RampDown) {
+            sweetTurnRate -= sweetTurnRampDownRate->GetMappedValue(remainingAngleAtStartRampDown);
+    
+            if (absError <= MinErrorToExit && fabs(xyz_dps[2]) <= SWEET_TURN_MAX_EXIT_VELOCITY) {
+                sweetTurnRate = 0;
+                sweetTurnTimer = 0;
+                sweetTurnIterateCounter = 0;
+                complete = true;
+                sweetTurnState = sweetTurn_reset;
+            }
+            else if (sweetTurnRate <= SWEET_TURN_PERCISE_TURN_PCT){
+                sweetTurnState = sweetTurn_Precision;
+            }
+        }
+    
+        if (sweetTurnState == sweetTurn_Precision) {
+            sweetTurnRate = SWEET_TURN_PERCISE_TURN_PCT;
+    
+            if (absError <= MinErrorToExit && fabs(xyz_dps[2]) <= SWEET_TURN_MAX_EXIT_VELOCITY) {
+                sweetTurnRate = 0;
+                sweetTurnTimer = 0;
+                sweetTurnIterateCounter = 0;
+                complete = true;
+                sweetTurnState = sweetTurn_reset;
+            }
+        }
+    
+        Drivetrain::ArcadeDrive(0,-sweetTurnDirection*sweetTurnRate);
+        return complete;
+    }
 }
