@@ -41,14 +41,14 @@ public class DriveTrain
     public static final int TALON_PIGEON = 2;
     public static final int TALON_RIGHT = 4;
 
-    WPI_TalonSRX leftTalon = new WPI_TalonSRX(TALON_LEFT);
-    WPI_TalonSRX rightTalon = new WPI_TalonSRX(TALON_RIGHT);
+    WPI_TalonSRX rightTalon = new WPI_TalonSRX(TALON_LEFT);
+    WPI_TalonSRX leftTalon = new WPI_TalonSRX(TALON_RIGHT);
     WPI_TalonSRX pigeonTalon = new WPI_TalonSRX(TALON_PIGEON);
 
     PigeonIMU pigeon = new PigeonIMU(pigeonTalon);
 
-    private double leftEncoder;
     private double rightEncoder;
+    private double leftEncoder;
     private double[] xyz_dps = new double[3];
 
     /*
@@ -71,37 +71,39 @@ public class DriveTrain
     }
 
     // Controllers
-    private EncoderFollower leftEncoderFollower;
     private EncoderFollower rightEncoderFollower;
+    private EncoderFollower leftEncoderFollower;
+
+    private final boolean HoldLastPoint = false;
 
     public DriveTrain()
     {
-        leftTalon.configFactoryDefault();
         rightTalon.configFactoryDefault();
+        leftTalon.configFactoryDefault();
 
-        leftTalon.setInverted(true);
-        leftTalon.setSensorPhase(true);
+        rightTalon.setInverted(true);
         rightTalon.setSensorPhase(true);
+        leftTalon.setSensorPhase(true);
 
-        leftTalon.selectProfileSlot(0, 0);
         rightTalon.selectProfileSlot(0, 0);
+        leftTalon.selectProfileSlot(0, 0);
 
-        leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
         rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+        leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 
-        leftTalon.setSelectedSensorPosition(0, 0, 0);
         rightTalon.setSelectedSensorPosition(0, 0, 0);
+        leftTalon.setSelectedSensorPosition(0, 0, 0);
 
-        leftTalon.set(ControlMode.PercentOutput, 0.0);
         rightTalon.set(ControlMode.PercentOutput, 0.0);
+        leftTalon.set(ControlMode.PercentOutput, 0.0);
 
-        leftTalon.setNeutralMode(NeutralMode.Brake);
         rightTalon.setNeutralMode(NeutralMode.Brake);
+        leftTalon.setNeutralMode(NeutralMode.Brake);
 
         setupMotionProfiling();
 
-        leftEncoderFollower.reset();
         rightEncoderFollower.reset();
+        leftEncoderFollower.reset();
     }
 
     private void setupMotionProfiling()
@@ -114,8 +116,8 @@ public class DriveTrain
             if (!left.exists() || !right.exists())
                 throw new IOException();
 
-            leftEncoderFollower = new EncoderFollower(Pathfinder.readFromCSV(left));
-            rightEncoderFollower = new EncoderFollower(Pathfinder.readFromCSV(right));
+            rightEncoderFollower = new EncoderFollower(Pathfinder.readFromCSV(left));
+            leftEncoderFollower = new EncoderFollower(Pathfinder.readFromCSV(right));
         }
         catch (Exception e)
         {
@@ -124,16 +126,16 @@ public class DriveTrain
             return;
         }
 
-        leftEncoderFollower.configureEncoder(0, (int) TICKS_PER_REVOLUTION, WHEEL_DIAMETER);
         rightEncoderFollower.configureEncoder(0, (int) TICKS_PER_REVOLUTION, WHEEL_DIAMETER);
+        leftEncoderFollower.configureEncoder(0, (int) TICKS_PER_REVOLUTION, WHEEL_DIAMETER);
 
-        leftEncoderFollower.configurePIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
         rightEncoderFollower.configurePIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
+        leftEncoderFollower.configurePIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
 
     private int followIterations = 0;
-    private Segment lastTargetLeft = null;
     private Segment lastTargetRight = null;
+    private Segment lastTargetLeft = null;
     private double lastTargetHeading = 0;
 
     public boolean FollowPath()
@@ -141,21 +143,21 @@ public class DriveTrain
         HotLogger.Log("Path Points", followIterations);
         ++followIterations;
 
-        double l = leftEncoderFollower.calculate((int) leftEncoder);
         double r = rightEncoderFollower.calculate((int) rightEncoder);
+        double l = leftEncoderFollower.calculate((int) leftEncoder);
 
         // Try-catch because the follower gradually increments current segment and can
         // IndexOutOfBounds
         try
         {
-            if (!leftEncoderFollower.isFinished())
-            {
-                lastTargetLeft = leftEncoderFollower.getSegment();
-                lastTargetHeading = leftEncoderFollower.getHeading();
-            }
             if (!rightEncoderFollower.isFinished())
             {
                 lastTargetRight = rightEncoderFollower.getSegment();
+                lastTargetHeading = rightEncoderFollower.getHeading();
+            }
+            if (!leftEncoderFollower.isFinished())
+            {
+                lastTargetLeft = leftEncoderFollower.getSegment();
                 lastTargetHeading = Pathfinder.boundHalfDegrees(360 - Pathfinder.r2d(lastTargetHeading));
             }
 
@@ -169,37 +171,44 @@ public class DriveTrain
         double angleError = Pathfinder.boundHalfDegrees(lastTargetHeading - heading);
         double turn = ANGLE_PID.P * angleError;
 
-        if (lastTargetLeft != null && lastTargetRight != null && leftEncoderFollower.isFinished()
-                && rightEncoderFollower.isFinished())
+        if (lastTargetRight != null && lastTargetLeft != null && rightEncoderFollower.isFinished()
+                && leftEncoderFollower.isFinished())
         {
 
-            double leftError = lastTargetLeft.position - (leftEncoder / TICKS_PER_METER);
-            double rightError = lastTargetRight.position - (rightEncoder / TICKS_PER_METER);
+            if (!HoldLastPoint)
+            {
+                rightTalon.set(ControlMode.PercentOutput, 0);
+                leftTalon.set(ControlMode.PercentOutput, 0);
+                return true;
+            }
 
-            if (Math.abs(leftError) < ALLOWED_ERROR_POSITION && Math.abs(rightError) < ALLOWED_ERROR_POSITION
+            double rightError = lastTargetRight.position - (rightEncoder / TICKS_PER_METER);
+            double leftError = lastTargetLeft.position - (leftEncoder / TICKS_PER_METER);
+
+            if (Math.abs(rightError) < ALLOWED_ERROR_POSITION && Math.abs(leftError) < ALLOWED_ERROR_POSITION
                     && Math.abs(angleError) < ALLOWED_ERROR_HEADING)
                 return true;
 
-            if (l == 0 || r == 0)
+            if (r == 0 || l == 0)
             {
+                r = manualPV(rightError, lastTargetRight.velocity);
                 l = manualPV(leftError, lastTargetLeft.velocity);
-                r = manualPV(leftError, lastTargetLeft.velocity);
 
                 return true;
             }
         }
-        else if (leftEncoderFollower.isFinished() && rightEncoderFollower.isFinished())
+        else if (rightEncoderFollower.isFinished() && leftEncoderFollower.isFinished())
             return true;
 
-        Log("Left", lastTargetLeft, l);
         Log("Right", lastTargetRight, r);
+        Log("Left", lastTargetLeft, l);
 
         HotLogger.Log("Path Heading", lastTargetHeading);
         HotLogger.Log("Heading Error", angleError);
         HotLogger.Log("Turn Output", turn);
 
-        leftTalon.set(ControlMode.PercentOutput, l - turn);
-        rightTalon.set(ControlMode.PercentOutput, r + turn);
+        rightTalon.set(ControlMode.PercentOutput, r - turn);
+        leftTalon.set(ControlMode.PercentOutput, l + turn);
 
         return false;
     }
@@ -226,43 +235,44 @@ public class DriveTrain
 
     public void readSensors()
     {
-        leftEncoder = leftTalon.getSelectedSensorPosition(0);
         rightEncoder = rightTalon.getSelectedSensorPosition(0);
+        leftEncoder = leftTalon.getSelectedSensorPosition(0);
 
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
     public void writeDashBoard()
     {
-        HotLogger.Log("leftEncoder", leftEncoder);
         HotLogger.Log("rightEncoder", rightEncoder);
+        HotLogger.Log("leftEncoder", leftEncoder);
         HotLogger.Log("currentYaw", xyz_dps[0]);
-        HotLogger.Log("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
         HotLogger.Log("currentVelocityRight", rightTalon.getSelectedSensorVelocity());
+        HotLogger.Log("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("leftEncoder", leftEncoder);
         SmartDashboard.putNumber("rightEncoder", rightEncoder);
         SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
-        SmartDashboard.putNumber("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("currentVelocityRight", rightTalon.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
     }
 
     public void zeroSensors()
     {
-        leftTalon.setSelectedSensorPosition(0, 0, 20);
         rightTalon.setSelectedSensorPosition(0, 0, 20);
+        leftTalon.setSelectedSensorPosition(0, 0, 20);
         pigeon.setYaw(0, 0);
+        readSensors();
     }
 
     public void zeroTalons()
     {
-        leftTalon.set(ControlMode.PercentOutput, 0);
         rightTalon.set(ControlMode.PercentOutput, 0);
-        leftEncoderFollower.reset();
+        leftTalon.set(ControlMode.PercentOutput, 0);
         rightEncoderFollower.reset();
+        leftEncoderFollower.reset();
         followIterations = 0;
         lastTargetHeading = 0;
-        lastTargetLeft = null;
         lastTargetRight = null;
+        lastTargetLeft = null;
     }
 
     public void arcadeDrive(double x, double y)
@@ -271,8 +281,8 @@ public class DriveTrain
         SmartDashboard.putNumber("Forward Input", y);
         x = deadband(x, .02);
         y = deadband(-y, .02);
-        leftTalon.set(ControlMode.PercentOutput, y, DemandType.ArbitraryFeedForward, -x);
-        rightTalon.set(ControlMode.PercentOutput, y, DemandType.ArbitraryFeedForward, x);
+        rightTalon.set(ControlMode.PercentOutput, y, DemandType.ArbitraryFeedForward, -x);
+        leftTalon.set(ControlMode.PercentOutput, y, DemandType.ArbitraryFeedForward, x);
     }
 
     public double deadband(double input, double deadband)
