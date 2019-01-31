@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    m_motor.set(m_stick.getStickLY());
+    m_motor.set(m_stick.getStickRY());
     SmartDashboard.putNumber("Voltage", m_motor.getBusVoltage());
     SmartDashboard.putNumber("Temperature", m_motor.getMotorTemperature());
     SmartDashboard.putNumber("Output", m_motor.getAppliedOutput());

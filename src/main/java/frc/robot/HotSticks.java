@@ -82,7 +82,7 @@ public class HotSticks extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
+        return (temp*temp);
     }
     
 	public double getStickRY() {
@@ -95,9 +95,8 @@ public class HotSticks extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
-    }
-    
+        return (temp*temp);
+    }    
 	public double getLeftTrigger() {
         double value = getRawAxis(2);
         double temp;
@@ -108,7 +107,7 @@ public class HotSticks extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
+        return temp*temp;
     }
     
 
