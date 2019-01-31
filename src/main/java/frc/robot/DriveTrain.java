@@ -151,12 +151,12 @@ public class DriveTrain
             if (!leftEncoderFollower.isFinished())
             {
                 lastTargetLeft = leftEncoderFollower.getSegment();
-                lastTargetHeading = Pathfinder.r2d(leftEncoderFollower.getHeading());
+                lastTargetHeading = leftEncoderFollower.getHeading();
             }
             if (!rightEncoderFollower.isFinished())
             {
                 lastTargetRight = rightEncoderFollower.getSegment();
-                lastTargetHeading = Pathfinder.r2d(rightEncoderFollower.getHeading());
+                lastTargetHeading = Pathfinder.boundHalfDegrees(360 - Pathfinder.r2d(lastTargetHeading));
             }
 
             // Headings are the same for both followers
