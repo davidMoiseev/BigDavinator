@@ -11,7 +11,7 @@ import java.io.File;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory.Segment;
-import jaci.pathfinder.followers.EncoderFollower;
+import jaci.pathfinder.followers.DistanceFollower;
 
 /**
  * Add your docs here.
@@ -27,9 +27,9 @@ public class HotPathFollower
     State pathState = State.Disabled;
 
     // Jaci leftFollower will do most calculation and handle the left path
-    private EncoderFollower leftFollower;
+    private DistanceFollower leftFollower;
     // Jaci rightFollower will do most calculation and handle the right path
-    private EncoderFollower rightFollower;
+    private DistanceFollower rightFollower;
 
     // PIDFA constants for the position error. Stored for holding last point only
     private double POS_P = 0, POS_I = 0, POS_D = 0, POS_V = 0, POS_A = 0;
@@ -101,8 +101,7 @@ public class HotPathFollower
         // Try catch for IOExceptions
         try
         {
-            leftFollower = new EncoderFollower(Pathfinder.readFromCSV(new File(leftPathFile)));
-            leftFollower.configureEncoder(0, ticksPerRev, wheelDiameter);
+            leftFollower = new DistanceFollower(Pathfinder.readFromCSV(new File(leftPathFile)));
         }
         catch (Exception e)
         {
@@ -114,8 +113,7 @@ public class HotPathFollower
         // Try catch for IOExceptions
         try
         {
-            rightFollower = new EncoderFollower(Pathfinder.readFromCSV(new File(rightPathFile)));
-            rightFollower.configureEncoder(0, ticksPerRev, wheelDiameter);
+            rightFollower = new DistanceFollower(Pathfinder.readFromCSV(new File(rightPathFile)));
         }
         catch (Exception e)
         {
@@ -194,8 +192,11 @@ public class HotPathFollower
      * @return an output object with desired left/right outputs, scaled as a double
      *         from -1 to 1 for -100% output to 100% output
      */
-    public Output FollowNextPoint(int currentPositionLeft, int currentPositionRight, double currentHeading)
+    public Output FollowNextPoint(double currentPositionLeft, double currentPositionRight, double currentHeading)
     {
+        currentPositionLeft = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionLeft;
+        currentPositionRight = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionRight;
+
         if (leftFollower == null || rightFollower == null)
             return new Output(0, 0);
         double l = 0, r = 0;
