@@ -35,7 +35,6 @@ public class HotLogger
 
     public static void Setup(String... valsToLog)
     {
-
         currentRow.clear();
         StringBuilder headerBuilder = new StringBuilder();
         headerBuilder.append("Time Step").append(DELIMITER);
