@@ -29,9 +29,9 @@ public class Robot extends TimedRobot
         driveTrain = new DriveTrain();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
-                "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y", "Left Output",
+                "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y", "Left Path Calculated Output",
                 "Right Path Position", "Right Path Velocity", "Right Path Acceleration", "Right Path X", "Right Path Y",
-                "Right Output");
+                "Right Path Calculated Output");
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Robot extends TimedRobot
     {
         // May have to invert driveturn/drivespeed
         driveTrain.readSensors();
-        driveTrain.writeDashBoard();
+        driveTrain.writeLogs();
 
         if (!profileFinished)
             profileFinished = driveTrain.FollowPath();
@@ -73,7 +73,7 @@ public class Robot extends TimedRobot
     {
         driveTrain.arcadeDrive(driver.getRawAxis(JOYSTICK_RX), driver.getRawAxis(JOYSTICK_LY));
         driveTrain.readSensors();
-        driveTrain.writeDashBoard();
+        driveTrain.writeLogs();
     }
 
     @Override
