@@ -19,7 +19,7 @@ import jaci.pathfinder.followers.DistanceFollower;
 public class HotPathFollower
 {
     // Encoder ticks per revolution on either side
-    private final int ticksPerRev;
+    private final double ticksPerRev;
     // Wheel diameter on either side
     private final double wheelDiameter;
 
@@ -68,7 +68,7 @@ public class HotPathFollower
      * @param ticksPerRev
      * @param wheelDiameter
      */
-    public HotPathFollower(int ticksPerRev, double wheelDiameter)
+    public HotPathFollower(double ticksPerRev, double wheelDiameter)
     {
         this.ticksPerRev = ticksPerRev;
         this.wheelDiameter = wheelDiameter;

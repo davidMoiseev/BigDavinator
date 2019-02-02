@@ -7,6 +7,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.SensorType;
+import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.hotteam67.HotLogger;
@@ -23,6 +25,10 @@ public class DriveTrain
 
     public static final double WHEEL_DIAMETER = 0.05436;
     public static final int TICKS_PER_REVOLUTION = 1; //3600;
+
+    public static final double ENCODER_TO_REVS = (50.0/12.0) * (42.0/24.0);
+    public static final double SECOND_ENCODER_TO_REVS = (42.0/24.0);
+
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
     public static final double TICKS_PER_METER = (TICKS_PER_REVOLUTION / (Math.PI * WHEEL_DIAMETER));
@@ -30,7 +36,7 @@ public class DriveTrain
     // Ticks per 100 ms, as read from getSelectedSensorVelocity(0)
     public static final double MAX_VELOCITY_TICKS = 5800;
     // Max velocity in m/s
-    public static final double MAX_VELOCITY = MAX_VELOCITY_TICKS * 10 / TICKS_PER_METER; // 1.4231;
+    public static final double MAX_VELOCITY = MAX_VELOCITY_TICKS * 10.0 / TICKS_PER_METER; // 1.4231;
 
     public static final int TALON_LEFT = 4;
     public static final int TALON_PIGEON = 2;
@@ -106,7 +112,7 @@ public class DriveTrain
          * leftTalon.setNeutralMode(NeutralMode.Brake);
          */
 
-        pathFollower = new HotPathFollower(TICKS_PER_REVOLUTION, WHEEL_DIAMETER, Paths.testLeft, Paths.testRight);
+        pathFollower = new HotPathFollower(ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.testLeft, Paths.testRight);
         pathFollower.ConfigAnglePID(ANGLE_PID.P);
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
