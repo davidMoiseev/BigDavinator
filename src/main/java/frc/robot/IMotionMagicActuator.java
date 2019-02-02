@@ -7,4 +7,6 @@ public interface IMotionMagicActuator{
     public void displaySensorsValue();
     public void disable();
 
+    public void setTarget(double target);
+
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.ManipulatorSetPoints;
 
 public class Robot extends TimedRobot
 {
@@ -26,11 +27,14 @@ public class Robot extends TimedRobot
     XboxController driver = new XboxController(JOYSTICK_DRIVER);
 
     DriveTrain driveTrain;
+    Elevator elevator;
 
     @Override
     public void robotInit()
     {
         driveTrain = new DriveTrain();
+        elevator = new Elevator(5);
+        elevator.initialize();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
                 "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y",
@@ -48,8 +52,6 @@ public class Robot extends TimedRobot
     }
 
     boolean profileFinished = false;
-
-    Elevator elevator = new Elevator();
 
     @Override
     public void autonomousPeriodic()
@@ -73,8 +75,6 @@ public class Robot extends TimedRobot
     public void teleopInit()
     {
         driveTrain.zeroSensors();
-        elevator.elevatorINIT();
-        elevator.zeroElevator();
     }
 
     boolean rumble = false;
@@ -98,23 +98,23 @@ public class Robot extends TimedRobot
         }*/
 
         if (driver.getAButton() == true) {
-          elevator.motionMagicElevatorLow();
+          elevator.setTarget(ManipulatorSetPoints.LOW);
         } else if (driver.getBButton() == true) {
-          elevator.motionMagicElevatorPrettyLow();
+          elevator.setTarget(ManipulatorSetPoints.PRETTY_LOW);
         } else if (driver.getXButton() == true) {
-          elevator.motionMagicElevatorMid();
+          elevator.setTarget(ManipulatorSetPoints.MID);
         } else if (driver.getYButton() == true) {
-          elevator.motionMagicElevatorTop();
+          elevator.setTarget(ManipulatorSetPoints.TOP);
         } else {
-          elevator.disableElevator();
+          elevator.disable();
         }
 
-        SmartDashboard.putNumber("Position", elevator.getElevatorPosition());
-        SmartDashboard.putNumber("Error", elevator.getClosedLoopError());
+        SmartDashboard.putNumber("Position", elevator.GetSensorValue());
         SmartDashboard.putBoolean("ButtonA", driver.getAButton());
         SmartDashboard.putBoolean("ButtonB", driver.getBButton());
         SmartDashboard.putBoolean("ButtonY", driver.getYButton());
         SmartDashboard.putBoolean("ButtonX", driver.getXButton());
+        
     }
 
     @Override
