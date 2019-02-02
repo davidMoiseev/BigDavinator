@@ -76,6 +76,9 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
+        double rum = Math.abs(driver.getY(Hand.kLeft)) + Math.abs(driver.getX(Hand.kRight));
+        driver.setRumble(RumbleType.kLeftRumble, rum);
+        driver.setRumble(RumbleType.kRightRumble, rum);
         driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft));
         driveTrain.readSensors();
         driveTrain.writeLogs();
@@ -89,6 +92,8 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
+        driver.setRumble(RumbleType.kLeftRumble, 0);
+        driver.setRumble(RumbleType.kRightRumble, 0);
         driveTrain.zeroSensors();
         driveTrain.zeroTalons();
     }
