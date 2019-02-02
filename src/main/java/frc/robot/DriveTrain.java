@@ -1,10 +1,6 @@
 package frc.robot;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -13,12 +9,6 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Trajectory.Segment;
-import jaci.pathfinder.followers.EncoderFollower;
 
 public class DriveTrain
 {
@@ -37,9 +27,9 @@ public class DriveTrain
     // Max velocity in m/s
     public static final double MAX_VELOCITY = MAX_VELOCITY_TICKS * 10 / TICKS_PER_METER; // 1.4231;
 
-    public static final int TALON_LEFT = 1;
+    public static final int TALON_LEFT = 4;
     public static final int TALON_PIGEON = 2;
-    public static final int TALON_RIGHT = 4;
+    public static final int TALON_RIGHT = 1;
 
     private final WPI_TalonSRX rightTalon = new WPI_TalonSRX(TALON_LEFT);
     private final WPI_TalonSRX leftTalon = new WPI_TalonSRX(TALON_RIGHT);
@@ -76,7 +66,7 @@ public class DriveTrain
         rightTalon.configFactoryDefault();
         leftTalon.configFactoryDefault();
 
-        rightTalon.setInverted(true);
+        leftTalon.setInverted(true);
         rightTalon.setSensorPhase(true);
         leftTalon.setSensorPhase(true);
 
@@ -103,7 +93,7 @@ public class DriveTrain
     public boolean FollowPath()
     {
         double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoder, rightEncoder, heading);
+        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoder, rightEncoder, -heading);
 
         rightTalon.set(ControlMode.PercentOutput, pathOutput.Right);
         leftTalon.set(ControlMode.PercentOutput, pathOutput.Left);
@@ -149,9 +139,9 @@ public class DriveTrain
     {
         double d = .02;
         x = ((d > x) && (x > -d)) ? 0 : x;
-        y = ((d > y) && (y > -d)) ? 0 : y;
+        y = ((d > y) && (y > -d)) ? 0 : -y;
 
-        rightTalon.set(ControlMode.PercentOutput, y - x);
-        leftTalon.set(ControlMode.PercentOutput, y + x);
+        rightTalon.set(ControlMode.PercentOutput, y + x);
+        leftTalon.set(ControlMode.PercentOutput, y - x);
     }
 }

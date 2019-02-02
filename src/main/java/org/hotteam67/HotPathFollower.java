@@ -7,8 +7,6 @@
 
 package org.hotteam67;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 
 import jaci.pathfinder.Pathfinder;
@@ -265,10 +263,10 @@ public class HotPathFollower
             }
 
             // Add angle error, in degrees
-            double targetHeading = Pathfinder.boundHalfDegrees(360 - Pathfinder.r2d(lastSegmentLeft.heading));
+            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(lastSegmentLeft.heading));
             double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
             double turn = ANGLE_P * headingError;
-
+            HotLogger.Log("Heading Error", headingError);
             l += turn;
             r -= turn;
         }
@@ -282,7 +280,7 @@ public class HotPathFollower
             pathState = State.Complete;
 
         // Hold the last point, or check if we are within configured acceptable range
-        if (pathState == State.Holding)
+        if (holdLastPoint && pathState == State.Holding && lastSegmentLeft != null && lastSegmentRight != null)
         {
             double ticksPerMeter = (ticksPerRev / (Math.PI * wheelDiameter));
 
@@ -291,7 +289,7 @@ public class HotPathFollower
             double rightError = lastSegmentRight.position - (currentPositionRight / ticksPerMeter);
 
             // Error in degrees
-            double targetHeading = Pathfinder.boundHalfDegrees(360 - Pathfinder.r2d(lastSegmentLeft.heading));
+            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(lastSegmentLeft.heading));
             double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
 
             // Check for allowable error deadband
@@ -306,10 +304,14 @@ public class HotPathFollower
                 l = leftError * POS_P;
                 r = rightError * POS_P;
                 double turn = ANGLE_P * headingError;
-                l += turn;
-                r -= turn;
+                l -= turn;
+                r += turn;
             }
         }
+        else if (!holdLastPoint && pathState == State.Holding)
+            pathState = State.Complete;
+        else if (lastSegmentLeft == null || lastSegmentRight == null && pathState == State.Holding)
+            pathState = State.Complete;
 
         // We are there, no output
         if (pathState == State.Complete)
@@ -351,9 +353,13 @@ public class HotPathFollower
 
     /**
      * Private logging function, logs for the path given
-     * @param motorName Left or Right Motor
-     * @param s the segment to get values from for logging
-     * @param output the calculated output to the motor
+     * 
+     * @param motorName
+     *                      Left or Right Motor
+     * @param s
+     *                      the segment to get values from for logging
+     * @param output
+     *                      the calculated output to the motor
      */
     private static void Log(String motorName, Segment s, double output)
     {
@@ -365,5 +371,6 @@ public class HotPathFollower
         HotLogger.Log(motorName + " Path X", s.x);
         HotLogger.Log(motorName + " Path Y", s.y);
         HotLogger.Log(motorName + " Path Calculated Output", output);
+        HotLogger.Log(motorName + " Path Heading", Pathfinder.boundHalfDegrees(Pathfinder.r2d(s.heading)));
     }
 }

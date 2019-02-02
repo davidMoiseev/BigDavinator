@@ -11,6 +11,9 @@ import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class Robot extends TimedRobot
 {
@@ -19,7 +22,7 @@ public class Robot extends TimedRobot
     public static final int JOYSTICK_LY = 1;
     public static final int JOYSTICK_RX = 4;
 
-    Joystick driver = new Joystick(JOYSTICK_DRIVER);
+    XboxController driver = new XboxController(JOYSTICK_DRIVER);
 
     DriveTrain driveTrain;
 
@@ -29,9 +32,10 @@ public class Robot extends TimedRobot
         driveTrain = new DriveTrain();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
-                "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y", "Left Path Calculated Output",
-                "Right Path Position", "Right Path Velocity", "Right Path Acceleration", "Right Path X", "Right Path Y",
-                "Right Path Calculated Output");
+                "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y",
+                "Left Path Calculated Output", "Left Path Heading", "Right Path Position", "Right Path Velocity",
+                "Right Path Acceleration", "Right Path X", "Right Path Y", "Right Path Calculated Output",
+                "Right Path Heading");
     }
 
     @Override
@@ -68,10 +72,11 @@ public class Robot extends TimedRobot
         driveTrain.zeroSensors();
     }
 
+    boolean rumble = false;
     @Override
     public void teleopPeriodic()
     {
-        driveTrain.arcadeDrive(driver.getRawAxis(JOYSTICK_RX), driver.getRawAxis(JOYSTICK_LY));
+        driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft));
         driveTrain.readSensors();
         driveTrain.writeLogs();
     }
