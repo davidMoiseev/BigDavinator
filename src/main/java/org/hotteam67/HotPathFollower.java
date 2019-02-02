@@ -18,11 +18,6 @@ import jaci.pathfinder.followers.EncoderFollower;
  */
 public class HotPathFollower
 {
-    // Allowable angle error defaults to .5 degrees
-    private double allowableAngleError = .5;
-    // Allowable position error defaults to 2000 encoder ticks;
-    private double allowablePosError = 2000;
-
     // Encoder ticks per revolution on either side
     private final int ticksPerRev;
     // Wheel diameter on either side
@@ -36,18 +31,10 @@ public class HotPathFollower
     // Jaci rightFollower will do most calculation and handle the right path
     private EncoderFollower rightFollower;
 
-    // Whether to hold the last point of the path
-    private boolean holdLastPoint = false;
-
     // PIDFA constants for the position error. Stored for holding last point only
     private double POS_P = 0, POS_I = 0, POS_D = 0, POS_V = 0, POS_A = 0;
     // PID constants for the angle error. Stored for holding last point only
     private double ANGLE_P = 0;
-
-    // Previous segment, used for holding the output value of followers
-    private Segment lastSegmentRight = null;
-    // Previous segment, used for holding the output value of followers
-    private Segment lastSegmentLeft = null;
 
     /**
      * State of the follower. Disabled - not yet run, or has been reset Enabled -
@@ -56,7 +43,7 @@ public class HotPathFollower
      */
     public enum State
     {
-        Disabled, Enabled, Holding, Complete
+        Disabled, Enabled, Complete
     }
 
     /**
@@ -193,37 +180,6 @@ public class HotPathFollower
     }
 
     /**
-     * Config allowable error for holding mode Pos
-     * 
-     * @param error
-     */
-    public void ConfigAllowablePosError(double error)
-    {
-        allowableAngleError = error;
-    }
-
-    /**
-     * Config allowable error for holding mos Angle
-     * 
-     * @param error
-     */
-    public void ConfigAllowableAngleError(double error)
-    {
-        allowableAngleError = error;
-    }
-
-    /**
-     * Config whether to hold the last point of the profile. Will just complete at
-     * the last point if true
-     * 
-     * @param doHold
-     */
-    public void SetHoldLastPointEnabled(boolean doHold)
-    {
-        this.holdLastPoint = doHold;
-    }
-
-    /**
      * Get the output of the path follower with given inputs for the next point.
      * Should be called at the same frequency as loaded path
      * 
@@ -243,6 +199,8 @@ public class HotPathFollower
         if (leftFollower == null || rightFollower == null)
             return new Output(0, 0);
         double l = 0, r = 0;
+        Segment segLeft = null;
+        Segment segRight = null;
 
         // Path is not currently being followed, so start it
         if (pathState == State.Disabled)
@@ -253,17 +211,15 @@ public class HotPathFollower
         {
             l = leftFollower.calculate(currentPositionLeft);
             r = rightFollower.calculate(currentPositionRight);
-            try
-            {
-                lastSegmentLeft = leftFollower.getSegment();
-                lastSegmentRight = rightFollower.getSegment();
-            }
-            catch (Exception ignored)
-            {
-            }
+
+            segLeft = leftFollower.getSegment();
+            segRight = rightFollower.getSegment();
+
+            Log("Left", segLeft, l);
+            Log("Right", segRight, r);
 
             // Add angle error, in degrees
-            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(lastSegmentLeft.heading));
+            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(segLeft.heading));
             double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
             double turn = ANGLE_P * headingError;
             HotLogger.Log("Heading Error", headingError);
@@ -271,46 +227,8 @@ public class HotPathFollower
             r -= turn;
         }
 
-        // Points are complete so make sure the state is holding, if its enabled
-        else if (holdLastPoint)
-            pathState = State.Holding;
-
-        // If holding is not enabled, we are done
+        // We are done
         else
-            pathState = State.Complete;
-
-        // Hold the last point, or check if we are within configured acceptable range
-        if (holdLastPoint && pathState == State.Holding && lastSegmentLeft != null && lastSegmentRight != null)
-        {
-            double ticksPerMeter = (ticksPerRev / (Math.PI * wheelDiameter));
-
-            // Error in meters
-            double leftError = lastSegmentLeft.position - (currentPositionLeft / ticksPerMeter);
-            double rightError = lastSegmentRight.position - (currentPositionRight / ticksPerMeter);
-
-            // Error in degrees
-            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(lastSegmentLeft.heading));
-            double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
-
-            // Check for allowable error deadband
-            if (Math.abs(leftError) < allowablePosError && Math.abs(rightError) < allowablePosError
-                    && Math.abs(headingError) < allowableAngleError)
-            {
-                pathState = State.Complete;
-            }
-            // Manually calculate with just P
-            else
-            {
-                l = leftError * POS_P;
-                r = rightError * POS_P;
-                double turn = ANGLE_P * headingError;
-                l -= turn;
-                r += turn;
-            }
-        }
-        else if (!holdLastPoint && pathState == State.Holding)
-            pathState = State.Complete;
-        else if (lastSegmentLeft == null || lastSegmentRight == null && pathState == State.Holding)
             pathState = State.Complete;
 
         // We are there, no output
@@ -319,9 +237,6 @@ public class HotPathFollower
             l = 0;
             r = 0;
         }
-
-        Log("Left", lastSegmentLeft, l);
-        Log("Right", lastSegmentRight, r);
 
         return new Output(l, r);
     }
@@ -347,8 +262,6 @@ public class HotPathFollower
             rightFollower.reset();
         }
         pathState = State.Disabled;
-        lastSegmentLeft = null;
-        lastSegmentRight = null;
     }
 
     /**
