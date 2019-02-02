@@ -15,7 +15,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-//Hi Hayley! How are you?
+
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -132,7 +132,7 @@ public class DriveTrain {
         solenoidH.set(state);
     }
 
-    // public boolean buttonDropH(){
+    // public boolean buttonDropH(){ 
     //     stateA = hotDrive.getButtonA();
     //     if((stateA != prevStateA) && (stateA == false) && (isHDown == false)){
     //         this.dropH(true);
