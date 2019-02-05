@@ -28,6 +28,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
     public MotionMagicActuator(int primaryCAN_ID, int secondaryCAN_ID) {
         primaryTalon = new TalonSRX(primaryCAN_ID);
         secondaryTalon = new TalonSRX(secondaryCAN_ID);
+        SRX_PID_0 = new SRX_PID();
         secondaryTalon.set(ControlMode.Follower, primaryCAN_ID);
     }
 
@@ -59,13 +60,11 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
     @Override
     public void setTarget(double target) {
         primaryTalon.set(ControlMode.MotionMagic,target);
-        System.out.println("It was set to:" + Double.toString(target));
     }
 
     @Override
     public void disable() {
         primaryTalon.set(ControlMode.PercentOutput,0);
-        System.out.println("Disabled");
     }
 
     public void manual(double Command) {
@@ -89,7 +88,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
     /**
      * @return the sensorPhase
      */
-    public boolean isSensorPhase() {
+    public boolean getSensorPhase() {
         return sensorPhase;
     }
 
