@@ -23,18 +23,19 @@ public class DriveTrain
     public static final double ALLOWED_ERROR_POSITION = 1000;
     public static final double ALLOWED_ERROR_HEADING = .5;
 
-    public static final double WHEEL_DIAMETER = 0.05436;
-    public static final int TICKS_PER_REVOLUTION = 1; //3600;
+    public static final double WHEEL_DIAMETER = 4.0 * 2.54;// 0.05436;
+    public static final int TICKS_PER_REVOLUTION = 1; // 3600;
 
-    public static final double ENCODER_TO_REVS = (50.0/12.0) * (42.0/24.0);
-    public static final double SECOND_ENCODER_TO_REVS = (42.0/24.0);
+    public static final double ENCODER_TO_REVS = (50.0 / 12.0) * (42.0 / 24.0);
+    public static final double SECOND_ENCODER_TO_REVS = (42.0 / 24.0);
 
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
-    public static final double TICKS_PER_METER = (TICKS_PER_REVOLUTION / (Math.PI * WHEEL_DIAMETER));
+    public static final double TICKS_PER_METER = ENCODER_TO_REVS * WHEEL_DIAMETER; // (TICKS_PER_REVOLUTION / (Math.PI *
+                                                                                   // WHEEL_DIAMETER));
 
     // Ticks per 100 ms, as read from getSelectedSensorVelocity(0)
-    public static final double MAX_VELOCITY_TICKS = 5800;
+    public static final double MAX_VELOCITY_TICKS = 0;// 5800;
     // Max velocity in m/s
     public static final double MAX_VELOCITY = MAX_VELOCITY_TICKS * 10.0 / TICKS_PER_METER; // 1.4231;
 

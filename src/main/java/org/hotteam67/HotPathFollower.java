@@ -80,7 +80,7 @@ public class HotPathFollower
      * @param ticksPerRev
      * @param wheelDiameter
      */
-    public HotPathFollower(int ticksPerRev, double wheelDiameter, String leftPathFile, String rightPathFile)
+    public HotPathFollower(double ticksPerRev, double wheelDiameter, String leftPathFile, String rightPathFile)
     {
         this.ticksPerRev = ticksPerRev;
         this.wheelDiameter = wheelDiameter;
