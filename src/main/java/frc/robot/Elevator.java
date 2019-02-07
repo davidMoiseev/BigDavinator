@@ -13,10 +13,11 @@ import frc.robot.constants.ElevatorConstants;
 /**
  * Add your docs here.
  */
-public class Elevator extends MotionMagicActuator {
 
-    public Elevator(int primaryCAN_ID){//}, int secondaryCAN_ID) {
-        super(primaryCAN_ID);//, secondaryCAN_ID);
+ public class Elevator extends MotionMagicActuator {
+
+    public Elevator(int primaryCAN_ID, int secondaryCAN_ID) {
+        super(primaryCAN_ID, secondaryCAN_ID);
 
         setNominalOutputForward(ElevatorConstants.nominalOutputForward);
         setNominalOutputReverse(ElevatorConstants.nominalOutputReverse);

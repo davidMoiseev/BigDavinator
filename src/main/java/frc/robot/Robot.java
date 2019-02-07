@@ -28,12 +28,16 @@ public class Robot extends TimedRobot
 
     DriveTrain driveTrain;
     Elevator elevator;
+    Wrist wrist;
+    Arm arm;
 
     @Override
     public void robotInit()
     {
         driveTrain = new DriveTrain();
-        elevator = new Elevator(5);
+        elevator = new Elevator(5, 6);
+        wrist = new Wrist(7);
+        arm = new Arm(8);
         elevator.initialize();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
@@ -56,7 +60,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        // May have to invert driveturn/drivespeed
+        
         driveTrain.readSensors();
         driveTrain.writeLogs();
 

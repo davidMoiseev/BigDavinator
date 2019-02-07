@@ -30,5 +30,4 @@ public class ElevatorConstants {
     public static final double derivative = 0.0;
     public static final double integral = 0.0016;
     public static final FeedbackDevice feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative;
-
 }

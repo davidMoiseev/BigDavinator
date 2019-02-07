@@ -15,6 +15,10 @@ public class ManipulatorSetPoint {
     public double getArmAngle() {
         return armAngle;
     }
+    
+    public void setArmAngle(double armAngle) {
+        this.armAngle = armAngle;
+    }
 
     public double getElevatorHeight() {
         return elevatorHeight;
@@ -30,9 +34,5 @@ public class ManipulatorSetPoint {
 
     public void setWristAngle(double wristAngle) {
         this.wristAngle = wristAngle;
-    }
-
-    public void setArmAngle(double armAngle) {
-        this.armAngle = armAngle;
     }
 }
