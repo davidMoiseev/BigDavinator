@@ -15,7 +15,7 @@ import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
 
-import frc.robot.constants.ControllerAreaNetworkIdentificationNumbers;
+import frc.robot.constants.WiringIDNumbers;
 
 public class DriveTrain
 {
@@ -43,17 +43,17 @@ public class DriveTrain
     public static final int TALON_PIGEON = 2;
     public static final int TALON_RIGHT = 1;
 
-    private final CANSparkMax rightMotor = new CANSparkMax(ControllerAreaNetworkIdentificationNumbers.LEFT_DRIVE_1,
+    private final CANSparkMax rightMotor = new CANSparkMax(WiringIDNumbers.LEFT_DRIVE_1,
             MotorType.kBrushless);
-    private final CANSparkMax rightFollower = new CANSparkMax(ControllerAreaNetworkIdentificationNumbers.LEFT_DRIVE_2,
-            MotorType.kBrushless);
-
-    private final CANSparkMax leftMotor = new CANSparkMax(ControllerAreaNetworkIdentificationNumbers.RIGHT_DRIVE_1,
-            MotorType.kBrushless);
-    private final CANSparkMax leftFollower = new CANSparkMax(ControllerAreaNetworkIdentificationNumbers.RIGHT_DRIVE_2,
+    private final CANSparkMax rightFollower = new CANSparkMax(WiringIDNumbers.LEFT_DRIVE_2,
             MotorType.kBrushless);
 
-    private final TalonSRX pigeonTalon = new TalonSRX(ControllerAreaNetworkIdentificationNumbers.ELEVATOR_2);
+    private final CANSparkMax leftMotor = new CANSparkMax(WiringIDNumbers.RIGHT_DRIVE_1,
+            MotorType.kBrushless);
+    private final CANSparkMax leftFollower = new CANSparkMax(WiringIDNumbers.RIGHT_DRIVE_2,
+            MotorType.kBrushless);
+
+    private final TalonSRX pigeonTalon = new TalonSRX(WiringIDNumbers.ELEVATOR_2);
     private final PigeonIMU pigeon = new PigeonIMU(pigeonTalon);
 
     private double rightEncoder;
