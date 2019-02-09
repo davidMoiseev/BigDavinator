@@ -1,25 +1,17 @@
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* Open Source Software - may be modified and shared by FTC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionMotion {
     Vision vision = new Vision();
-    DriveTrain driveTrain = new DriveTrain();
 
-    HotSticks hotDrive = new HotSticks(0);
-    Solenoid solenoid = new Solenoid(0);
     public double h;
     public double speedH;
     public boolean isHDown;
@@ -28,79 +20,160 @@ public class VisionMotion {
     public static final double pGain = 0.04;
     public static final double iGain = 0.000008;
     public static final double dGain = 0.0;
+    public static final double pGainBall = 0.04;
+    public static final double iGainBall = 0.000008;
+    public static final double dGainBall = 0.0;
     public double integral = 0;
     public double speed = 0;
     public double Lspeed;
     public double Rspeed;
     public double pAngle;
     public double iAngle;
+    public double motorOutput;
+    public int num;
+    public double Houtput;
+    public double Loutput;
+    public double Routput;
+    public double bouncePrevY = 0;
 
-    public void turnVision() {
-        
-        if(vision.canSeeTarget() == 0 || vision.getHeading() < 1.0 && vision.getHeading() > -1.0 ) {
-            driveTrain.allOff();
+    public double turnVision() {
+        vision.setPipeline(1);
+        if (vision.canSeeTarget() == 0 || vision.getHeading() < 5.0 && vision.getHeading() > -5.0) {
+            motorOutput = 0.0;
+            return motorOutput;
         }
-           /* else if (vision.getHeading() == currentYaw) {
-            turnGyro(vision.getHeading(true));} */
+        /*
+         * else if (vision.getHeading() == currentYaw) {
+         * turnGyro(vision.getHeading(true));}
+         */
 
-           else if (vision.getHeading() > 1.0) {
-               driveTrain.basicTurnOutput(0.4);
-              }
-            else if (vision.getHeading() < -1.0) {
-              driveTrain.basicTurnOutput(-0.4);
-            }; 
-        
+        else if (vision.getHeading() > 5.0) {
+            motorOutput = 0.4;
+            return motorOutput;
+        } else if (vision.getHeading() < -5.0) {
+            motorOutput = -0.4;
+            return motorOutput;
+        }else{
+            motorOutput = 0.0;
+            return motorOutput;
         }
-        public void shuffleVision() {
-        
-            if(/*(vision.canSeeTarget() == 0 && previousCanSeeTarget == 0 && prevprevCanSeeTarget == 0) ||*/ vision.getHeading() < 4.0 && vision.getHeading() > -4.0 ) {
-                driveTrain.dropH(false);
-                driveTrain.basicSideOutput(0.0);
-            }
-               /* else if (vision.getHeading() == currentYaw) {
-                turnGyro(vision.getHeading(true));} */
+
+    }
     
-               else if (vision.getHeading() > 5.0) {
-                driveTrain.dropH(true);    
-                driveTrain.basicSideOutput(0.25);
-               
-                }
-                else if (vision.getHeading() < -5.0) {
-                    driveTrain.dropH(true);
-                    driveTrain.basicSideOutput(-0.25);
-                    
-                }; 
-            prevprevCanSeeTarget = previousCanSeeTarget;
-            previousCanSeeTarget = vision.canSeeTarget();
-            }    
-          
-        public double findProportional(double targetHeading){
-            double error = vision.getHeading() - targetHeading;
-            return error;
-        }    
-        public double findIntegral(double targetHeading) {
-            integral = integral + this.findProportional(targetHeading);
-            return integral;
-        }   
-        public void shuffleVisionPID(){
-            driveTrain.dropH(true);
-
-            pAngle = findProportional(0); // 27;
-            iAngle = findIntegral(0); // 27;
-            double Hspeed = (pAngle * pGain) + (iAngle * iGain);
-            if (Hspeed > 1.0) 
-                Hspeed = 1.0;
-             else if (Hspeed < -1.0) {
-                Hspeed = -1.0;
-            }
-            driveTrain.basicSideOutput(Hspeed);
+    public double shuffleVision() {
+        vision.setPipeline(1);
+        if(vision.getHeading() < 4.0 && vision.getHeading() > -4.0 ) {   
+            motorOutput = 0.0;
+            return motorOutput;
         }
-	
-	public void writeDashBoardVis() {
+        /* else if (vision.getHeading() == currentYaw) {
+        turnGyro(vision.getHeading(true));} */
+    
+        else if (vision.getHeading() > 4.0) {
+            motorOutput = 0.25;
+            return motorOutput;
+    
+        }
+        else if (vision.getHeading() < -4.0) {
+            motorOutput = -0.25;
+            return motorOutput;
+    
+        }else{
+            motorOutput = 0.0;
+            return motorOutput;
+        }
+        }
+
+    public double findProportional(double targetHeading) {
+        double error = vision.getHeading() - targetHeading;
+        return error;
+    }
+
+    public double findIntegral(double targetHeading) {
+        integral = integral + this.findProportional(targetHeading);
+        return integral;
+    }
+
+    public double shuffleVisionPID() {
+        vision.setPipeline(1);
+        pAngle = findProportional(0); // 27;
+        iAngle = findIntegral(0); // 27;
+        double Hspeed = (pAngle * pGain) + (iAngle * iGain);
+        if (Hspeed > 1.0)
+            Hspeed = 1.0;
+        else if (Hspeed < -1.0) {
+            Hspeed = -1.0;
+        }
+        //driveTrain.basicSideOutput(Hspeed);
+        return Hspeed;
+    }
+
+     public double driveToVisionDistance() {
+        if(vision.findDistance() < 20.0) {
+            motorOutput = 0.0;
+            return motorOutput;
+        }else{
+            motorOutput = 0.2;
+            return motorOutput;
+        }
+    }
+
+    public void followBallVis(){
+        this.shuffleVisionPID();
+        this.turnVision();
+        this.driveToVisionDistance();
+        double Lspeed = this.driveToVisionDistance() /*+ (this.turnVision())*/;
+        double Rspeed = this.driveToVisionDistance() /*- (this.turnVision())*/;
+        if(Lspeed > 1.0){
+            Lspeed = 1.0;
+        }else if(Lspeed < -1.0){
+            Lspeed = -1.0;
+        }
+        if(Rspeed > 1.0){
+            Rspeed = 1.0;
+        }else if(Rspeed < -1.0){
+            Rspeed = -1.0;
+        }
+
+            Loutput = Lspeed;
+            Routput = Rspeed;
+    }
+    public boolean ballHasBeenFollowed(){
+        if((Math.abs(vision.getHeading()) < 5.0) && (vision.findDistance()) < 20.0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public double outputLBall(){
+        this.followBallVis();
+        double outputL = Loutput;
+        return outputL;
+    }
+
+    public double outputRBall(){
+        this.followBallVis();
+        double outputR = Routput;
+        return outputR;
+    }
+
+    public boolean detectBallBounce(){
+        if(Math.abs(vision.getTY() - bouncePrevY) > 5.0){
+            bouncePrevY = vision.getTY();
+            return true;
+        }else{
+            bouncePrevY = vision.getTY();
+            return false;
+        }
+    }
+
+    public void writeDashBoardVis() {
         SmartDashboard.putNumber("heading", vision.getHeading());
-        SmartDashboard.putNumber("H-Joystick", hotDrive.getStickRX());
         SmartDashboard.putNumber("Can Detect Target", vision.canSeeTarget());
+        SmartDashboard.putNumber("distance", vision.findDistance());
         SmartDashboard.putBoolean("Is h down", isHDown);
-    } 
-    
-}
+        SmartDashboard.putBoolean("has ball been followed", this.ballHasBeenFollowed());
+    }
+
+};

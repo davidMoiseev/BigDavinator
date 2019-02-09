@@ -7,6 +7,8 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
+
 public class DriveTrain {
 	
     public static final int TALON_LF = 7;
@@ -18,7 +20,7 @@ public class DriveTrain {
     public static final int TALON_H = 1;
     public static final int TALON_PIGEON = 6;
     
-    //WPI_TalonSRX pigeon = new WPI_TalonSRX(TALON_PIGEON);
+    // WPI_TalonSRX pigeon = new WPI_TalonSRX(TALON_PIGEON);
     WPI_TalonSRX LFTalon = new WPI_TalonSRX(TALON_LF);
     WPI_TalonSRX RFTalon = new WPI_TalonSRX(TALON_RF);
     WPI_TalonSRX RBTalon = new WPI_TalonSRX(TALON_RB);
@@ -28,7 +30,7 @@ public class DriveTrain {
     WPI_TalonSRX RMTalon = new WPI_TalonSRX(TALON_RM);
   
     public PigeonIMU pigeon = new PigeonIMU(TALON_PIGEON);
-    Vision vision = new Vision();
+    VisionMotion vmotion = new VisionMotion();
 
     HotSticks hotDrive = new HotSticks(0);
     Solenoid solenoid = new Solenoid(0);
@@ -91,13 +93,14 @@ public class DriveTrain {
         // HTalon.setNeutralMode(NeutralMode.Brake);
  
         pigeon.setYaw(0);
-        this.zeroSensors();
+        // this.zeroSensors();
         RMTalon.set(ControlMode.Follower, RFTalon.getDeviceID());
         RBTalon.set(ControlMode.Follower, RFTalon.getDeviceID());
         LMTalon.set(ControlMode.Follower, LFTalon.getDeviceID());
         LBTalon.set(ControlMode.Follower, LFTalon.getDeviceID());
  
     }
+
     public void dropH(boolean state){
         solenoid.set(state);
         if(state == true) {
@@ -107,6 +110,23 @@ public class DriveTrain {
             isHDown = false;
         }
     }
+
+    public void automaticDropH(){
+        if(HTalon.getMotorOutputPercent() > 0.05){
+            this.dropH(true);
+        }else if(HTalon.getMotorOutputPercent() < -0.05){
+            this.dropH(true);
+        }else{
+            this.dropH(false);
+        }
+    }
+
+    public void zeroSensors(){
+        LFTalon.setSelectedSensorPosition(0,0,0);
+        RFTalon.setSelectedSensorPosition(0,0,0);
+        pigeon.setYaw(0,0);
+    }
+ 
     public void driveManualH(double kFwd, double kTurn, double kSpeed, double kH){
         hotDrive.setDeadBandRY(0.1);
         hotDrive.setDeadBandLX(0.1);
@@ -135,13 +155,7 @@ public class DriveTrain {
             HTalon.set(ControlMode.PercentOutput, (speedH));
         }
     }
- 
 
-	public void zeroSensors() {
-		LFTalon.setSelectedSensorPosition(0, 0, 0); 
-        RFTalon.setSelectedSensorPosition(0, 0, 0); 
-        pigeon.setYaw(0, 0);        
-	}
 	
 	public void readSensors() {
         leftEncoder = LFTalon.getSelectedSensorPosition(0);
@@ -163,15 +177,6 @@ public class DriveTrain {
 		} else {
 			return false;
 		}
-    }
-
-    public void basicTurnOutput(double speed){
-        LFTalon.set(ControlMode.PercentOutput, speed);
-        RFTalon.set(ControlMode.PercentOutput, -speed);
-    }
-
-    public void basicSideOutput(double speed){
-        HTalon.set(ControlMode.PercentOutput, speed);
     }
 
     public void turnGyro(double heading){
@@ -196,13 +201,44 @@ public class DriveTrain {
 		} else {
 			return false;
 		}	
-	}
-	
+    }
+    // public void basicTurnOutput(double speed){
+    //     LFTalon.set(ControlMode.PercentOutput, speed);
+    //     RFTalon.set(ControlMode.PercentOutput, -speed);
+    // }
+
+    // public void basicSideOutput(double speed){
+    //     HTalon.set(ControlMode.PercentOutput, speed);
+    // }
+
+    public void LRControlVis(){
+        LFTalon.set(ControlMode.PercentOutput, vmotion.turnVision());
+        RFTalon.set(ControlMode.PercentOutput, -vmotion.turnVision());
+    }
+
+    public void HControlVis(){
+        HTalon.set(ControlMode.PercentOutput, vmotion.shuffleVisionPID());
+    }
+    
+    public boolean followBall(){
+        HTalon.set(ControlMode.PercentOutput, vmotion.shuffleVisionPID());
+        LFTalon.set(ControlMode.PercentOutput, vmotion.outputLBall());
+        RFTalon.set(ControlMode.PercentOutput, -vmotion.outputRBall());
+        if(vmotion.ballHasBeenFollowed() == true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 	public void writeDashBoard() {
         SmartDashboard.putNumber("leftEncoder", leftEncoder);
         SmartDashboard.putNumber("rightEncoder", rightEncoder);
         SmartDashboard.putNumber("currentYaw", currentYaw);
         SmartDashboard.putBoolean("Is h down", isHDown);
+        vmotion.writeDashBoardVis();
+        SmartDashboard.putNumber("outputL", vmotion.outputLBall());
+        SmartDashboard.putNumber("outputR", vmotion.outputRBall());
     } 
     
     public void arcadeDrive(double f, double t)

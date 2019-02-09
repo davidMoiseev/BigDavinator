@@ -15,6 +15,8 @@ public class Robot extends TimedRobot {
     
     Joystick stickDrive = new Joystick(0);
 
+    public int state = 0;
+
     @Override
     public void robotInit() {
       driveTrain.zeroSensors();
@@ -36,16 +38,29 @@ public class Robot extends TimedRobot {
     
     @Override
     public void autonomousPeriodic() {
+      driveTrain.automaticDropH();
     //driveTrain.shuffleVision(); 
-    driveTrain.shuffleVisionPID();
     
+    //driveTrain.HControlVis();
+        switch(state){
+          case 0:
+            if(driveTrain.followBall() == true){
+              state++;
+            }
+          break;
+          case 1:
+          
+          break;
+        }
+       
+    SmartDashboard.putNumber("state", state);
 
     }
 
 
     @Override
     public void teleopPeriodic() {
-      driveTrain.driveManualH(1, 1, 1, 1);
+      driveTrain.driveManualH(1.0, 1.0, 1.0, 1.0);
 
 
       //driveTrain.arcadeDrive((Math.abs(forward) < .05 ? 0 : forward ), (Math.abs(turn) < .05 ? 0 : turn ));
