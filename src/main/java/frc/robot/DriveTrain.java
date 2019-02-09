@@ -169,6 +169,11 @@ public class DriveTrain implements IPigeonWrapper
         forward = ((d > forward) && (forward > -d)) ? 0 : -forward;
         side = ((.4 > forward) && (forward > -.4)) ? 0 : side;
 
+        if (side > 0)
+            hDriveSolenoid.set(true);
+        else
+            hDriveSolenoid.set(false);
+
         rightMotor.set(forward + turn);
         leftMotor.set(forward - turn);
         hDriveMotor.set(side);

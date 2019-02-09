@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 
@@ -52,6 +53,7 @@ public class Robot extends TimedRobot
         eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR);
         eleRight = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         eleRight.follow(eleLeft);
+        eleLeft.setInverted(true);
 
         intake = new TalonSRX(WiringIDs.INTAKE);
         wrist = new TalonSRX(WiringIDs.WRIST);
@@ -102,6 +104,8 @@ public class Robot extends TimedRobot
         driver.setRumble(RumbleType.kRightRumble, rum);
 
         driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft), driver.getX(Hand.kLeft));
+
+        eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
         driveTrain.readSensors();
         driveTrain.writeLogs();
