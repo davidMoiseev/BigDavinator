@@ -23,7 +23,9 @@ import frc.robot.constants.WiringIDs;
 
 public class Robot extends TimedRobot
 {
-
+    /**
+     * Joysticks
+     */
     public static final int JOYSTICK_DRIVER = 0;
     public static final int JOYSTICK_OPERATOR = 1;
 
@@ -52,6 +54,8 @@ public class Robot extends TimedRobot
 
         eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR);
         eleRight = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
+
+        
         eleRight.follow(eleLeft);
         eleLeft.setInverted(true);
 
@@ -99,9 +103,8 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        double rum = Math.abs(driver.getY(Hand.kLeft)) + Math.abs(driver.getX(Hand.kRight));
-        driver.setRumble(RumbleType.kLeftRumble, rum);
-        driver.setRumble(RumbleType.kRightRumble, rum);
+        rumble(driver);
+        rumble(operator);
 
         driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft), driver.getX(Hand.kLeft));
 
@@ -109,6 +112,17 @@ public class Robot extends TimedRobot
 
         driveTrain.readSensors();
         driveTrain.writeLogs();
+    }
+
+    /**
+     * WHOS READY TO RUMBBLEEE
+     * @param joy
+     */
+    public static void rumble(XboxController joy)
+    {
+        double rum = Math.abs(joy.getY(Hand.kLeft)) + Math.abs(joy.getX(Hand.kRight));
+        joy.setRumble(RumbleType.kLeftRumble, rum);
+        joy.setRumble(RumbleType.kRightRumble, rum);
     }
 
     @Override
@@ -121,16 +135,25 @@ public class Robot extends TimedRobot
         pigeonInitializing = false;
     }
 
+    /**
+     * Whether the dashboard has already told us to configure the pigeon
+     */
     boolean pigeonInitializing = false;
 
     @Override
     public void disabledPeriodic()
     {
+        /**
+         * Clicked for the first time, the robot is stable so start boot calibrate
+         */
         if (SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing)
         {
             driveTrain.CalibratePigeon();
             pigeonInitializing = true;
         }
+        /**
+         * Pigeon is done initializing but we have not informed the DashBoard
+         */
         else if (pigeonInitializing && driveTrain.PigeonReady())
         {
             pigeonInitializing = false;

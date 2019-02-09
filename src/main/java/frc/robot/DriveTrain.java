@@ -34,9 +34,9 @@ public class DriveTrain implements IPigeonWrapper
     // 21,080.986
     public static final double TICKS_PER_METER = ENCODER_TO_REVS * Math.PI * WHEEL_DIAMETER;
 
-    public static final double MAX_VELOCITY_TICKS = 0;// 5800;
+    public static final double MAX_VELOCITY_TICKS = 0;
     // Max velocity in m/s
-    public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS * TICKS_PER_METER) / 60.0; // 1.4231;
+    public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS * TICKS_PER_METER) / 60.0;
 
     /**
      * Primary motor controllers
@@ -53,7 +53,6 @@ public class DriveTrain implements IPigeonWrapper
     private final CANSparkMax leftFollower;
 
     private final CANSparkMax hDriveMotor;
-    private final Solenoid hDriveSolenoid;
 
     private final PigeonIMU pigeon;
 
@@ -66,7 +65,7 @@ public class DriveTrain implements IPigeonWrapper
 
     private final HotPathFollower pathFollower;
 
-    /*
+    /**
      * Motion Profiling Constants
      */
     public static final class POS_PIDVA
@@ -78,13 +77,17 @@ public class DriveTrain implements IPigeonWrapper
         public static final double A = 0; // Acceleration gain
     }
 
+    /**
+     * Only using P rn for ANGLE_PID
+     */
     public static final class ANGLE_PID
     {
         public static final double P = .8 * (-1.0 / 80.0);
-        public static final double I = 0;
-        public static final double D = 0;
     }
 
+    /**
+     * Drivetrain class will load paths from disk and so takes a little bit of time
+     */
     public DriveTrain()
     {
         rightMotor = new CANSparkMax(WiringIDs.LEFT_DRIVE_1, MotorType.kBrushless);
@@ -94,7 +97,6 @@ public class DriveTrain implements IPigeonWrapper
         leftFollower = new CANSparkMax(WiringIDs.RIGHT_DRIVE_2, MotorType.kBrushless);
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
-        hDriveSolenoid = new Solenoid(WiringIDs.SOLENOID_H_DRIVE);
 
         rightEncoder = rightMotor.getEncoder();
         leftEncoder = leftMotor.getEncoder();
@@ -106,11 +108,19 @@ public class DriveTrain implements IPigeonWrapper
         leftFollower.follow(leftMotor);
         rightFollower.follow(rightMotor);
 
+        /**
+         * Path controller, can be configured to use different paths after construction.
+         * This call loads from disk
+         */
         pathFollower = new HotPathFollower(ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.testLeft, Paths.testRight);
         pathFollower.ConfigAngleP(ANGLE_PID.P);
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
 
+    /**
+     * Control the path follower, should be called on the same period as the profile's time step
+     * @return whether the path is complete
+     */
     public boolean FollowPath()
     {
         double heading = xyz_dps[0];
@@ -122,6 +132,9 @@ public class DriveTrain implements IPigeonWrapper
         return (pathFollower.GetState() == State.Complete);
     }
 
+    /**
+     * Read the sensors into memory
+     */
     public void readSensors()
     {
         rightEncoderValue = rightEncoder.getPosition() - leftEncoderLastValue;
@@ -129,6 +142,9 @@ public class DriveTrain implements IPigeonWrapper
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
+    /**
+     * Write to logs and dashboards
+     */
     public void writeLogs()
     {
         SmartDashboard.putNumber("rightEncoder", rightEncoderValue);
@@ -144,6 +160,9 @@ public class DriveTrain implements IPigeonWrapper
         HotLogger.Log("currentVelocityLeft", leftEncoder.getVelocity());
     }
 
+    /**
+     * Clear all measured sensor values in memory and zero the pigeon
+     */
     public void zeroSensors()
     {
         pigeon.setYaw(0);
@@ -156,12 +175,22 @@ public class DriveTrain implements IPigeonWrapper
         pathFollower.Reset();
     }
 
+    /**
+     * Motor output to zero
+     */
     public void zeroMotors()
     {
         rightMotor.set(0);
         leftMotor.set(0);
+        hDriveMotor.set(0);
     }
 
+    /**
+     * Manual control, includes deadband
+     * @param turn turn offset for motor output
+     * @param forward primary forward/backwards output
+     * @param side the hdrive output value
+     */
     public void arcadeDrive(double turn, double forward, double side)
     {
         double d = .02;
@@ -169,22 +198,23 @@ public class DriveTrain implements IPigeonWrapper
         forward = ((d > forward) && (forward > -d)) ? 0 : -forward;
         side = ((.4 > forward) && (forward > -.4)) ? 0 : side;
 
-        if (side > 0)
-            hDriveSolenoid.set(true);
-        else
-            hDriveSolenoid.set(false);
-
         rightMotor.set(forward + turn);
         leftMotor.set(forward - turn);
         hDriveMotor.set(side);
     }
 
+    /**
+     * Configure the Talon to Calibrate once the robot is stable
+     */
     @Override
     public void CalibratePigeon()
     {
         pigeon.enterCalibrationMode(CalibrationMode.BootTareGyroAccel);
     }
 
+    /**
+     * Whether the current state of the Pigeon is Ready
+     */
     @Override
     public boolean PigeonReady()
     {
