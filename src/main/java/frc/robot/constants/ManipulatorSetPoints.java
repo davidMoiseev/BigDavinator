@@ -12,9 +12,9 @@ package frc.robot.constants;
  */
 public class ManipulatorSetPoints {
 
-    public static final double TOP = 15000;
+    public static final double TOP = 8000;
     public static final double PRETTY_LOW = 2000;
-    public static final double MID = 10000;
+    public static final double MID = 4000;
     public static final double LOW = 1000;
     public static final double ZERO = 0;
 

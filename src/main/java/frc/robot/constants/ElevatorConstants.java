@@ -15,7 +15,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 public class ElevatorConstants {
     public static final double nominalOutputForward = 0;
     public static final double nominalOutputReverse = 0;
-    public static final int forwardSoftLimitThreshold = 20000;
+    public static final int forwardSoftLimitThreshold = 10000;
     public static final int reverseSoftLimitThreshold = 1000;
     public static final double peakOutputForward = 1;
     public static final double peakOutputReverse = -1;
