@@ -136,7 +136,7 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
         SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getVelocity());
         SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getVelocity());
-        
+
         HotLogger.Log("rightEncoder", rightEncoderValue);
         HotLogger.Log("leftEncoder", leftEncoderValue);
         HotLogger.Log("currentYaw", xyz_dps[0]);
