@@ -53,8 +53,7 @@ public class DriveTrain
     private final CANSparkMax leftFollower = new CANSparkMax(WiringIDNumbers.RIGHT_DRIVE_2,
             MotorType.kBrushless);
 
-    private final TalonSRX pigeonTalon = new TalonSRX(WiringIDNumbers.ELEVATOR_2);
-    private final PigeonIMU pigeon = new PigeonIMU(pigeonTalon);
+    private final PigeonIMU pigeon = new PigeonIMU(WiringIDNumbers.PIGEON_BASE);
 
     private double rightEncoder;
     private double leftEncoder;
@@ -85,33 +84,10 @@ public class DriveTrain
 
     public DriveTrain()
     {
-        /*
-         * rightTalon.configFactoryDefault(); leftTalon.configFactoryDefault();
-         */
-
         leftMotor.setInverted(true);
+
         leftFollower.follow(leftMotor);
         rightFollower.follow(rightMotor);
-        /*
-         * rightTalon.setSensorPhase(true); leftTalon.setSensorPhase(true);
-         * 
-         * rightTalon.selectProfileSlot(0, 0); leftTalon.selectProfileSlot(0, 0);
-         * 
-         * rightTalon.configSelectedFeedbackSensor(FeedbackDevice.
-         * CTRE_MagEncoder_Relative, 0, 0);
-         * leftTalon.configSelectedFeedbackSensor(FeedbackDevice.
-         * CTRE_MagEncoder_Relative, 0, 0);
-         * 
-         * 
-         * rightTalon.setSelectedSensorPosition(0, 0, 0);
-         * leftTalon.setSelectedSensorPosition(0, 0, 0);
-         * 
-         * rightTalon.set(ControlMode.PercentOutput, 0.0);
-         * leftTalon.set(ControlMode.PercentOutput, 0.0);
-         * 
-         * rightTalon.setNeutralMode(NeutralMode.Brake);
-         * leftTalon.setNeutralMode(NeutralMode.Brake);
-         */
 
         pathFollower = new HotPathFollower(ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.testLeft, Paths.testRight);
         pathFollower.ConfigAnglePID(ANGLE_PID.P);
@@ -163,13 +139,13 @@ public class DriveTrain
         leftMotor.set(0);
     }
 
-    public void arcadeDrive(double x, double y)
+    public void arcadeDrive(double turn, double forward, double side)
     {
         double d = .02;
-        x = ((d > x) && (x > -d)) ? 0 : x;
-        y = ((d > y) && (y > -d)) ? 0 : -y;
+        turn = ((d > turn) && (turn > -d)) ? 0 : turn;
+        forward = ((d > forward) && (forward > -d)) ? 0 : -forward;
 
-        rightMotor.set(y + x);
-        leftMotor.set(y - x);
+        rightMotor.set(forward + turn);
+        leftMotor.set(forward - turn);
     }
 }

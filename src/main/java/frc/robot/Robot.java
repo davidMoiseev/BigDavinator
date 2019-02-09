@@ -7,12 +7,17 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+
 import org.hotteam67.HotLogger;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import frc.robot.constants.WiringIDNumbers;
 
 public class Robot extends TimedRobot
 {
@@ -25,6 +30,9 @@ public class Robot extends TimedRobot
 
     DriveTrain driveTrain;
 
+    TalonSRX eleLeft;
+    TalonSRX eleRight;
+
     @Override
     public void robotInit()
     {
@@ -35,6 +43,10 @@ public class Robot extends TimedRobot
                 "Left Path Calculated Output", "Left Path Heading", "Right Path Position", "Right Path Velocity",
                 "Right Path Acceleration", "Right Path X", "Right Path Y", "Right Path Calculated Output",
                 "Right Path Heading");
+
+        eleLeft = new TalonSRX(WiringIDNumbers.LEFT_ELEVATOR);
+        eleRight = new TalonSRX(WiringIDNumbers.RIGHT_ELEVATOR);
+        eleRight.follow(eleLeft);
     }
 
     @Override
@@ -78,7 +90,7 @@ public class Robot extends TimedRobot
         double rum = Math.abs(driver.getY(Hand.kLeft)) + Math.abs(driver.getX(Hand.kRight));
         driver.setRumble(RumbleType.kLeftRumble, rum);
         driver.setRumble(RumbleType.kRightRumble, rum);
-        driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft));
+        driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft), 0);
         driveTrain.readSensors();
         driveTrain.writeLogs();
     }
