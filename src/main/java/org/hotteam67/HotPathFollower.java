@@ -172,7 +172,7 @@ public class HotPathFollower
      * 
      * @param p
      */
-    public void ConfigAnglePID(double p)
+    public void ConfigAngleP(double p)
     {
         ANGLE_P = p;
     }

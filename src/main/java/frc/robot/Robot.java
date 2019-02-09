@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import frc.robot.constants.WiringIDNumbers;
+import frc.robot.constants.WiringIDs;
 
 public class Robot extends TimedRobot
 {
@@ -44,8 +44,8 @@ public class Robot extends TimedRobot
                 "Right Path Acceleration", "Right Path X", "Right Path Y", "Right Path Calculated Output",
                 "Right Path Heading");
 
-        eleLeft = new TalonSRX(WiringIDNumbers.LEFT_ELEVATOR);
-        eleRight = new TalonSRX(WiringIDNumbers.RIGHT_ELEVATOR);
+        eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR);
+        eleRight = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         eleRight.follow(eleLeft);
     }
 
@@ -53,7 +53,7 @@ public class Robot extends TimedRobot
     public void autonomousInit()
     {
         driveTrain.zeroSensors();
-        driveTrain.zeroTalons();
+        driveTrain.zeroMotors();
         profileFinished = false;
     }
 
@@ -69,7 +69,7 @@ public class Robot extends TimedRobot
         if (!profileFinished)
             profileFinished = driveTrain.FollowPath();
         else
-            driveTrain.zeroTalons();
+            driveTrain.zeroMotors();
     }
 
     @Override
@@ -84,6 +84,7 @@ public class Robot extends TimedRobot
     }
 
     boolean rumble = false;
+
     @Override
     public void teleopPeriodic()
     {
@@ -96,16 +97,11 @@ public class Robot extends TimedRobot
     }
 
     @Override
-    public void testPeriodic()
-    {
-    }
-
-    @Override
     public void disabledInit()
     {
         driver.setRumble(RumbleType.kLeftRumble, 0);
         driver.setRumble(RumbleType.kRightRumble, 0);
         driveTrain.zeroSensors();
-        driveTrain.zeroTalons();
+        driveTrain.zeroMotors();
     }
 }
