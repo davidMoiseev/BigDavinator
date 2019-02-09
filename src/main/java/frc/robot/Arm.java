@@ -16,8 +16,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
  * Add your docs here.
  */
 public class Arm {
-  public static final int arm = 7;
-  public static final int armfollow = 5;
+  public static final int arm = 2;
+  public static final int armfollow = 1;
   private static final int UpperLimit = 5000;
   private static final int LowerLimit = -5000;
   private double Position;
