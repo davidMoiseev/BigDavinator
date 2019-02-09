@@ -167,6 +167,7 @@ public class DriveTrain implements IPigeonWrapper
         double d = .02;
         turn = ((d > turn) && (turn > -d)) ? 0 : turn;
         forward = ((d > forward) && (forward > -d)) ? 0 : -forward;
+        side = ((.4 > forward) && (forward > -.4)) ? 0 : side;
 
         rightMotor.set(forward + turn);
         leftMotor.set(forward - turn);
