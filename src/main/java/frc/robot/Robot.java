@@ -43,6 +43,9 @@ public class Robot extends TimedRobot {
     sweetTurn.SweetTurnReset();
     arm.Config();
     double position = 0;
+
+
+    
   }
 
   @Override
