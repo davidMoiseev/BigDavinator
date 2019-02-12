@@ -90,11 +90,11 @@ public class DriveTrain implements IPigeonWrapper
      */
     public DriveTrain()
     {
-        rightMotor = new CANSparkMax(WiringIDs.LEFT_DRIVE_1, MotorType.kBrushless);
-        rightFollower = new CANSparkMax(WiringIDs.LEFT_DRIVE_2, MotorType.kBrushless);
+        rightMotor = new CANSparkMax(WiringIDs.RIGHT_DRIVE_1, MotorType.kBrushless);
+        rightFollower = new CANSparkMax(WiringIDs.RIGHT_DRIVE_2, MotorType.kBrushless);
 
-        leftMotor = new CANSparkMax(WiringIDs.RIGHT_DRIVE_1, MotorType.kBrushless);
-        leftFollower = new CANSparkMax(WiringIDs.RIGHT_DRIVE_2, MotorType.kBrushless);
+        leftMotor = new CANSparkMax(WiringIDs.LEFT_DRIVE_1, MotorType.kBrushless);
+        leftFollower = new CANSparkMax(WiringIDs.LEFT_DRIVE_2, MotorType.kBrushless);
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
 
@@ -104,6 +104,7 @@ public class DriveTrain implements IPigeonWrapper
         pigeon = new PigeonIMU(WiringIDs.PIGEON_BASE);
 
         leftMotor.setInverted(true);
+        leftFollower.setInverted(true);
 
         leftFollower.follow(leftMotor);
         rightFollower.follow(rightMotor);
@@ -153,6 +154,10 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getVelocity());
         SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getVelocity());
 
+        /*
+        SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
+        SmartDashboard.putNumber("motorEncoderConfiguration", leftMotor.getParameterInt(ConfigParameter.kSensorType).get());
+        */
         HotLogger.Log("rightEncoder", rightEncoderValue);
         HotLogger.Log("leftEncoder", leftEncoderValue);
         HotLogger.Log("currentYaw", xyz_dps[0]);
@@ -193,14 +198,15 @@ public class DriveTrain implements IPigeonWrapper
      */
     public void arcadeDrive(double turn, double forward, double side)
     {
-        double d = .02;
+        double d = .04;
         turn = ((d > turn) && (turn > -d)) ? 0 : turn;
         forward = ((d > forward) && (forward > -d)) ? 0 : -forward;
-        side = ((.4 > forward) && (forward > -.4)) ? 0 : side;
+        side = ((.1 > side) && (side > -.4)) ? 0 : side;
 
-        rightMotor.set(forward + turn);
-        leftMotor.set(forward - turn);
+
         hDriveMotor.set(side);
+        rightMotor.set(forward - turn);
+        leftMotor.set(forward + turn);
     }
 
     /**
