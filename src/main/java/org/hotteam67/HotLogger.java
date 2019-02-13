@@ -33,15 +33,32 @@ public class HotLogger
 
     private static Notifier logScheduler = new Notifier(LogThread::WriteToFile);
 
-    public static void Setup(String... valsToLog)
+    public static void Setup(Object... valsToLog)
     {
         currentRow.clear();
         StringBuilder headerBuilder = new StringBuilder();
         headerBuilder.append("Time Step").append(DELIMITER);
         for (int i = 0; i < valsToLog.length; ++i)
         {
-            currentRow.put(valsToLog[i], EMPTY);
-            headerBuilder.append(valsToLog[i]).append(DELIMITER);
+            if (valsToLog[i] instanceof String)
+            {
+                currentRow.put((String) valsToLog[i], EMPTY);
+                headerBuilder.append((String) valsToLog[i]).append(DELIMITER);
+            }
+            else if (valsToLog[i] instanceof List)
+            {
+                try
+                {
+                    for (String s : (List<String>) valsToLog[i])
+                    {
+                        currentRow.put(s, EMPTY);
+                        headerBuilder.append(s).append(DELIMITER);
+                    }
+                }
+                catch (Exception ignored)
+                {
+                }
+            }
         }
 
         logScheduler.stop();

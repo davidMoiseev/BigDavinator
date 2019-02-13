@@ -24,7 +24,7 @@ import frc.robot.constants.WiringIDs;
 
 public class DriveTrain implements IPigeonWrapper
 {
-    public static final double WHEEL_DIAMETER = 4.0 * 2.54;
+    public static final double WHEEL_DIAMETER = 4.0 * 2.54 / 100;
     public static final int TICKS_PER_REVOLUTION = 1;
 
     public static final double ENCODER_TO_REVS = (50.0 / 12.0) * (42.0 / 24.0);
@@ -32,11 +32,11 @@ public class DriveTrain implements IPigeonWrapper
 
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
-    public static final double TICKS_PER_METER = ENCODER_TO_REVS * Math.PI * WHEEL_DIAMETER;
+    public static final double TICKS_PER_METER = 24;
 
-    public static final double MAX_VELOCITY_TICKS = 0;
+    public static final double MAX_VELOCITY_TICKS = 5151.928;
     // Max velocity in m/s
-    public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS * TICKS_PER_METER) / 60.0;
+    public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS / TICKS_PER_METER) / 60.0;
 
     /**
      * Primary motor controllers
@@ -56,12 +56,16 @@ public class DriveTrain implements IPigeonWrapper
 
     private final PigeonIMU pigeon;
 
-    private double rightEncoderValue;
-    private double leftEncoderValue;
+    private double rightEncoderValue = 0;
+    private double leftEncoderValue = 0;
     private double[] xyz_dps = new double[3];
 
     private double leftEncoderLastValue = 0;
     private double rightEncoderLastValue = 0;
+
+    // values without offset
+    private double leftEncoderCurrentValue = 0;
+    private double rightEncoderCurrentValue = 0;
 
     private final HotPathFollower pathFollower;
 
@@ -82,7 +86,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class ANGLE_PID
     {
-        public static final double P = .8 * (-1.0 / 80.0);
+        public static final double P = 0 * .8 * (1.0 / 80.0);
     }
 
     /**
@@ -119,7 +123,9 @@ public class DriveTrain implements IPigeonWrapper
     }
 
     /**
-     * Control the path follower, should be called on the same period as the profile's time step
+     * Control the path follower, should be called on the same period as the
+     * profile's time step
+     * 
      * @return whether the path is complete
      */
     public boolean FollowPath()
@@ -138,8 +144,10 @@ public class DriveTrain implements IPigeonWrapper
      */
     public void readSensors()
     {
-        rightEncoderValue = rightEncoder.getPosition() - leftEncoderLastValue;
-        leftEncoderValue = leftEncoder.getPosition() - rightEncoderLastValue;
+        rightEncoderValue = rightEncoder.getPosition() - rightEncoderLastValue;
+        leftEncoderValue = -1 * (leftEncoder.getPosition() - leftEncoderLastValue);
+        leftEncoderCurrentValue = leftEncoder.getPosition();
+        rightEncoderCurrentValue = rightEncoder.getPosition();
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
@@ -155,9 +163,10 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getVelocity());
 
         /*
-        SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
-        SmartDashboard.putNumber("motorEncoderConfiguration", leftMotor.getParameterInt(ConfigParameter.kSensorType).get());
-        */
+         * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
+         * SmartDashboard.putNumber("motorEncoderConfiguration",
+         * leftMotor.getParameterInt(ConfigParameter.kSensorType).get());
+         */
         HotLogger.Log("rightEncoder", rightEncoderValue);
         HotLogger.Log("leftEncoder", leftEncoderValue);
         HotLogger.Log("currentYaw", xyz_dps[0]);
@@ -171,8 +180,8 @@ public class DriveTrain implements IPigeonWrapper
     public void zeroSensors()
     {
         pigeon.setYaw(0);
-        leftEncoderLastValue = leftEncoderValue;
-        rightEncoderLastValue = rightEncoderValue;
+        leftEncoderLastValue = leftEncoderCurrentValue;
+        rightEncoderLastValue = rightEncoderCurrentValue;
         leftEncoderValue = 0;
         rightEncoderValue = 0;
         xyz_dps = new double[]
@@ -192,18 +201,16 @@ public class DriveTrain implements IPigeonWrapper
 
     /**
      * Manual control, includes deadband
-     * @param turn turn offset for motor output
-     * @param forward primary forward/backwards output
-     * @param side the hdrive output value
+     * 
+     * @param turn
+     *                    turn offset for motor output
+     * @param forward
+     *                    primary forward/backwards output
+     * @param side
+     *                    the hdrive output value
      */
     public void arcadeDrive(double turn, double forward, double side)
     {
-        double d = .04;
-        turn = ((d > turn) && (turn > -d)) ? 0 : turn;
-        forward = ((d > forward) && (forward > -d)) ? 0 : -forward;
-        side = ((.1 > side) && (side > -.4)) ? 0 : side;
-
-
         hDriveMotor.set(side);
         rightMotor.set(forward - turn);
         leftMotor.set(forward + turn);

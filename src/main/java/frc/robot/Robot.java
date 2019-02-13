@@ -10,7 +10,9 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
+import org.hotteam67.HotPathFollower;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -27,7 +29,7 @@ public class Robot extends TimedRobot
     public static final int JOYSTICK_DRIVER = 0;
     public static final int JOYSTICK_OPERATOR = 1;
 
-    XboxController driver = new XboxController(JOYSTICK_DRIVER);
+    HotController driver = new HotController(JOYSTICK_DRIVER);
     // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
 
     DriveTrain driveTrain;
@@ -44,12 +46,12 @@ public class Robot extends TimedRobot
     public void robotInit()
     {
         driveTrain = new DriveTrain();
-        HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
-                "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
-                "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y",
-                "Left Path Calculated Output", "Left Path Heading", "Right Path Position", "Right Path Velocity",
-                "Right Path Acceleration", "Right Path X", "Right Path Y", "Right Path Calculated Output",
-                "Right Path Heading");
+        HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight", "leftStick", "StickLY", HotPathFollower.LoggerValues);
+
+        driver.setDeadBandLY(.08);
+        driver.setDeadBandLX(.08);
+        driver.setDeadBandRX(.1);
+        driver.setDeadBandRY(.08);
 
         /*
          * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new
@@ -81,11 +83,8 @@ public class Robot extends TimedRobot
         // May have to invert driveturn/drivespeed
         driveTrain.readSensors();
         driveTrain.writeLogs();
-        /*
-         * 
-         * if (!profileFinished) profileFinished = driveTrain.FollowPath(); else
-         * driveTrain.zeroMotors();
-         */
+        if (!profileFinished) profileFinished = driveTrain.FollowPath(); else
+            driveTrain.zeroMotors();
     }
 
     @Override
@@ -104,10 +103,11 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        rumble(driver);
+        // rumble(driver);
         // rumble(operator);
 
-        driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft), driver.getX(Hand.kLeft));
+        HotLogger.Log("StickLY", -driver.getStickLY());
+        driveTrain.arcadeDrive(driver.getStickRX(), -driver.getStickLY(), driver.getRawAxis(2) - driver.getRawAxis(3));
 
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
@@ -120,7 +120,7 @@ public class Robot extends TimedRobot
      * 
      * @param joy
      */
-    public static void rumble(XboxController joy)
+    public static void rumble(HotController joy)
     {
         double rum = Math.abs(joy.getY(Hand.kLeft)) + Math.abs(joy.getX(Hand.kRight));
         joy.setRumble(RumbleType.kLeftRumble, rum);

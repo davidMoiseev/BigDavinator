@@ -8,6 +8,9 @@
 package org.hotteam67;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory.Segment;
@@ -18,6 +21,12 @@ import jaci.pathfinder.followers.DistanceFollower;
  */
 public class HotPathFollower
 {
+    public static final List<String> LoggerValues = new ArrayList<>(Arrays.asList("Path Points", "Path Heading",
+            "Heading Error", "Turn Output", "Left Path Position", "Left Path Velocity", "Left Path Acceleration",
+            "Left Path X", "Left Path Y", "Left Path Calculated Output", "Left Path Heading", "Right Path Position",
+            "Right Path Velocity", "Right Path Acceleration", "Right Path X", "Right Path Y",
+            "Right Path Calculated Output", "Right Path Heading"));
+
     // Encoder ticks per revolution on either side
     private final double ticksPerRev;
     // Wheel diameter on either side
@@ -220,12 +229,13 @@ public class HotPathFollower
             Log("Right", segRight, r);
 
             // Add angle error, in degrees
-            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(segLeft.heading));
+            double targetHeading = -Pathfinder.boundHalfDegrees(Pathfinder.r2d(segLeft.heading));
             double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
             double turn = ANGLE_P * headingError;
             HotLogger.Log("Heading Error", headingError);
-            l += turn;
-            r -= turn;
+            HotLogger.Log("Turn Output", turn);
+            l -= turn;
+            r += turn;
         }
 
         // We are done
