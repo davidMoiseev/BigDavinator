@@ -46,7 +46,8 @@ public class Robot extends TimedRobot
     public void robotInit()
     {
         driveTrain = new DriveTrain();
-        HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight", "leftStick", "StickLY", HotPathFollower.LoggerValues);
+        HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
+                "leftStick", "StickLY", HotPathFollower.LoggerValues);
 
         driver.setDeadBandLY(.08);
         driver.setDeadBandLX(.08);
@@ -83,7 +84,9 @@ public class Robot extends TimedRobot
         // May have to invert driveturn/drivespeed
         driveTrain.readSensors();
         driveTrain.writeLogs();
-        if (!profileFinished) profileFinished = driveTrain.FollowPath(); else
+        if (!profileFinished)
+            profileFinished = driveTrain.FollowPath();
+        else
             driveTrain.zeroMotors();
     }
 

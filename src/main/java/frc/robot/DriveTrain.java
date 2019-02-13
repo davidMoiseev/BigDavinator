@@ -117,7 +117,8 @@ public class DriveTrain implements IPigeonWrapper
          * Path controller, can be configured to use different paths after construction.
          * This call loads from disk
          */
-        pathFollower = new HotPathFollower(ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.testLeft, Paths.testRight);
+        pathFollower = new HotPathFollower(ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.TestPath1.Left,
+                Paths.TestPath1.Right);
         pathFollower.ConfigAngleP(ANGLE_PID.P);
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
@@ -128,8 +129,16 @@ public class DriveTrain implements IPigeonWrapper
      * 
      * @return whether the path is complete
      */
+    boolean onSecondPath = false;
+
     public boolean FollowPath()
     {
+        if (pathFollower.GetState() == State.Complete && !onSecondPath)
+        {
+            pathFollower.LoadPath(Paths.TestPath2.Left, Paths.TestPath2.Right);
+            pathFollower.Reset();
+        }
+
         double heading = xyz_dps[0];
         HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, -heading);
 

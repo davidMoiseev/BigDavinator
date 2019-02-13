@@ -44,6 +44,9 @@ public class HotPathFollower
     private double POS_P = 0, POS_I = 0, POS_D = 0, POS_V = 0, POS_A = 0;
     // PID constants for the angle error. Stored for holding last point only
     private double ANGLE_P = 0;
+    
+    // Whether we are running in reverse
+    private boolean isInverted = false;
 
     /**
      * State of the follower. Disabled - not yet run, or has been reset Enabled -
@@ -137,6 +140,20 @@ public class HotPathFollower
     }
 
     /**
+     * Whether to invert the encoder values, gyro, and output to run the robot backwards
+     * @param inverted
+     */
+    public void SetInverted(boolean inverted)
+    {
+        isInverted = inverted;
+    }
+
+    private int GetPolarity()
+    {
+        return (isInverted) ? -1 : 1;
+    }
+
+    /**
      * Configure all of the constants for position, with acceleration constant
      * defaulting to 0
      * 
@@ -203,8 +220,8 @@ public class HotPathFollower
      */
     public Output FollowNextPoint(double currentPositionLeft, double currentPositionRight, double currentHeading)
     {
-        currentPositionLeft = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionLeft;
-        currentPositionRight = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionRight;
+        currentPositionLeft = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionLeft * GetPolarity();
+        currentPositionRight = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionRight * GetPolarity();
 
         if (leftFollower == null || rightFollower == null)
             return new Output(0, 0);
@@ -219,8 +236,8 @@ public class HotPathFollower
         // Path is enabled and the points are not yet complete
         if (pathState == State.Enabled && !leftFollower.isFinished() || !rightFollower.isFinished())
         {
-            l = leftFollower.calculate(currentPositionLeft);
-            r = rightFollower.calculate(currentPositionRight);
+            l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
+            r = rightFollower.calculate(currentPositionRight) * GetPolarity();
 
             segLeft = leftFollower.getSegment();
             segRight = rightFollower.getSegment();
@@ -234,8 +251,8 @@ public class HotPathFollower
             double turn = ANGLE_P * headingError;
             HotLogger.Log("Heading Error", headingError);
             HotLogger.Log("Turn Output", turn);
-            l -= turn;
-            r += turn;
+            l -= turn * GetPolarity();
+            r += turn * GetPolarity();
         }
 
         // We are done
