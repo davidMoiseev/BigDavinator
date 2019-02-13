@@ -33,6 +33,7 @@ public class Robot extends TimedRobot
     // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
 
     DriveTrain driveTrain;
+    TalonSRX intake;
 
     /*
      * TalonSRX eleLeft; TalonSRX eleRight;
@@ -46,6 +47,9 @@ public class Robot extends TimedRobot
     public void robotInit()
     {
         driveTrain = new DriveTrain();
+        intake = new TalonSRX(WiringIDs.INTAKE);
+
+        intake.set(ControlMode.PercentOutput, 0);
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "leftStick", "StickLY", HotPathFollower.LoggerValues);
 
@@ -116,6 +120,16 @@ public class Robot extends TimedRobot
 
         driveTrain.readSensors();
         driveTrain.writeLogs();
+
+        if (driver.getButtonLeftBumper()) {
+            intake.set(ControlMode.PercentOutput, 0.2);
+        } 
+        else if (driver.getButtonRightBumper()) {
+            intake.set(ControlMode.PercentOutput, -0.2);
+        }
+        else {
+            intake.set(ControlMode.PercentOutput, 0);
+        }
     }
 
     /**
