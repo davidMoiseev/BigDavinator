@@ -28,7 +28,8 @@ public class DriveTrain implements IPigeonWrapper
     public static final int TICKS_PER_REVOLUTION = 1;
 
     public static final double ENCODER_TO_REVS = (50.0 / 12.0) * (42.0 / 24.0);
-    public static final double SECOND_ENCODER_TO_REVS = 4096;
+
+    public static final double SECOND_ENCODER_TO_REVS = 4096 * (42.0 / 24.0);
 
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
@@ -69,7 +70,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class POS_PIDVA
     {
-        public static final double P = 0 * .8;
+        public static final double P = .75;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
@@ -81,7 +82,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class ANGLE_PID
     {
-        public static final double P = 0 * .8 * (1.0 / 80.0);
+        public static final double P = .8 * (-1.0 / 80.0);
     }
 
     /**
@@ -135,8 +136,8 @@ public class DriveTrain implements IPigeonWrapper
         double heading = xyz_dps[0];
         HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, -heading);
 
-        rightMotor.set(pathOutput.Right);
-        leftMotor.set(pathOutput.Left);
+        rightMotor.set(pathOutput.Left);
+        leftMotor.set(pathOutput.Right);
 
         return (pathFollower.GetState() == State.Complete);
     }
