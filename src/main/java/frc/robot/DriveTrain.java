@@ -28,23 +28,21 @@ public class DriveTrain implements IPigeonWrapper
     public static final int TICKS_PER_REVOLUTION = 1;
 
     public static final double ENCODER_TO_REVS = (50.0 / 12.0) * (42.0 / 24.0);
-    public static final double SECOND_ENCODER_TO_REVS = (42.0 / 24.0);
+    public static final double SECOND_ENCODER_TO_REVS = 4096;
 
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
-    public static final double TICKS_PER_METER = 24;
+    public static final double TICKS_PER_METER = 22000;
 
-    public static final double MAX_VELOCITY_TICKS = 5151.928;
+    public static final double MAX_VELOCITY_TICKS = 8000;
     // Max velocity in m/s
-    public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS / TICKS_PER_METER) / 60.0;
+    public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS / TICKS_PER_METER) * 10;
 
     /**
      * Primary motor controllers
      */
     private final CANSparkMax rightMotor;
-    private final CANEncoder rightEncoder;
     private final CANSparkMax leftMotor;
-    private final CANEncoder leftEncoder;
 
     /**
      * Following motor controllers
@@ -56,16 +54,13 @@ public class DriveTrain implements IPigeonWrapper
 
     private final PigeonIMU pigeon;
 
-    private double rightEncoderValue = 0;
-    private double leftEncoderValue = 0;
+    private final TalonSRX rightEncoder;
+    private final TalonSRX leftEncoder;
     private double[] xyz_dps = new double[3];
 
-    private double leftEncoderLastValue = 0;
-    private double rightEncoderLastValue = 0;
-
     // values without offset
-    private double leftEncoderCurrentValue = 0;
-    private double rightEncoderCurrentValue = 0;
+    private double leftEncoderValue = 0;
+    private double rightEncoderValue = 0;
 
     private final HotPathFollower pathFollower;
 
@@ -74,7 +69,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class POS_PIDVA
     {
-        public static final double P = .8;
+        public static final double P = 0 * .8;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
@@ -102,8 +97,14 @@ public class DriveTrain implements IPigeonWrapper
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
 
-        rightEncoder = rightMotor.getEncoder();
-        leftEncoder = leftMotor.getEncoder();
+        rightEncoder = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
+        leftEncoder = new TalonSRX(WiringIDs.INTAKE);
+
+        rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+
+        leftEncoder.setSensorPhase(true);
+        ;
 
         pigeon = new PigeonIMU(WiringIDs.PIGEON_BASE);
 
@@ -117,8 +118,8 @@ public class DriveTrain implements IPigeonWrapper
          * Path controller, can be configured to use different paths after construction.
          * This call loads from disk
          */
-        pathFollower = new HotPathFollower(ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.TestPath1.Left,
-                Paths.TestPath1.Right);
+        pathFollower = new HotPathFollower(SECOND_ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.TestPath2.Left,
+                Paths.TestPath2.Right);
         pathFollower.ConfigAngleP(ANGLE_PID.P);
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
@@ -129,16 +130,8 @@ public class DriveTrain implements IPigeonWrapper
      * 
      * @return whether the path is complete
      */
-    boolean onSecondPath = false;
-
     public boolean FollowPath()
     {
-        if (pathFollower.GetState() == State.Complete && !onSecondPath)
-        {
-            pathFollower.LoadPath(Paths.TestPath2.Left, Paths.TestPath2.Right);
-            pathFollower.Reset();
-        }
-
         double heading = xyz_dps[0];
         HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, -heading);
 
@@ -153,10 +146,8 @@ public class DriveTrain implements IPigeonWrapper
      */
     public void readSensors()
     {
-        rightEncoderValue = rightEncoder.getPosition() - rightEncoderLastValue;
-        leftEncoderValue = -1 * (leftEncoder.getPosition() - leftEncoderLastValue);
-        leftEncoderCurrentValue = leftEncoder.getPosition();
-        rightEncoderCurrentValue = rightEncoder.getPosition();
+        rightEncoderValue = rightEncoder.getSelectedSensorPosition();
+        leftEncoderValue = leftEncoder.getSelectedSensorPosition();
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
@@ -168,8 +159,8 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("rightEncoder", rightEncoderValue);
         SmartDashboard.putNumber("leftEncoder", leftEncoderValue);
         SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
-        SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getVelocity());
-        SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getVelocity());
+        SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
 
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
@@ -179,8 +170,8 @@ public class DriveTrain implements IPigeonWrapper
         HotLogger.Log("rightEncoder", rightEncoderValue);
         HotLogger.Log("leftEncoder", leftEncoderValue);
         HotLogger.Log("currentYaw", xyz_dps[0]);
-        HotLogger.Log("currentVelocityRight", rightEncoder.getVelocity());
-        HotLogger.Log("currentVelocityLeft", leftEncoder.getVelocity());
+        HotLogger.Log("currentVelocityRight", rightEncoder.getSelectedSensorPosition());
+        HotLogger.Log("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
     }
 
     /**
@@ -189,8 +180,8 @@ public class DriveTrain implements IPigeonWrapper
     public void zeroSensors()
     {
         pigeon.setYaw(0);
-        leftEncoderLastValue = leftEncoderCurrentValue;
-        rightEncoderLastValue = rightEncoderCurrentValue;
+        leftEncoder.setSelectedSensorPosition(0);
+        rightEncoder.setSelectedSensorPosition(0);
         leftEncoderValue = 0;
         rightEncoderValue = 0;
         xyz_dps = new double[]

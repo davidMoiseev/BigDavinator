@@ -110,7 +110,7 @@ public class Robot extends TimedRobot
         // rumble(operator);
 
         HotLogger.Log("StickLY", -driver.getStickLY());
-        driveTrain.arcadeDrive(driver.getStickRX(), -driver.getStickLY(), driver.getRawAxis(2) - driver.getRawAxis(3));
+        driveTrain.arcadeDrive(driver.getStickRX(), -driver.getStickLY(), driver.getRawAxis(3) - driver.getRawAxis(2));
 
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
