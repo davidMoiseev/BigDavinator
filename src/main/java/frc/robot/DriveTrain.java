@@ -3,145 +3,235 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
+import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.SensorType;
+import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
 
-public class DriveTrain
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.WiringIDs;
+
+public class DriveTrain implements IPigeonWrapper
 {
+    public static final double WHEEL_DIAMETER = 4.0 * 2.54 / 100;
+    public static final int TICKS_PER_REVOLUTION = 1;
 
-    public static final double ALLOWED_ERROR_POSITION = 1000;
-    public static final double ALLOWED_ERROR_HEADING = .5;
+    public static final double ENCODER_TO_REVS = (50.0 / 12.0) * (42.0 / 24.0);
 
-    public static final double WHEEL_DIAMETER = 0.05436;
-    public static final int TICKS_PER_REVOLUTION = 3600;
+    public static final double SECOND_ENCODER_TO_REVS = 4096 * (42.0 / 24.0);
+
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
-    public static final double TICKS_PER_METER = (TICKS_PER_REVOLUTION / (Math.PI * WHEEL_DIAMETER));
+    public static final double TICKS_PER_METER = 22000;
 
-    // Ticks per 100 ms, as read from getSelectedSensorVelocity(0)
-    public static final double MAX_VELOCITY_TICKS = 5800;
+    public static final double MAX_VELOCITY_TICKS = 8000;
     // Max velocity in m/s
-    public static final double MAX_VELOCITY = MAX_VELOCITY_TICKS * 10 / TICKS_PER_METER; // 1.4231;
+    public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS / TICKS_PER_METER) * 10;
 
-    public static final int TALON_LEFT = 4;
-    public static final int TALON_PIGEON = 2;
-    public static final int TALON_RIGHT = 1;
+    /**
+     * Primary motor controllers
+     */
+    private final CANSparkMax rightMotor;
+    private final CANSparkMax leftMotor;
 
-    private final WPI_TalonSRX rightTalon = new WPI_TalonSRX(TALON_LEFT);
-    private final WPI_TalonSRX leftTalon = new WPI_TalonSRX(TALON_RIGHT);
-    private final WPI_TalonSRX pigeonTalon = new WPI_TalonSRX(TALON_PIGEON);
-    private final PigeonIMU pigeon = new PigeonIMU(pigeonTalon);
+    /**
+     * Following motor controllers
+     */
+    private final CANSparkMax rightFollower;
+    private final CANSparkMax leftFollower;
 
-    private int rightEncoder;
-    private int leftEncoder;
+    private final CANSparkMax hDriveMotor;
+
+    private final PigeonIMU pigeon;
+
+    private final TalonSRX rightEncoder;
+    private final TalonSRX leftEncoder;
     private double[] xyz_dps = new double[3];
+
+    // values without offset
+    private double leftEncoderValue = 0;
+    private double rightEncoderValue = 0;
 
     private final HotPathFollower pathFollower;
 
-    /*
+    /**
      * Motion Profiling Constants
      */
     public static final class POS_PIDVA
     {
-        public static final double P = .8;
+        public static final double P = .75;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
         public static final double A = 0; // Acceleration gain
     }
 
+    /**
+     * Only using P rn for ANGLE_PID
+     */
     public static final class ANGLE_PID
     {
         public static final double P = .8 * (-1.0 / 80.0);
-        public static final double I = 0;
-        public static final double D = 0;
     }
 
+    /**
+     * Drivetrain class will load paths from disk and so takes a little bit of time
+     */
     public DriveTrain()
     {
-        rightTalon.configFactoryDefault();
-        leftTalon.configFactoryDefault();
+        rightMotor = new CANSparkMax(WiringIDs.RIGHT_DRIVE_1, MotorType.kBrushless);
+        rightFollower = new CANSparkMax(WiringIDs.RIGHT_DRIVE_2, MotorType.kBrushless);
 
-        leftTalon.setInverted(true);
-        rightTalon.setSensorPhase(true);
-        leftTalon.setSensorPhase(true);
+        leftMotor = new CANSparkMax(WiringIDs.LEFT_DRIVE_1, MotorType.kBrushless);
+        leftFollower = new CANSparkMax(WiringIDs.LEFT_DRIVE_2, MotorType.kBrushless);
 
-        rightTalon.selectProfileSlot(0, 0);
-        leftTalon.selectProfileSlot(0, 0);
+        hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
 
-        rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-        leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+        rightEncoder = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
+        leftEncoder = new TalonSRX(WiringIDs.INTAKE);
 
-        rightTalon.setSelectedSensorPosition(0, 0, 0);
-        leftTalon.setSelectedSensorPosition(0, 0, 0);
+        rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
-        rightTalon.set(ControlMode.PercentOutput, 0.0);
-        leftTalon.set(ControlMode.PercentOutput, 0.0);
+        leftEncoder.setSensorPhase(true);
+        ;
 
-        rightTalon.setNeutralMode(NeutralMode.Brake);
-        leftTalon.setNeutralMode(NeutralMode.Brake);
+        pigeon = new PigeonIMU(WiringIDs.PIGEON_BASE);
 
-        pathFollower = new HotPathFollower(TICKS_PER_REVOLUTION, WHEEL_DIAMETER, Paths.testLeft, Paths.testRight);
-        pathFollower.ConfigAnglePID(ANGLE_PID.P);
+        leftMotor.setInverted(true);
+        leftFollower.setInverted(true);
+
+        leftFollower.follow(leftMotor);
+        rightFollower.follow(rightMotor);
+
+        /**
+         * Path controller, can be configured to use different paths after construction.
+         * This call loads from disk
+         */
+        pathFollower = new HotPathFollower(SECOND_ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.TestPath2.Left,
+                Paths.TestPath2.Right);
+        pathFollower.ConfigAngleP(ANGLE_PID.P);
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
 
+    /**
+     * Control the path follower, should be called on the same period as the
+     * profile's time step
+     * 
+     * @return whether the path is complete
+     */
     public boolean FollowPath()
     {
         double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoder, rightEncoder, -heading);
+        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, -heading);
 
-        rightTalon.set(ControlMode.PercentOutput, pathOutput.Right);
-        leftTalon.set(ControlMode.PercentOutput, pathOutput.Left);
+        rightMotor.set(pathOutput.Left);
+        leftMotor.set(pathOutput.Right);
 
         return (pathFollower.GetState() == State.Complete);
     }
 
+    /**
+     * Read the sensors into memory
+     */
     public void readSensors()
     {
-        rightEncoder = rightTalon.getSelectedSensorPosition(0);
-        leftEncoder = leftTalon.getSelectedSensorPosition(0);
+        rightEncoderValue = rightEncoder.getSelectedSensorPosition();
+        leftEncoderValue = leftEncoder.getSelectedSensorPosition();
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
+    /**
+     * Write to logs and dashboards
+     */
     public void writeLogs()
     {
-        HotLogger.Log("rightEncoder", rightEncoder);
-        HotLogger.Log("leftEncoder", leftEncoder);
+        SmartDashboard.putNumber("rightEncoder", rightEncoderValue);
+        SmartDashboard.putNumber("leftEncoder", leftEncoderValue);
+        SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
+        SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+
+        /*
+         * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
+         * SmartDashboard.putNumber("motorEncoderConfiguration",
+         * leftMotor.getParameterInt(ConfigParameter.kSensorType).get());
+         */
+        HotLogger.Log("rightEncoder", rightEncoderValue);
+        HotLogger.Log("leftEncoder", leftEncoderValue);
         HotLogger.Log("currentYaw", xyz_dps[0]);
-        HotLogger.Log("currentVelocityRight", rightTalon.getSelectedSensorVelocity());
-        HotLogger.Log("currentVelocityLeft", leftTalon.getSelectedSensorVelocity());
+        HotLogger.Log("currentVelocityRight", rightEncoder.getSelectedSensorPosition());
+        HotLogger.Log("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
     }
 
+    /**
+     * Clear all measured sensor values in memory and zero the pigeon
+     */
     public void zeroSensors()
     {
-        rightTalon.setSelectedSensorPosition(0, 0, 20);
-        leftTalon.setSelectedSensorPosition(0, 0, 20);
         pigeon.setYaw(0);
-        leftEncoder = 0;
-        rightEncoder = 0;
+        leftEncoder.setSelectedSensorPosition(0);
+        rightEncoder.setSelectedSensorPosition(0);
+        leftEncoderValue = 0;
+        rightEncoderValue = 0;
         xyz_dps = new double[]
         { 0, 0, 0 };
         pathFollower.Reset();
     }
 
-    public void zeroTalons()
+    /**
+     * Motor output to zero
+     */
+    public void zeroMotors()
     {
-        rightTalon.set(ControlMode.PercentOutput, 0);
-        leftTalon.set(ControlMode.PercentOutput, 0);
+        rightMotor.set(0);
+        leftMotor.set(0);
+        hDriveMotor.set(0);
     }
 
-    public void arcadeDrive(double x, double y)
+    /**
+     * Manual control, includes deadband
+     * 
+     * @param turn
+     *                    turn offset for motor output
+     * @param forward
+     *                    primary forward/backwards output
+     * @param side
+     *                    the hdrive output value
+     */
+    public void arcadeDrive(double turn, double forward, double side)
     {
-        double d = .02;
-        x = ((d > x) && (x > -d)) ? 0 : x;
-        y = ((d > y) && (y > -d)) ? 0 : -y;
+        hDriveMotor.set(side);
+        rightMotor.set(forward - turn);
+        leftMotor.set(forward + turn);
+    }
 
-        rightTalon.set(ControlMode.PercentOutput, y + x);
-        leftTalon.set(ControlMode.PercentOutput, y - x);
+    /**
+     * Configure the Talon to Calibrate once the robot is stable
+     */
+    @Override
+    public void CalibratePigeon()
+    {
+        pigeon.enterCalibrationMode(CalibrationMode.BootTareGyroAccel);
+    }
+
+    /**
+     * Whether the current state of the Pigeon is Ready
+     */
+    @Override
+    public boolean PigeonReady()
+    {
+        return (pigeon.getState() == PigeonState.Ready);
     }
 }

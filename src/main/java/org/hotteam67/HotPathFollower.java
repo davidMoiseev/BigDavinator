@@ -8,23 +8,27 @@
 package org.hotteam67;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory.Segment;
-import jaci.pathfinder.followers.EncoderFollower;
+import jaci.pathfinder.followers.DistanceFollower;
 
 /**
  * Add your docs here.
  */
 public class HotPathFollower
 {
-    // Allowable angle error defaults to .5 degrees
-    private double allowableAngleError = .5;
-    // Allowable position error defaults to 2000 encoder ticks;
-    private double allowablePosError = 2000;
+    public static final List<String> LoggerValues = new ArrayList<>(Arrays.asList("Path Points", "Path Heading",
+            "Heading Error", "Turn Output", "Left Path Position", "Left Path Velocity", "Left Path Acceleration",
+            "Left Path X", "Left Path Y", "Left Path Calculated Output", "Left Path Heading", "Right Path Position",
+            "Right Path Velocity", "Right Path Acceleration", "Right Path X", "Right Path Y",
+            "Right Path Calculated Output", "Right Path Heading"));
 
     // Encoder ticks per revolution on either side
-    private final int ticksPerRev;
+    private final double ticksPerRev;
     // Wheel diameter on either side
     private final double wheelDiameter;
 
@@ -32,22 +36,17 @@ public class HotPathFollower
     State pathState = State.Disabled;
 
     // Jaci leftFollower will do most calculation and handle the left path
-    private EncoderFollower leftFollower;
+    private DistanceFollower leftFollower;
     // Jaci rightFollower will do most calculation and handle the right path
-    private EncoderFollower rightFollower;
-
-    // Whether to hold the last point of the path
-    private boolean holdLastPoint = false;
+    private DistanceFollower rightFollower;
 
     // PIDFA constants for the position error. Stored for holding last point only
     private double POS_P = 0, POS_I = 0, POS_D = 0, POS_V = 0, POS_A = 0;
     // PID constants for the angle error. Stored for holding last point only
     private double ANGLE_P = 0;
-
-    // Previous segment, used for holding the output value of followers
-    private Segment lastSegmentRight = null;
-    // Previous segment, used for holding the output value of followers
-    private Segment lastSegmentLeft = null;
+    
+    // Whether we are running in reverse
+    private boolean isInverted = false;
 
     /**
      * State of the follower. Disabled - not yet run, or has been reset Enabled -
@@ -56,7 +55,7 @@ public class HotPathFollower
      */
     public enum State
     {
-        Disabled, Enabled, Holding, Complete
+        Disabled, Enabled, Complete
     }
 
     /**
@@ -81,7 +80,7 @@ public class HotPathFollower
      * @param ticksPerRev
      * @param wheelDiameter
      */
-    public HotPathFollower(int ticksPerRev, double wheelDiameter)
+    public HotPathFollower(double ticksPerRev, double wheelDiameter)
     {
         this.ticksPerRev = ticksPerRev;
         this.wheelDiameter = wheelDiameter;
@@ -93,7 +92,7 @@ public class HotPathFollower
      * @param ticksPerRev
      * @param wheelDiameter
      */
-    public HotPathFollower(int ticksPerRev, double wheelDiameter, String leftPathFile, String rightPathFile)
+    public HotPathFollower(double ticksPerRev, double wheelDiameter, String leftPathFile, String rightPathFile)
     {
         this.ticksPerRev = ticksPerRev;
         this.wheelDiameter = wheelDiameter;
@@ -114,8 +113,7 @@ public class HotPathFollower
         // Try catch for IOExceptions
         try
         {
-            leftFollower = new EncoderFollower(Pathfinder.readFromCSV(new File(leftPathFile)));
-            leftFollower.configureEncoder(0, ticksPerRev, wheelDiameter);
+            leftFollower = new DistanceFollower(Pathfinder.readFromCSV(new File(leftPathFile)));
         }
         catch (Exception e)
         {
@@ -127,8 +125,7 @@ public class HotPathFollower
         // Try catch for IOExceptions
         try
         {
-            rightFollower = new EncoderFollower(Pathfinder.readFromCSV(new File(rightPathFile)));
-            rightFollower.configureEncoder(0, ticksPerRev, wheelDiameter);
+            rightFollower = new DistanceFollower(Pathfinder.readFromCSV(new File(rightPathFile)));
         }
         catch (Exception e)
         {
@@ -140,6 +137,20 @@ public class HotPathFollower
         ConfigPosPIDVA(POS_P, POS_I, POS_D, POS_V, POS_A);
         // New path so reset everything
         Reset();
+    }
+
+    /**
+     * Whether to invert the encoder values, gyro, and output to run the robot backwards
+     * @param inverted
+     */
+    public void SetInverted(boolean inverted)
+    {
+        isInverted = inverted;
+    }
+
+    private int GetPolarity()
+    {
+        return (isInverted) ? -1 : 1;
     }
 
     /**
@@ -187,40 +198,9 @@ public class HotPathFollower
      * 
      * @param p
      */
-    public void ConfigAnglePID(double p)
+    public void ConfigAngleP(double p)
     {
         ANGLE_P = p;
-    }
-
-    /**
-     * Config allowable error for holding mode Pos
-     * 
-     * @param error
-     */
-    public void ConfigAllowablePosError(double error)
-    {
-        allowableAngleError = error;
-    }
-
-    /**
-     * Config allowable error for holding mos Angle
-     * 
-     * @param error
-     */
-    public void ConfigAllowableAngleError(double error)
-    {
-        allowableAngleError = error;
-    }
-
-    /**
-     * Config whether to hold the last point of the profile. Will just complete at
-     * the last point if true
-     * 
-     * @param doHold
-     */
-    public void SetHoldLastPointEnabled(boolean doHold)
-    {
-        this.holdLastPoint = doHold;
     }
 
     /**
@@ -238,11 +218,16 @@ public class HotPathFollower
      * @return an output object with desired left/right outputs, scaled as a double
      *         from -1 to 1 for -100% output to 100% output
      */
-    public Output FollowNextPoint(int currentPositionLeft, int currentPositionRight, double currentHeading)
+    public Output FollowNextPoint(double currentPositionLeft, double currentPositionRight, double currentHeading)
     {
+        currentPositionLeft = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionLeft * GetPolarity();
+        currentPositionRight = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionRight * GetPolarity();
+
         if (leftFollower == null || rightFollower == null)
             return new Output(0, 0);
         double l = 0, r = 0;
+        Segment segLeft = null;
+        Segment segRight = null;
 
         // Path is not currently being followed, so start it
         if (pathState == State.Disabled)
@@ -251,66 +236,27 @@ public class HotPathFollower
         // Path is enabled and the points are not yet complete
         if (pathState == State.Enabled && !leftFollower.isFinished() || !rightFollower.isFinished())
         {
-            l = leftFollower.calculate(currentPositionLeft);
-            r = rightFollower.calculate(currentPositionRight);
-            try
-            {
-                lastSegmentLeft = leftFollower.getSegment();
-                lastSegmentRight = rightFollower.getSegment();
-            }
-            catch (Exception ignored)
-            {
-            }
+            l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
+            r = rightFollower.calculate(currentPositionRight) * GetPolarity();
+
+            segLeft = leftFollower.getSegment();
+            segRight = rightFollower.getSegment();
+
+            Log("Left", segLeft, l);
+            Log("Right", segRight, r);
 
             // Add angle error, in degrees
-            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(lastSegmentLeft.heading));
+            double targetHeading = -Pathfinder.boundHalfDegrees(Pathfinder.r2d(segLeft.heading));
             double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
             double turn = ANGLE_P * headingError;
             HotLogger.Log("Heading Error", headingError);
-            l += turn;
-            r -= turn;
+            HotLogger.Log("Turn Output", turn);
+            l -= turn * GetPolarity();
+            r += turn * GetPolarity();
         }
 
-        // Points are complete so make sure the state is holding, if its enabled
-        else if (holdLastPoint)
-            pathState = State.Holding;
-
-        // If holding is not enabled, we are done
+        // We are done
         else
-            pathState = State.Complete;
-
-        // Hold the last point, or check if we are within configured acceptable range
-        if (holdLastPoint && pathState == State.Holding && lastSegmentLeft != null && lastSegmentRight != null)
-        {
-            double ticksPerMeter = (ticksPerRev / (Math.PI * wheelDiameter));
-
-            // Error in meters
-            double leftError = lastSegmentLeft.position - (currentPositionLeft / ticksPerMeter);
-            double rightError = lastSegmentRight.position - (currentPositionRight / ticksPerMeter);
-
-            // Error in degrees
-            double targetHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(lastSegmentLeft.heading));
-            double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
-
-            // Check for allowable error deadband
-            if (Math.abs(leftError) < allowablePosError && Math.abs(rightError) < allowablePosError
-                    && Math.abs(headingError) < allowableAngleError)
-            {
-                pathState = State.Complete;
-            }
-            // Manually calculate with just P
-            else
-            {
-                l = leftError * POS_P;
-                r = rightError * POS_P;
-                double turn = ANGLE_P * headingError;
-                l -= turn;
-                r += turn;
-            }
-        }
-        else if (!holdLastPoint && pathState == State.Holding)
-            pathState = State.Complete;
-        else if (lastSegmentLeft == null || lastSegmentRight == null && pathState == State.Holding)
             pathState = State.Complete;
 
         // We are there, no output
@@ -319,9 +265,6 @@ public class HotPathFollower
             l = 0;
             r = 0;
         }
-
-        Log("Left", lastSegmentLeft, l);
-        Log("Right", lastSegmentRight, r);
 
         return new Output(l, r);
     }
@@ -347,8 +290,6 @@ public class HotPathFollower
             rightFollower.reset();
         }
         pathState = State.Disabled;
-        lastSegmentLeft = null;
-        lastSegmentRight = null;
     }
 
     /**

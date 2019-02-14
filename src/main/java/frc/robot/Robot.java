@@ -7,29 +7,44 @@
 
 package frc.robot;
 
-import org.hotteam67.HotLogger;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.Joystick;
+import org.hotteam67.HotController;
+import org.hotteam67.HotLogger;
+import org.hotteam67.HotPathFollower;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ManipulatorSetPoints;
+import frc.robot.constants.WiringIDs;
 
 public class Robot extends TimedRobot
 {
-
+    /**
+     * Joysticks
+     */
     public static final int JOYSTICK_DRIVER = 0;
-    public static final int JOYSTICK_LY = 1;
-    public static final int JOYSTICK_RX = 4;
+    public static final int JOYSTICK_OPERATOR = 1;
 
-    XboxController driver = new XboxController(JOYSTICK_DRIVER);
+    HotController driver = new HotController(JOYSTICK_DRIVER);
+    // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
 
     DriveTrain driveTrain;
     Elevator elevator;
     Wrist wrist;
     Arm arm;
+
+    /*
+     * TalonSRX eleLeft; TalonSRX eleRight;
+     */
+
+    /*
+     * TalonSRX shoulder; TalonSRX wrist; TalonSRX intake;
+     */
 
     @Override
     public void robotInit()
@@ -40,18 +55,32 @@ public class Robot extends TimedRobot
         arm = new Arm(8);
         elevator.initialize();
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
-                "Path Points", "Path Heading", "Heading Error", "Turn Output", "Left Path Position",
-                "Left Path Velocity", "Left Path Acceleration", "Left Path X", "Left Path Y",
-                "Left Path Calculated Output", "Left Path Heading", "Right Path Position", "Right Path Velocity",
-                "Right Path Acceleration", "Right Path X", "Right Path Y", "Right Path Calculated Output",
-                "Right Path Heading");
+                "leftStick", "StickLY", HotPathFollower.LoggerValues);
+
+        driver.setDeadBandLY(.08);
+        driver.setDeadBandLX(.08);
+        driver.setDeadBandRX(.1);
+        driver.setDeadBandRY(.08);
+
+        /*
+         * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new
+         * TalonSRX(WiringIDs.RIGHT_ELEVATOR);
+         * 
+         * 
+         * eleRight.follow(eleLeft); eleLeft.setInverted(true);
+         */
+
+        /*
+         * intake = new TalonSRX(WiringIDs.INTAKE); wrist = new
+         * TalonSRX(WiringIDs.WRIST); shoulder = new TalonSRX(WiringIDs.SHOULDER);
+         */
     }
 
     @Override
     public void autonomousInit()
     {
         driveTrain.zeroSensors();
-        driveTrain.zeroTalons();
+        driveTrain.zeroMotors();
         profileFinished = false;
     }
 
@@ -63,11 +92,10 @@ public class Robot extends TimedRobot
         
         driveTrain.readSensors();
         driveTrain.writeLogs();
-
         if (!profileFinished)
             profileFinished = driveTrain.FollowPath();
         else
-            driveTrain.zeroTalons();
+            driveTrain.zeroMotors();
     }
 
     @Override
@@ -82,10 +110,18 @@ public class Robot extends TimedRobot
     }
 
     boolean rumble = false;
+
     @Override
     public void teleopPeriodic()
     {
-        driveTrain.arcadeDrive(driver.getX(Hand.kRight), driver.getY(Hand.kLeft));
+        // rumble(driver);
+        // rumble(operator);
+
+        HotLogger.Log("StickLY", -driver.getStickLY());
+        driveTrain.arcadeDrive(driver.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
+
+        // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
+
         driveTrain.readSensors();
         driveTrain.writeLogs();
 
@@ -121,15 +157,53 @@ public class Robot extends TimedRobot
         
     }
 
-    @Override
-    public void testPeriodic()
+    /**
+     * LETS GET READY TO RUMBBLEEE
+     * 
+     * @param joy
+     */
+    public static void rumble(HotController joy)
     {
+        double rum = Math.abs(joy.getY(Hand.kLeft)) + Math.abs(joy.getX(Hand.kRight));
+        joy.setRumble(RumbleType.kLeftRumble, rum);
+        joy.setRumble(RumbleType.kRightRumble, rum);
     }
 
     @Override
     public void disabledInit()
     {
+        driver.setRumble(RumbleType.kLeftRumble, 0);
+        driver.setRumble(RumbleType.kRightRumble, 0);
         driveTrain.zeroSensors();
-        driveTrain.zeroTalons();
+        driveTrain.zeroMotors();
+        pigeonInitializing = false;
+    }
+
+    /**
+     * Whether the dashboard has already told us to configure the pigeon
+     */
+    boolean pigeonInitializing = false;
+
+    @Override
+    public void disabledPeriodic()
+    {
+        /**
+         * Clicked for the first time, the robot is stable so start boot calibrate
+         */
+        if (SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing)
+        {
+            driveTrain.CalibratePigeon();
+            pigeonInitializing = true;
+        }
+
+        /**
+         * Pigeon is done initializing but we have not informed the DashBoard
+         */
+        else if (pigeonInitializing && driveTrain.PigeonReady())
+        {
+            pigeonInitializing = false;
+            driveTrain.zeroSensors();
+            SmartDashboard.putBoolean("PigeonReady", true);
+        }
     }
 }

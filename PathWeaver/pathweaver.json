@@ -1,10 +1,10 @@
 {
   "lengthUnit": "Meter",
   "timeStep": 0.02,
-  "maxVelocity": 1.5,
-  "maxAcceleration": 2.5,
+  "maxVelocity": 1.0,
+  "maxAcceleration": 1.0,
   "maxJerk": 20.0,
-  "wheelBase": 0.46,
+  "wheelBase": 0.5715,
   "gameName": "Destination: Deep Space",
   "outputDir": "../src/main/deploy"
 }
