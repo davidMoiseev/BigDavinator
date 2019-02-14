@@ -124,37 +124,6 @@ public class Robot extends TimedRobot
 
         driveTrain.readSensors();
         driveTrain.writeLogs();
-
-        /*if (hotstick.ButtonA() == true) {
-          elevator.lowerElevator();
-        } else if (hotstick.ButtonB() == true) {
-          elevator.raiseElevator();
-        } else if (hotstick.ButtonY() == true) {
-          elevator.motionMagicElevatorTop();
-        } else if (hotstick.ButtonX() == true) {
-          elevator.motionMagicElevatorLow();
-        } else {
-          elevator.disableElevator();
-        }*/
-
-        if (driver.getAButton() == true) {
-          elevator.setTarget(ManipulatorSetPoints.LOW);
-        } else if (driver.getBButton() == true) {
-          elevator.setTarget(ManipulatorSetPoints.PRETTY_LOW);
-        } else if (driver.getXButton() == true) {
-          elevator.setTarget(ManipulatorSetPoints.MID);
-        } else if (driver.getYButton() == true) {
-          elevator.setTarget(ManipulatorSetPoints.TOP);
-        } else {
-          elevator.disable();
-        }
-
-        SmartDashboard.putNumber("Position", elevator.GetSensorValue());
-        SmartDashboard.putBoolean("ButtonA", driver.getAButton());
-        SmartDashboard.putBoolean("ButtonB", driver.getBButton());
-        SmartDashboard.putBoolean("ButtonY", driver.getYButton());
-        SmartDashboard.putBoolean("ButtonX", driver.getXButton());
-        
     }
 
     /**
