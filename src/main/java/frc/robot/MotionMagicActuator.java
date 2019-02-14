@@ -25,11 +25,24 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
         secondaryTalon = null;
     }
 
+    public MotionMagicActuator(TalonSRX primaryTalon) {
+        this.primaryTalon = primaryTalon;
+        SRX_PID_0 = new SRX_PID();
+        this.secondaryTalon = null;
+    }
+
     public MotionMagicActuator(int primaryCAN_ID, int secondaryCAN_ID) {
         primaryTalon = new TalonSRX(primaryCAN_ID);
         secondaryTalon = new TalonSRX(secondaryCAN_ID);
         SRX_PID_0 = new SRX_PID();
         secondaryTalon.set(ControlMode.Follower, primaryCAN_ID);
+    }
+
+    public MotionMagicActuator(TalonSRX primaryTalon, TalonSRX secondaryTalon) {
+        this.primaryTalon = primaryTalon;
+        this.secondaryTalon = secondaryTalon;
+        SRX_PID_0 = new SRX_PID();
+        secondaryTalon.set(ControlMode.Follower, this.primaryTalon.getDeviceID());
     }
 
     @Override

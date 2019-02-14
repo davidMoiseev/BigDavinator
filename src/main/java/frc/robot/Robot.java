@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.WiringIDs;
 
 public class Robot extends TimedRobot
 {
@@ -28,7 +31,7 @@ public class Robot extends TimedRobot
     // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
 
     DriveTrain driveTrain;
-
+    Manipulator manipulator;
     /*
      * TalonSRX eleLeft; TalonSRX eleRight;
      */
@@ -40,7 +43,11 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-        driveTrain = new DriveTrain();
+        TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
+        TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
+        driveTrain = new DriveTrain(rightElevator, intake);
+        manipulator = new Manipulator(rightElevator, intake);
+        manipulator.InitializeTalons();
 
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "leftStick", "StickLY", HotPathFollower.LoggerValues);

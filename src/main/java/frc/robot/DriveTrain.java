@@ -88,7 +88,7 @@ public class DriveTrain implements IPigeonWrapper
     /**
      * Drivetrain class will load paths from disk and so takes a little bit of time
      */
-    public DriveTrain()
+    public DriveTrain(TalonSRX rightEncoder, TalonSRX leftEncoder)
     {
         rightMotor = new CANSparkMax(WiringIDs.RIGHT_DRIVE_1, MotorType.kBrushless);
         rightFollower = new CANSparkMax(WiringIDs.RIGHT_DRIVE_2, MotorType.kBrushless);
@@ -98,8 +98,8 @@ public class DriveTrain implements IPigeonWrapper
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
 
-        rightEncoder = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
-        leftEncoder = new TalonSRX(WiringIDs.INTAKE);
+        this.rightEncoder = rightEncoder;
+        this.leftEncoder = leftEncoder;
 
         rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);

@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ElevatorConstants;
 
@@ -16,8 +18,8 @@ import frc.robot.constants.ElevatorConstants;
 
  public class Elevator extends MotionMagicActuator {
 
-    public Elevator(int primaryCAN_ID, int secondaryCAN_ID) {
-        super(primaryCAN_ID, secondaryCAN_ID);
+    public Elevator(TalonSRX primaryTalon, TalonSRX secondaryTalon) {
+        super(primaryTalon, secondaryTalon);
 
         setNominalOutputForward(ElevatorConstants.nominalOutputForward);
         setNominalOutputReverse(ElevatorConstants.nominalOutputReverse);
