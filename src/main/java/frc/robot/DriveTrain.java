@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMax.SensorType;
 import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
@@ -210,11 +211,12 @@ public class DriveTrain implements IPigeonWrapper
      * @param side
      *                    the hdrive output value
      */
-    public void arcadeDrive(double turn, double forward, double side)
+    public void Update(HotController joystick)
     {
-        hDriveMotor.set(side);
-        rightMotor.set(forward - turn);
-        leftMotor.set(forward + turn);
+        //(joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
+        hDriveMotor.set((joystick.getRawAxis(3) - joystick.getRawAxis(2)) / 2.0);
+        rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
+        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX());
     }
 
     /**
