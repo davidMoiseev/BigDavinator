@@ -40,6 +40,8 @@ public class Robot extends TimedRobot
      * TalonSRX shoulder; TalonSRX wrist; TalonSRX intake;
      */
 
+     private boolean forceInitailization;
+
     @Override
     public void robotInit()
     {
@@ -49,7 +51,8 @@ public class Robot extends TimedRobot
         driveTrain = new DriveTrain(rightElevator, intake);
         manipulator = new Manipulator(operator, rightElevator, intake);
         manipulator.InitializeTalons();
-        manipulator.IntializeManipulator();
+        manipulator.RestartInitialization();
+        forceInitailization = true;
 
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "leftStick", "StickLY", HotPathFollower.LoggerValues);
@@ -158,20 +161,24 @@ public class Robot extends TimedRobot
         /**
          * Clicked for the first time, the robot is stable so start boot calibrate
          */
-        if (SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing)
+        if ((SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing) || forceInitailization )
         {
+            forceInitailization = false;
             driveTrain.CalibratePigeon();
+            manipulator.RestartInitialization();
             pigeonInitializing = true;
         }
 
         /**
          * Pigeon is done initializing but we have not informed the DashBoard
          */
-        else if (pigeonInitializing && driveTrain.PigeonReady())
+        else if (pigeonInitializing && driveTrain.PigeonReady() && manipulator.isReady())
         {
             pigeonInitializing = false;
             driveTrain.zeroSensors();
             SmartDashboard.putBoolean("PigeonReady", true);
         }
+
+        manipulator.RunManipulatorInitialization();
     }
 }

@@ -43,7 +43,7 @@ public class Arm extends MotionMagicActuator {
     @Override
     public void displaySensorsValue() {
         SmartDashboard.putNumber("Arm Position ticks", GetSensorValue());
-        SmartDashboard.putNumber("Arm Position degrees", GetSensorValue() *360/(4096*34.72222));
+        SmartDashboard.putNumber("Arm Position degrees", GetSensorValue() * ArmConstants.TICKS_TO_DEGREES);
         SmartDashboard.putNumber("Arm Power", primaryTalon.getMotorOutputPercent());
         SmartDashboard.putNumber("Arm Error", primaryTalon.getClosedLoopError());
         SmartDashboard.putNumber("Arm target", primaryTalon.getClosedLoopTarget());
@@ -53,4 +53,8 @@ public class Arm extends MotionMagicActuator {
     public void getError() {
 
     }
+
+	public void setPosition(double angle) {
+        primaryTalon.setSelectedSensorPosition((int) (angle / ArmConstants.TICKS_TO_DEGREES));
+	}
 }
