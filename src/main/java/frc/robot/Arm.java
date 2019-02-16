@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ArmConstants;
 
@@ -14,9 +16,9 @@ import frc.robot.constants.ArmConstants;
  * Add your docs here.
  */
 public class Arm extends MotionMagicActuator {
-    
-    public Arm(int primaryCAN_ID/*, int secondaryCAN_ID*/) {
-        super(primaryCAN_ID/*, secondaryCAN_ID*/);
+
+    public Arm(int primaryCAN_ID/* , int secondaryCAN_ID */) {
+        super(primaryCAN_ID/* , secondaryCAN_ID */);
 
         setNominalOutputForward(ArmConstants.nominalOutputForward);
         setNominalOutputReverse(ArmConstants.nominalOutputReverse);
@@ -45,8 +47,10 @@ public class Arm extends MotionMagicActuator {
         SmartDashboard.putNumber("Arm Position ticks", GetSensorValue());
         SmartDashboard.putNumber("Arm Position degrees", GetSensorValue() * ArmConstants.TICKS_TO_DEGREES);
         SmartDashboard.putNumber("Arm Power", primaryTalon.getMotorOutputPercent());
-        SmartDashboard.putNumber("Arm Error", primaryTalon.getClosedLoopError());
-        SmartDashboard.putNumber("Arm target", primaryTalon.getClosedLoopTarget());
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+            SmartDashboard.putNumber("Arm Error", primaryTalon.getClosedLoopError());
+            SmartDashboard.putNumber("Arm target", primaryTalon.getClosedLoopTarget());
+        }
     }
 
     @Override
@@ -54,7 +58,7 @@ public class Arm extends MotionMagicActuator {
 
     }
 
-	public void setPosition(double angle) {
+    public void setPosition(double angle) {
         primaryTalon.setSelectedSensorPosition((int) (angle / ArmConstants.TICKS_TO_DEGREES));
-	}
+    }
 }

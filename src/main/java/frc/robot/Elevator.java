@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,7 +17,7 @@ import frc.robot.constants.ElevatorConstants;
  * Add your docs here.
  */
 
- public class Elevator extends MotionMagicActuator {
+public class Elevator extends MotionMagicActuator {
 
     public Elevator(TalonSRX primaryTalon, TalonSRX secondaryTalon) {
         super(primaryTalon, secondaryTalon);
@@ -46,10 +47,12 @@ import frc.robot.constants.ElevatorConstants;
     @Override
     public void displaySensorsValue() {
         SmartDashboard.putNumber("Elevator Position ticks", GetSensorValue());
-        SmartDashboard.putNumber("Elevator Position inches", GetSensorValue()*2.75*Math.PI/8192);
+        SmartDashboard.putNumber("Elevator Position inches", GetSensorValue() * 2.75 * Math.PI / 8192);
         SmartDashboard.putNumber("Elevator Power", primaryTalon.getMotorOutputPercent());
-        SmartDashboard.putNumber("Elevator Error", primaryTalon.getClosedLoopError());
-        SmartDashboard.putNumber("Elevator target", primaryTalon.getClosedLoopTarget());
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+            SmartDashboard.putNumber("Elevator Error", primaryTalon.getClosedLoopError());
+            SmartDashboard.putNumber("Elevator target", primaryTalon.getClosedLoopTarget());
+        }
     }
 
     @Override

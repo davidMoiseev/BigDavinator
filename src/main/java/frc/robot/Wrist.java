@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WristConstants;
 
@@ -44,8 +46,10 @@ public class Wrist extends MotionMagicActuator {
         SmartDashboard.putNumber("Wirst Position ticks", GetSensorValue());
         SmartDashboard.putNumber("Wirst Position degree", GetSensorValue() * 0.12 * 360 / 4096);
         SmartDashboard.putNumber("Wirst Power", primaryTalon.getMotorOutputPercent());
-        SmartDashboard.putNumber("Wirst Error", primaryTalon.getClosedLoopError());
-        SmartDashboard.putNumber("Wirst target", primaryTalon.getClosedLoopTarget());
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+            SmartDashboard.putNumber("Wirst Error", primaryTalon.getClosedLoopError());
+            SmartDashboard.putNumber("Wirst target", primaryTalon.getClosedLoopTarget());
+        }
     }
 
     public void setPosition(double angle) {

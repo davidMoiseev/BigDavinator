@@ -59,6 +59,8 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
         primaryTalon.setSensorPhase(sensorPhase);
         SRX_PID_0.initatlize(primaryTalon);
 
+        primaryTalon.set(ControlMode.PercentOutput,0.0);
+
         if (secondaryTalon != null) {
             secondaryTalon.configFactoryDefault();
             secondaryTalon.configNominalOutputForward(nominalOutputForward, timeoutms);
