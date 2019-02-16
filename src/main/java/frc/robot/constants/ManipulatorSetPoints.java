@@ -12,10 +12,40 @@ package frc.robot.constants;
  */
 public class ManipulatorSetPoints {
 
-    public static final double TOP = 8000;
-    public static final double PRETTY_LOW = 2000;
-    public static final double MID = 4000;
-    public static final double LOW = 1000;
-    public static final double ZERO = 0;
+    public static final double WRIST_HEIGHT_LOW_CARGO = 27.5;//Inches
+    public static final double WRIST_ANGLE_PLACEMENT_LOW_CARGO = 36;//Degrees
+    
+    public static final double WRIST_HEIGHT_LOW_HATCH = 19;//Inches
+    public static final double WRIST_ANGLE_PLACEMENT_LOW_HATCH = 90;//Degrees
+    
+    public static final double WRIST_HEIGHT_MIDDLE_CARGO = 55.5;//Inches
+    public static final double WRIST_ANGLE_PLACEMENT_MIDDLE_CARGO = 36;//Degrees
+    
+    public static final double WRIST_HEIGHT_MIDDLE_HATCH = 47;//Inches
+    public static final double WRIST_ANGLE_PLACEMENT_MIDDLE_HATCH = 90;//Degrees
+    
+    public static final double WRIST_HEIGHT_HIGH_CARGO = 83.5;//Inches
+    public static final double WRIST_ANGLE_PLACEMENT_HIGH_CARGO = 36;//Degrees
+    
+    public static final double WRIST_HEIGHT_HIGH_HATCH = 75;//Inches
+    public static final double WRIST_ANGLE_PLACEMENT_HIGH_HATCH = 90;//Degrees
+    
+    public static final double WRIST_HEIGHT_CARGO_HOLD = 39.75;//Inches
+    public static final double WRIST_ANGLE_PLACEMENT_CARGO_HOLD = 36;//Degrees
+    
+    public static final double WRIST_HEIGHT_Ground = 4/*????It's a guess????*/;//Inches
+    public static final double WRIST_ANGLE_PICKUP = 70;//Degrees
+
+    /* Lowest port hole (where the cargo is placed) center on spaceship is 27.5in. off the ground.
+    Middle port hole (where the cargo is placed) center on spaceship is 55.5in. off the ground.
+    Top port hole (where the cargo is placed) center on spaceship is 83.5in. off the ground.
+    The center of the lowest hatch pannel spot on spaceship is 19in. off the ground.
+    The center of the middle hatch pannel spot on spaceship is 47in. off the ground.
+    The center of the top hatch pannel spot on spaceship is 75in. off the ground.
+    
+    Approx. 70 Deg.L (or -70 Deg.L) @ wrist to pick up cargo.
+    Approx. 36 Deg.L (or -36 Deg.L) @ wrist to place cargo.
+    90 Deg.L (or -90 Deg.L) @ wrist to place hatches.
+    */
 
 }
