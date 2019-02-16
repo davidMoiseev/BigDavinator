@@ -91,7 +91,15 @@ public class Manipulator {
     }
 
     public void IntializeManipulator(){
-        
+        elevator.zeroSensors();
+        arm.zeroSensors();
+        wrist.zeroSensors();
+    }
+
+    public void DisplaySensors() {
+        elevator.displaySensorsValue();
+        arm.displaySensorsValue();
+        wrist.displaySensorsValue();
     }
 
     public void Control(){

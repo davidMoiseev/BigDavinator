@@ -45,7 +45,8 @@ import frc.robot.constants.ElevatorConstants;
 
     @Override
     public void displaySensorsValue() {
-        SmartDashboard.putNumber("ElevatorPosition", GetSensorValue());
+        SmartDashboard.putNumber("Elevator Position ticks", GetSensorValue());
+        SmartDashboard.putNumber("Elevator Position inches", GetSensorValue()*2.75*Math.PI/8192);
         SmartDashboard.putNumber("Elevator Power", primaryTalon.getMotorOutputPercent());
         SmartDashboard.putNumber("Elevator Error", primaryTalon.getClosedLoopError());
         SmartDashboard.putNumber("Elevator target", primaryTalon.getClosedLoopTarget());

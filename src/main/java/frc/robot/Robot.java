@@ -49,6 +49,7 @@ public class Robot extends TimedRobot
         driveTrain = new DriveTrain(rightElevator, intake);
         manipulator = new Manipulator(operator, rightElevator, intake);
         manipulator.InitializeTalons();
+        manipulator.IntializeManipulator();
 
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "leftStick", "StickLY", HotPathFollower.LoggerValues);
@@ -97,6 +98,7 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
+        manipulator.DisplaySensors();
     }
 
     @Override
