@@ -7,10 +7,19 @@
 
 package frc.robot;
 
+import frc.robot.constants.ManipulatorSetPoints;
+
 public class ManipulatorSetPoint {
     private double armAngle;
     private double wristAngle;
     private double elevatorHeight;
+    private double overallHeight;
+    private double angle;
+    public ManipulatorSetPoint(double angle, double height) {
+        this.overallHeight = height;
+        this.angle = angle;
+    }
+
 
     public double getArmAngle() {
         return armAngle;
