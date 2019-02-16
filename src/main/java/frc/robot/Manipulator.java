@@ -95,6 +95,24 @@ public class Manipulator {
     }
 
     public void Control(){
-        
+        if(operator.getButtonA()) {
+            
+        } else if(operator.getButtonB()) {
+            
+        }else if(operator.getButtonX()) {
+            
+        }else if(operator.getButtonY()) {
+            
+        }else if(operator.getButtonLeftBumper()) {
+            
+        }else if(operator.getButtonRightBumper()) {
+            
+        }else if(operator.getButtonLeftStick()) {
+            
+        }else if(operator.getButtonRightStick()) {
+            
+        } else {
+            
+        }
     }
 }
