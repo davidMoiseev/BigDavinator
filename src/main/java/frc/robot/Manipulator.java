@@ -23,7 +23,6 @@ public class Manipulator {
     //private Intake intake;
     private Wrist wrist;
     private Arm arm;
-    private HotController hotJoystick;
 
     private ManipulatorSetPoint frontHatchHigh;
     private ManipulatorSetPoint backHatchHigh;
@@ -51,6 +50,7 @@ public class Manipulator {
 
     private ManipulatorSetPoint frontCargoCarry;//Carrying Cargo
     private ManipulatorSetPoint backCargoCarry;//Carrying Cargo
+    private HotController operator;
 
     public Manipulator(HotController operator, TalonSRX rightElevator, TalonSRX intake) {
         this.elevator = new Elevator(new TalonSRX(WiringIDs.LEFT_ELEVATOR), rightElevator);
@@ -95,6 +95,6 @@ public class Manipulator {
     }
 
     public void Control(){
-
+        
     }
 }

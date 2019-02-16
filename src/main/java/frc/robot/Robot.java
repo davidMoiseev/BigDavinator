@@ -45,8 +45,9 @@ public class Robot extends TimedRobot
     {
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
+        HotController operator = new HotController(0);
         driveTrain = new DriveTrain(rightElevator, intake);
-        manipulator = new Manipulator(rightElevator, intake);
+        manipulator = new Manipulator(operator, rightElevator, intake);
         manipulator.InitializeTalons();
 
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
