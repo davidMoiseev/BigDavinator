@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.hotteam67.HotController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ManipulatorSetPoints;
 import frc.robot.constants.WiringIDs;
 
@@ -130,6 +131,7 @@ public class Manipulator {
             initailizationState = InitailizationState.CALIBRATING;
         }
         if (initailizationState == InitailizationState.CALIBRATING) {
+
             armPigeon.CalibratePigeon();
             if (armPigeon.PigeonReady()) {
                 initailizationState = InitailizationState.READY;

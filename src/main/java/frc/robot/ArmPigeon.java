@@ -20,7 +20,7 @@ public class ArmPigeon implements IPigeonWrapper {
         UNINITALIZED, CALIBRATING, GATHERING_MEASUREMENTS, READY
     }
 
-    PigeonIMU pigeon;
+    private PigeonIMU pigeon;
     ArmPigeonState state;
     private double[] xyz_dps = new double[3];
     private double[] AverageAngle = new double[50];
@@ -35,10 +35,11 @@ public class ArmPigeon implements IPigeonWrapper {
     @Override
     public void CalibratePigeon() {
         short[] xyz_short = new short[3];
-        double currentAngle;
+        double currentAngle = 1000;
 
         if (state == ArmPigeonState.UNINITALIZED) {
             pigeon.enterCalibrationMode(CalibrationMode.BootTareGyroAccel);
+            state = ArmPigeonState.CALIBRATING;
         }
         if (state == ArmPigeonState.CALIBRATING) {
             if (pigeon.getState() == PigeonState.Ready) {
