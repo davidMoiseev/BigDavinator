@@ -90,34 +90,34 @@ public class Manipulator {
         arm.initialize();
     }
 
-    public void IntializeManipulator(){
+    public void IntializeManipulator() {
         elevator.zeroSensors();
         arm.zeroSensors();
         wrist.zeroSensors();
-    }
-
+    }         
+    
     public void DisplaySensors() {
         elevator.displaySensorsValue();
         arm.displaySensorsValue();
         wrist.displaySensorsValue();
     }
 
-    public void Control(){
-        if(operator.getButtonA()) {
+    public void Control() {
+        if (operator.getButtonA()) {
             
         } else if(operator.getButtonB()) {
             
-        }else if(operator.getButtonX()) {
+        } else if(operator.getButtonX()) {
             
-        }else if(operator.getButtonY()) {
+        } else if(operator.getButtonY()) {
             
-        }else if(operator.getButtonLeftBumper()) {
+        } else if(operator.getButtonLeftBumper()) {
             
-        }else if(operator.getButtonRightBumper()) {
+        } else if(operator.getButtonRightBumper()) {
             
-        }else if(operator.getButtonLeftStick()) {
+        } else if(operator.getButtonLeftStick()) {
             
-        }else if(operator.getButtonRightStick()) {
+        } else if(operator.getButtonRightStick()) {
             
         } else {
             

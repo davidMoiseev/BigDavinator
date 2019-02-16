@@ -15,8 +15,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 public class WristConstants {
     public static final double nominalOutputForward = 0;
     public static final double nominalOutputReverse = 0;
-    public static final int forwardSoftLimitThreshold = 20000;
-    public static final int reverseSoftLimitThreshold = 1000;
+    public static final int forwardSoftLimitThreshold = 12760;
+    public static final int reverseSoftLimitThreshold = -11570;
     public static final double peakOutputForward = 1;
     public static final double peakOutputReverse = -1;
     public static final int motionCruiseVelocity = 10000;
