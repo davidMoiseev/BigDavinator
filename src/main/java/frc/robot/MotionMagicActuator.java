@@ -58,6 +58,21 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
         primaryTalon.configMotionCruiseVelocity(motionCruiseVelocity, timeoutms);
         primaryTalon.setSensorPhase(sensorPhase);
         SRX_PID_0.initatlize(primaryTalon);
+
+        if (secondaryTalon != null) {
+            secondaryTalon.configFactoryDefault();
+            secondaryTalon.configNominalOutputForward(nominalOutputForward, timeoutms);
+            secondaryTalon.configNominalOutputReverse(nominalOutputReverse, timeoutms);
+            secondaryTalon.configForwardSoftLimitThreshold(forwardSoftLimitThreshold);
+            secondaryTalon.configReverseSoftLimitThreshold(reverseSoftLimitThreshold);
+            secondaryTalon.configPeakOutputForward(peakOutputForward, timeoutms);
+            secondaryTalon.configPeakOutputReverse(peakOutputReverse, timeoutms);
+            secondaryTalon.configMotionAcceleration(motionAcceleration, timeoutms);
+            secondaryTalon.configMotionCruiseVelocity(motionCruiseVelocity, timeoutms);
+            secondaryTalon.setSensorPhase(sensorPhase);
+            SRX_PID_0.initatlize(secondaryTalon);
+        }
+
     }
  
     protected double GetSensorValue(){

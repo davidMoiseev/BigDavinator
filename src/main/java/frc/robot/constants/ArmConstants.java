@@ -15,8 +15,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 public class ArmConstants {
     public static final double nominalOutputForward = 0;
     public static final double nominalOutputReverse = 0;
-    public static final int forwardSoftLimitThreshold = 20000;
-    public static final int reverseSoftLimitThreshold = 1000;
+    public static final int forwardSoftLimitThreshold = 61910;
+    public static final int reverseSoftLimitThreshold = -64130;
     public static final double peakOutputForward = 1;
     public static final double peakOutputReverse = -1;
     public static final int motionCruiseVelocity = 10000;
