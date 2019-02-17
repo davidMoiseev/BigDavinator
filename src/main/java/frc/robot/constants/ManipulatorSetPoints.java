@@ -12,8 +12,9 @@ package frc.robot.constants;
  */
 public class ManipulatorSetPoints {
 
-    public static final double WRIST_HEIGHT_LOW_CARGO = 27.5;//Inches
-    public static final double WRIST_ANGLE_PLACEMENT_LOW_CARGO = 36;//Degrees
+    public static final double CARGO_LOW_ARM_ANGLE = 27.5;//Inches
+    public static final double CARGO_LOW_WRIST_ANGLE = 36;//Degrees
+    public static final double CARGO_LOW_ELEVATOR_HEIGHT = 3;//Inches
     public static final double WRIST_ANGLE_PLACEMENT_LOW_CARGO_REVERSE = -36;//Degrees
 
     public static final double WRIST_HEIGHT_LOW_HATCH = 19;//Inches
@@ -44,9 +45,9 @@ public class ManipulatorSetPoints {
     public static final double WRIST_ANGLE_PICKUP = 70;//Degrees
     public static final double WRIST_ANGLE_PICKUP_REVERSE = -70;//Degrees
 
-    public static final double ELEVATOR_HEIGHT_CARRY = 3;//+3 Inches
-    public static final double WRIST_ANGLE_CARRY = 10;//Degrees
-    public static final double WRIST_ANGLE_CARRY_REVERSE = -10;//Degrees
+    public static final double CARRY_WRIST_ANGLE = 10;//Degrees
+    public static final double CARRY_ARM_ANGLE = 0;//Degrees
+    public static final double CARRY_ELEVATOR_HEIGHT = 3;//+3 Inches
 
     /* Lowest port hole (where the cargo is placed) center on spaceship is 27.5in. off the ground.
     Middle port hole (where the cargo is placed) center on spaceship is 55.5in. off the ground.

@@ -57,6 +57,12 @@ public class Wrist extends MotionMagicActuator {
     }
 
     @Override
+    public void setTarget(double target) {
+        super.setTarget(target / WristConstants.TICKS_TO_DEGREES);
+    }
+
+
+    @Override
     public void getError() {
 
     }

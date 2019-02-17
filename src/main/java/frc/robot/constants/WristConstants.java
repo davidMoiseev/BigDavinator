@@ -32,4 +32,5 @@ public class WristConstants {
     public static final FeedbackDevice feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative;
 
 	public static final double TICKS_TO_DEGREES = 0.12 * 360/4096;
+	public static double lenght = 10;
 }

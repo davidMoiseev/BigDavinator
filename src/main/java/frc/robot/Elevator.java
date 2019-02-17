@@ -47,12 +47,17 @@ public class Elevator extends MotionMagicActuator {
     @Override
     public void displaySensorsValue() {
         SmartDashboard.putNumber("Elevator Position ticks", GetSensorValue());
-        SmartDashboard.putNumber("Elevator Position inches", GetSensorValue() * 2.75 * Math.PI / 8192);
+        SmartDashboard.putNumber("Elevator Position inches", GetSensorValue() * ElevatorConstants.TICKS_TO_INCHES);
         SmartDashboard.putNumber("Elevator Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
             SmartDashboard.putNumber("Elevator Error", primaryTalon.getClosedLoopError());
             SmartDashboard.putNumber("Elevator target", primaryTalon.getClosedLoopTarget());
         }
+    }
+
+    @Override
+    public void setTarget(double target) {
+        super.setTarget(target / ElevatorConstants.TICKS_TO_INCHES);
     }
 
     @Override
