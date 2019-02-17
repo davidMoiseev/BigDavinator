@@ -6,7 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public abstract class MotionMagicActuator implements IMotionMagicActuator {
 
     protected TalonSRX primaryTalon;
-    private TalonSRX secondaryTalon;
+    protected TalonSRX secondaryTalon;
     protected SRX_PID SRX_PID_0;
     private double nominalOutputForward;
     private double nominalOutputReverse;

@@ -55,7 +55,7 @@ public class Robot extends TimedRobot
         HotController driver = new HotController(0);
         HotController operator = new HotController(1);
         driveTrain = new DriveTrain(rightElevator, intake);
-        manipulator = new Manipulator(operator, driver, rightElevator, intake);
+        manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
         forceInitailization = true;

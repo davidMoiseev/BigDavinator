@@ -37,7 +37,7 @@ public class Intake {
         if(joystick.getButtonRightBumper()) {
             runIntake(Inputspeed);
         }
-        if(!joystick.getButtonLeftBumper() || !joystick.getButtonRightBumper()) {
+        if(!joystick.getButtonLeftBumper() && !joystick.getButtonRightBumper()) {
             allOff();
         }
         writeDashboard();

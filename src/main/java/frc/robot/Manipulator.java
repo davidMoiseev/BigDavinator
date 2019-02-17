@@ -58,16 +58,20 @@ public class Manipulator {
     private HotController driver;
     private HotController operator;
     private ArmPigeon armPigeon;
+    private  DriveTrain drivetrain;
     private InitailizationState initailizationState;
 
-    public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake) {
+    public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake, DriveTrain drivetrain) {
         this.elevator = new Elevator(new TalonSRX(WiringIDs.LEFT_ELEVATOR), rightElevator);
         this.wrist = new Wrist(WiringIDs.WRIST);
         this.arm = new Arm(WiringIDs.SHOULDER);
         this.armPigeon = new ArmPigeon(WiringIDs.PIGEON_ARM);
+        this.intake = new Intake(driver);
+        this.pneumaticIntake = new IntakePneumatics(driver);
 
         this.operator = operator;
         this.driver = driver;
+        this.drivetrain = drivetrain;
 
         // frontHatchHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_HEIGHT_HIGH_HATCH,
         //         ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_HATCH);
@@ -157,8 +161,8 @@ public class Manipulator {
 
         if (operator.getButtonA()) {
             elevator.setTarget(frontCarry.getElevatorHeight());
-            // arm.setTarget(frontCarry.getArmAngle());
-            // wrist.setTarget(frontCarry.getWristAngle());
+            arm.setTarget(frontCarry.getArmAngle() + drivetrain.getPitch());
+            wrist.setTarget(frontCarry.getWristAngle());
 
         } else if (operator.getButtonB()) {
 

@@ -151,6 +151,9 @@ public class DriveTrain implements IPigeonWrapper
         leftEncoderValue = leftEncoder.getSelectedSensorPosition();
         pigeon.getYawPitchRoll(xyz_dps);
     }
+    public double getPitch() {
+        return xyz_dps[1];
+    }
 
     /**
      * Write to logs and dashboards
@@ -160,6 +163,7 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("rightEncoder", rightEncoderValue);
         SmartDashboard.putNumber("leftEncoder", leftEncoderValue);
         SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
+        SmartDashboard.putNumber("currentPitch", xyz_dps[1]);
         SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
         SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
 

@@ -60,7 +60,7 @@ public class Arm extends MotionMagicActuator {
 
     @Override
     public void setTarget(double target) {
-        super.setTarget(target / ArmConstants.TICKS_TO_DEGREES);
+        super.setTarget(-target / ArmConstants.TICKS_TO_DEGREES);
     }
 
 

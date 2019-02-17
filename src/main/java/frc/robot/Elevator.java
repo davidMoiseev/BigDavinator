@@ -45,6 +45,13 @@ public class Elevator extends MotionMagicActuator {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+        primaryTalon.setInverted(true);
+        secondaryTalon.setInverted(true);
+    }
+
+    @Override
     public void displaySensorsValue() {
         SmartDashboard.putNumber("Elevator Position ticks", GetSensorValue());
         SmartDashboard.putNumber("Elevator Position inches", GetSensorValue() * ElevatorConstants.TICKS_TO_INCHES);
