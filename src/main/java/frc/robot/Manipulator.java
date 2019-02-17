@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.hotteam67.HotController;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ManipulatorSetPoints;
 import frc.robot.constants.WiringIDs;
 
@@ -53,8 +52,8 @@ public class Manipulator {
     private ManipulatorSetPoint frontCargoPickup;
     private ManipulatorSetPoint backCargoPickup;
 
-    private ManipulatorSetPoint frontCargoCarry;// Carrying Cargo
-    private ManipulatorSetPoint backCargoCarry;// Carrying Cargo
+    private ManipulatorSetPoint frontCarry;// Carrying Cargo
+    private ManipulatorSetPoint backCarry;// Carrying Cargo
     private HotController driver;
     private HotController operator;
     private ArmPigeon armPigeon;
@@ -69,47 +68,47 @@ public class Manipulator {
         this.operator = operator;
         this.driver = driver;
 
-        frontHatchHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_HEIGHT_HIGH_HATCH,
-                ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_HATCH);
-        frontCargoHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_HEIGHT_HIGH_CARGO,
-                ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_CARGO);
-        backHatchHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_HATCH_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_HIGH_HATCH);
-        backCargoHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_CARGO_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_HIGH_CARGO);
+        // frontHatchHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_HEIGHT_HIGH_HATCH,
+        //         ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_HATCH);
+        // frontCargoHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_HEIGHT_HIGH_CARGO,
+        //         ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_CARGO);
+        // backHatchHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_HATCH_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_HIGH_HATCH);
+        // backCargoHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_CARGO_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_HIGH_CARGO);
 
-        frontHatchMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_HATCH,
-                ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_HATCH);
-        frontCargoMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_CARGO,
-                ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_CARGO);
-        backHatchMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_HATCH_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_HATCH);
-        backCargoMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_CARGO_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_CARGO);
+        // frontHatchMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_HATCH,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_HATCH);
+        // frontCargoMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_CARGO,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_CARGO);
+        // backHatchMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_HATCH_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_HATCH);
+        // backCargoMiddle = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_MIDDLE_CARGO_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_MIDDLE_CARGO);
 
-        frontHatchLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_HATCH,
-                ManipulatorSetPoints.WRIST_HEIGHT_LOW_HATCH);
-        frontCargoLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_CARGO,
-                ManipulatorSetPoints.WRIST_HEIGHT_LOW_CARGO);
-        backHatchLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_HATCH_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_LOW_HATCH);
-        backCargoLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_CARGO_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_LOW_CARGO);
+        // frontHatchLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_HATCH,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_LOW_HATCH);
+        // frontCargoLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_CARGO,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_LOW_CARGO);
+        // backHatchLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_HATCH_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_LOW_HATCH);
+        // backCargoLow = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_LOW_CARGO_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_LOW_CARGO);
 
-        frontCargoHold = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_CARGO_HOLD,
-                ManipulatorSetPoints.WRIST_HEIGHT_CARGO_HOLD);
-        backCargoHold = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_CARGO_HOLD_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_CARGO_HOLD);
+        // frontCargoHold = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_CARGO_HOLD,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_CARGO_HOLD);
+        // backCargoHold = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_CARGO_HOLD_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_CARGO_HOLD);
 
-        frontCargoPickup = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PICKUP,
-                ManipulatorSetPoints.WRIST_HEIGHT_Ground);
-        backCargoPickup = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PICKUP_REVERSE,
-                ManipulatorSetPoints.WRIST_HEIGHT_Ground);
+        // frontCargoPickup = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PICKUP,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_Ground);
+        // backCargoPickup = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_PICKUP_REVERSE,
+        //         ManipulatorSetPoints.WRIST_HEIGHT_Ground);
 
-        frontCargoCarry = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_CARRY,
-                ManipulatorSetPoints.ELEVATOR_HEIGHT_CARRY);
-        backCargoCarry = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_ANGLE_CARRY_REVERSE,
-                ManipulatorSetPoints.ELEVATOR_HEIGHT_CARRY);
+        frontCarry = new ManipulatorSetPoint(ManipulatorSetPoints.CARRY_WRIST_ANGLE,
+                ManipulatorSetPoints.CARRY_ARM_ANGLE,ManipulatorSetPoints.CARRY_ELEVATOR_HEIGHT);
+        backCarry = new ManipulatorSetPoint(ManipulatorSetPoints.CARRY_WRIST_ANGLE,
+                ManipulatorSetPoints.CARRY_ARM_ANGLE,ManipulatorSetPoints.CARRY_ELEVATOR_HEIGHT);
     }
 
     public void InitializeTalons() {
@@ -151,8 +150,11 @@ public class Manipulator {
         wrist.displaySensorsValue();
     }
 
-    public void ControlOperator() {
+    public void Update() {
         if (operator.getButtonA()) {
+            elevator.setTarget(frontCarry.getElevatorHeight());
+            // arm.setTarget(frontCarry.getArmAngle());
+            // wrist.setTarget(frontCarry.getWristAngle());
 
         } else if (operator.getButtonB()) {
 
@@ -169,7 +171,9 @@ public class Manipulator {
         } else if (operator.getButtonRightStick()) {
 
         } else {
-
+            elevator.disable();
+            arm.disable();
+            wrist.disable();
         }
     }
 }

@@ -127,6 +127,8 @@ public class Robot extends TimedRobot
         HotLogger.Log("StickLY", -driver.getStickLY());
         driveTrain.arcadeDrive(driver.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
+        manipulator.Update();
+
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
         driveTrain.readSensors();
@@ -165,7 +167,7 @@ public class Robot extends TimedRobot
     public void disabledPeriodic()
     {
         /**
-         * Clicked for the first time, the robot is stable so start boot calibrate
+         * Clicked for the first time, the robotj is stable so start boot calibrate
          */
         if ((SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing) || forceInitailization )
         {
