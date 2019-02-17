@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ElevatorConstants;
+import frc.robot.constants.ManipulatorSetPoint;
 
 /**
  * Add your docs here.
@@ -53,11 +54,11 @@ public class Elevator extends MotionMagicActuator {
 
     @Override
     public void displaySensorsValue() {
-        SmartDashboard.putNumber("Elevator Position ticks", GetSensorValue());
-        SmartDashboard.putNumber("Elevator Position inches", GetSensorValue() * ElevatorConstants.TICKS_TO_INCHES);
+        SmartDashboard.putNumber("Elevator Position ticks", getSensorValue());
+        SmartDashboard.putNumber("Elevator Position inches", getPosition());
         SmartDashboard.putNumber("Elevator Power", primaryTalon.getMotorOutputPercent());
+        SmartDashboard.putNumber("Elevator Error", getError());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
-            SmartDashboard.putNumber("Elevator Error", primaryTalon.getClosedLoopError());
             SmartDashboard.putNumber("Elevator target", primaryTalon.getClosedLoopTarget());
         }
     }
@@ -67,8 +68,16 @@ public class Elevator extends MotionMagicActuator {
         super.setTarget(target / ElevatorConstants.TICKS_TO_INCHES);
     }
 
-    @Override
-    public void getError() {
+    public void setTarget(ManipulatorSetPoint targetPoint) {
+        setTarget(targetPoint.elevatorHeight());
+    }
 
+	public boolean reachedTarget() {
+        return Math.abs(getError()) <= ElevatorConstants.allowableError;
+	}
+
+    @Override
+    public double getPosition() {
+        return getSensorValue() * ElevatorConstants.TICKS_TO_INCHES;
     }
 }

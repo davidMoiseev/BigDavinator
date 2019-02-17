@@ -76,8 +76,17 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
         }
 
     }
- 
-    protected double GetSensorValue(){
+    
+    @Override
+    public int getError() {
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+            return primaryTalon.getClosedLoopError();
+        } else {
+            return 2147483647;
+        }
+    }
+
+    protected double getSensorValue(){
         return primaryTalon.getSelectedSensorPosition();
     }
 

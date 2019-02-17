@@ -30,5 +30,6 @@ public class ElevatorConstants {
     public static final double derivative = 0.0;
     public static final double integral = 0.0016;//.0016 initially
     public static final FeedbackDevice feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative;
-	public static final double TICKS_TO_INCHES = 2.75 * Math.PI / 8192;
+    public static final double TICKS_TO_INCHES = 2.75 * Math.PI / 8192;
+    public static final int allowableError = (int) (0.5 / TICKS_TO_INCHES);
 }

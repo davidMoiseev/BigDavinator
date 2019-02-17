@@ -31,5 +31,7 @@ public class ArmConstants {
     public static final double integral = 0.0016;
     public static final FeedbackDevice feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative;
 	public static final double TICKS_TO_DEGREES = 0.0288 * 360/4096;
-	public static double length = 20;
+    public static final double length = 20;
+    
+    public static final int allowableError = (int) (2 / TICKS_TO_DEGREES);
 }

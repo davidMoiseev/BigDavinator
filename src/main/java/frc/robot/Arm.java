@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ArmConstants;
+import frc.robot.constants.ManipulatorSetPoint;
 
 /**
  * Add your docs here.
@@ -44,8 +45,8 @@ public class Arm extends MotionMagicActuator {
 
     @Override
     public void displaySensorsValue() {
-        SmartDashboard.putNumber("Arm Position ticks", GetSensorValue());
-        SmartDashboard.putNumber("Arm Position degrees", GetSensorValue() * ArmConstants.TICKS_TO_DEGREES);
+        SmartDashboard.putNumber("Arm Position ticks", getSensorValue());
+        SmartDashboard.putNumber("Arm Position degrees", getPosition());
         SmartDashboard.putNumber("Arm Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
             SmartDashboard.putNumber("Arm Error", primaryTalon.getClosedLoopError());
@@ -54,17 +55,25 @@ public class Arm extends MotionMagicActuator {
     }
 
     @Override
-    public void getError() {
-
-    }
-
-    @Override
     public void setTarget(double target) {
         super.setTarget(-target / ArmConstants.TICKS_TO_DEGREES);
     }
 
+    public void setTarget(ManipulatorSetPoint targetPoint) {
+        setTarget(targetPoint.armAngle());
+    }
 
     public void setPosition(double angle) {
         primaryTalon.setSelectedSensorPosition((int) (angle / ArmConstants.TICKS_TO_DEGREES));
+    }
+
+    @Override
+    public boolean reachedTarget() {
+        return Math.abs(getError()) <= ArmConstants.allowableError;
+    }
+
+    @Override
+    public double getPosition() {
+        return getSensorValue() * ArmConstants.TICKS_TO_DEGREES;
     }
 }
