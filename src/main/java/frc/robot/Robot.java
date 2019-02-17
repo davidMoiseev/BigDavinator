@@ -13,6 +13,7 @@ import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot
 
     DriveTrain driveTrain;
     Manipulator manipulator;
+    Compressor compressor;
     /*
      * TalonSRX eleLeft; TalonSRX eleRight;
      */
@@ -45,11 +47,15 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
+    compressor = new Compressor(0);
+    compressor.setClosedLoopControl(true);
+
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
-        HotController operator = new HotController(0);
+        HotController driver = new HotController(0);
+        HotController operator = new HotController(1);
         driveTrain = new DriveTrain(rightElevator, intake);
-        manipulator = new Manipulator(operator, rightElevator, intake);
+        manipulator = new Manipulator(operator, driver, rightElevator, intake);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
         forceInitailization = true;

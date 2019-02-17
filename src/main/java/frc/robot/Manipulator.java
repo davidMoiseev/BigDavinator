@@ -55,17 +55,19 @@ public class Manipulator {
 
     private ManipulatorSetPoint frontCargoCarry;// Carrying Cargo
     private ManipulatorSetPoint backCargoCarry;// Carrying Cargo
+    private HotController driver;
     private HotController operator;
     private ArmPigeon armPigeon;
     private InitailizationState initailizationState;
 
-    public Manipulator(HotController operator, TalonSRX rightElevator, TalonSRX intake) {
+    public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake) {
         this.elevator = new Elevator(new TalonSRX(WiringIDs.LEFT_ELEVATOR), rightElevator);
         this.wrist = new Wrist(WiringIDs.WRIST);
         this.arm = new Arm(WiringIDs.SHOULDER);
         this.armPigeon = new ArmPigeon(WiringIDs.PIGEON_ARM);
 
         this.operator = operator;
+        this.driver = driver;
 
         frontHatchHigh = new ManipulatorSetPoint(ManipulatorSetPoints.WRIST_HEIGHT_HIGH_HATCH,
                 ManipulatorSetPoints.WRIST_ANGLE_PLACEMENT_HIGH_HATCH);
@@ -136,7 +138,7 @@ public class Manipulator {
             if (armPigeon.PigeonReady()) {
                 initailizationState = InitailizationState.READY;
                 arm.setPosition(armPigeon.GetAngle());
-                wrist.setPosition(armPigeon.GetAngle() + 46);
+                wrist.setPosition(armPigeon.GetAngle() - 134);
                 elevator.zeroSensors();
                 
             }
@@ -149,7 +151,7 @@ public class Manipulator {
         wrist.displaySensorsValue();
     }
 
-    public void Control() {
+    public void ControlOperator() {
         if (operator.getButtonA()) {
 
         } else if (operator.getButtonB()) {

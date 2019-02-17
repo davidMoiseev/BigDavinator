@@ -11,6 +11,8 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * Add your docs here.
  */
@@ -61,23 +63,32 @@ public class ArmPigeon implements IPigeonWrapper {
             double x = (xyz_dps[0] / 16384);
             double y = (xyz_dps[1] / 16384);
             double z = (xyz_dps[2] / 16384);
+            SmartDashboard.putNumber("x", x);
+            SmartDashboard.putNumber("y", y);
+            SmartDashboard.putNumber("z", z);
             // Checks if Values Are Within The 1.1 G Tolerance value And Throws Out Bad
             // Values
             if ((x < -1.1 || x > 1.1) || (y < -1.1 || y > 1.1) || (z < -1.1 || z > 1.1)) {
                 loops = loops - 1;
             } else {
                 // This converts the G values to radians then to degress
-                currentAngle = Math.atan(y / ((Math.sqrt(Math.pow(x, 2) + Math.pow(z, 2)))));
-                currentAngle = Math.toDegrees(angle);
+                currentAngle = Math.atan(z / ((Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)))));
+                currentAngle = Math.toDegrees(currentAngle) - 90;
                 // Allows The Rio Angle To Wrap Around
-                if (x < 0) {
-                    if (y > 0) {
-                        AverageAngle[loops] = currentAngle + 90;
+                if (z < 0) {
+                    if (x > 0) {
+                        currentAngle = currentAngle + 90;
                     } else {
-                        AverageAngle[loops] = currentAngle - 90;
+                        currentAngle = currentAngle - 90;
                     }
                 }
+                if (x < 0) {
+                    AverageAngle[loops] = -currentAngle;
+                } else {
+                    AverageAngle[loops] = currentAngle;
+                }
             }
+            SmartDashboard.putNumber("Loops",loops);
             // This section does a rolling average and then returns the value
             if (loops >= 49) {
                 double sum = 0;
@@ -90,6 +101,8 @@ public class ArmPigeon implements IPigeonWrapper {
             } else {
                 loops++;
             }
+            SmartDashboard.putNumber("CurrentAngle", currentAngle);
+            SmartDashboard.putNumber("angle", angle);
         }
     }
 

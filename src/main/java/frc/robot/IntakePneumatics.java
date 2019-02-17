@@ -1,4 +1,5 @@
-//Made By Nick S. and TJ M.
+//Made by Nick S. and TJ M.
+//Later Modified by Johnny B.
 
 package frc.robot;
 
@@ -9,12 +10,12 @@ import frc.robot.constants.WiringIDs;
  
 
 
-public class Pneumatics {
+public class IntakePneumatics {
 
 	Solenoid intakeSingle = new Solenoid(WiringIDs.SOLENOID_INTAKE);
 	HotController joystick;
 	
-	public Pneumatics(HotController joystick) {
+	public IntakePneumatics(HotController joystick) {
 		this.joystick = joystick;
 	}
 
