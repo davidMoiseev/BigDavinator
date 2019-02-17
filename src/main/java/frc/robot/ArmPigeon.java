@@ -63,9 +63,6 @@ public class ArmPigeon implements IPigeonWrapper {
             double x = (xyz_dps[0] / 16384);
             double y = (xyz_dps[1] / 16384);
             double z = (xyz_dps[2] / 16384);
-            SmartDashboard.putNumber("x", x);
-            SmartDashboard.putNumber("y", y);
-            SmartDashboard.putNumber("z", z);
             // Checks if Values Are Within The 1.1 G Tolerance value And Throws Out Bad
             // Values
             if ((x < -1.1 || x > 1.1) || (y < -1.1 || y > 1.1) || (z < -1.1 || z > 1.1)) {
@@ -88,7 +85,7 @@ public class ArmPigeon implements IPigeonWrapper {
                     AverageAngle[loops] = currentAngle;
                 }
             }
-            SmartDashboard.putNumber("Loops",loops);
+
             // This section does a rolling average and then returns the value
             if (loops >= 49) {
                 double sum = 0;
@@ -101,8 +98,6 @@ public class ArmPigeon implements IPigeonWrapper {
             } else {
                 loops++;
             }
-            SmartDashboard.putNumber("CurrentAngle", currentAngle);
-            SmartDashboard.putNumber("angle", angle);
         }
     }
 

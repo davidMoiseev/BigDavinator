@@ -63,10 +63,10 @@ public class Robot extends TimedRobot
         HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
                 "leftStick", "StickLY", HotPathFollower.LoggerValues);
 
-        driver.setDeadBandLY(.08);
-        driver.setDeadBandLX(.08);
-        driver.setDeadBandRX(.1);
-        driver.setDeadBandRY(.08);
+        driver.setDeadBandLY(.3);
+        driver.setDeadBandLX(.3);
+        driver.setDeadBandRX(.3);
+        driver.setDeadBandRY(.3);
 
         /*
          * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new

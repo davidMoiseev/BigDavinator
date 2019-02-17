@@ -25,7 +25,8 @@ public class Manipulator {
     }
 
     private Elevator elevator;
-    // private Intake intake;
+    private Intake intake;
+    private IntakePneumatics pneumaticIntake;
     private Wrist wrist;
     private Arm arm;
 
@@ -152,6 +153,9 @@ public class Manipulator {
     }
 
     public void ControlOperator() {
+        intake.Update();
+        pneumaticIntake.Update();
+
         if (operator.getButtonA()) {
 
         } else if (operator.getButtonB()) {
