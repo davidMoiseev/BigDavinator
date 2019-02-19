@@ -199,11 +199,21 @@ public class VisionMotion {
                 gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
                 gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
                 gyroHoutput = (distanceHorizontal * vt) / (distanceHorizontal + distance);
+                SmartDashboard.putNumber("vt", vt);
              }
 
     public boolean reachedTarget() {
         //distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal * distanceHorizontal));
         if(vision.findDistance() <= targetVisDistance){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean targetReached(double target) {
+        //distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal * distanceHorizontal));
+        if(vision.findDistance() <= target){
             return true;
         }else{
             return false;
@@ -248,7 +258,6 @@ public class VisionMotion {
         SmartDashboard.putNumber("angle1", angle1);
         SmartDashboard.putNumber("vy", vy);
         SmartDashboard.putNumber("vx", vx);
-        SmartDashboard.putNumber("vt", vt);
         SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
     }
 

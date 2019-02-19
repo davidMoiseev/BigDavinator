@@ -183,14 +183,14 @@ public class DriveTrain {
         HTalon.set(ControlMode.PercentOutput, vmotion.shuffleVisionPID());
         LFTalon.set(ControlMode.PercentOutput, vmotion.outputL());
         RFTalon.set(ControlMode.PercentOutput, -vmotion.outputR());
-        if(vmotion.targetFound() == true){
+        if(vmotion.reachedTarget() == true){
             return true;
         }else{
             return false;
         }
     }
 
-    public boolean gyroLineUp(double pipeline, double maxOutput){
+    public boolean gyroLineUp(double pipeline, double maxOutput, double target){
             switch (state){
                 case 0:
                     vmotion.setPipeline(pipeline);
@@ -206,7 +206,7 @@ public class DriveTrain {
                     RFTalon.set(ControlMode.PercentOutput, -vmotion.outputGyroR(currentYaw, maxOutput));
                     break;
             }
-            if(vmotion.reachedTarget() == true){
+            if(vmotion.targetReached(target) == true){
                 return true;
             }else{
                 return false;
