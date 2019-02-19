@@ -141,7 +141,7 @@ public class VisionMotion {
         vision.setPipeline(pipeline);
     }
 
-    public void targetLineUp(){
+    public void targetLineUp(){ //faster but sloppier than gyroTargetLineUp
         this.shuffleVisionPID();
         this.turnVision();
         this.driveToVisionDistance();
@@ -163,22 +163,13 @@ public class VisionMotion {
         }
     }
 
-    public boolean targetFound(){
-        if((Math.abs(vision.getHeading()) < 5.0) && (vision.findDistance()) < 20.0){
-            return true;
-
-        }else{
-            return false;
-        }
-    }
-
-    public double outputL(){
+    public double outputL(){ //for targetLineUp
         this.targetLineUp();
         double outputL = Loutput;
         return outputL;
     }
 
-    public double outputR(){
+    public double outputR(){ //for targetLineUp
          this.targetLineUp();
         double outputR = Routput;
         return outputR;
@@ -208,53 +199,7 @@ public class VisionMotion {
                 gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
                 gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
                 gyroHoutput = (distanceHorizontal * vt) / (distanceHorizontal + distance);
-                SmartDashboard.putNumber("distanceHorizontal", distanceHorizontal);
-                SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
-                SmartDashboard.putNumber("targetVisDistance", targetVisDistance);
-                SmartDashboard.putNumber("angle2", angle2);
-                SmartDashboard.putNumber("angle1", angle1);
-                SmartDashboard.putNumber("vy", vy);
-                SmartDashboard.putNumber("vx", vx);
-                SmartDashboard.putNumber("vt", vt);
-                // SmartDashboard.putNumber("vxh", vxh);
-                // SmartDashboard.putNumber("vxlr", vxlr);
-                // SmartDashboard.putNumber("vyh", vyh);
-                // SmartDashboard.putNumber("vylr", vylr);
              }
-
-    // public void gyroTargetLineUp(double yaw, double vt){ //vt is the motor output of the resultant
-    //     double distance = vision.findDistance();
-    //     distanceHorizontal = 40 * Math.tan(Math.PI / 4);
-    //     angle2 = Math.atan((40 - targetVisDistance) / distanceHorizontal);
-    //     angle1 = ((Math.PI / 2) - (Math.PI / 4)) - angle2;
-    //             vy = Math.sin(Math.PI / 4) * vt;  
-    //             vx = Math.cos(Math.PI / 4)* vt; 
-    //             // vxh = vx * Math.cos(yaw);
-    //             // vxlr = vx * Math.sin(yaw);
-    //             // vyh = vy * Math.sin(yaw);
-    //             // vylr = vy * Math.cos(yaw);
-    //             // gyroLoutput = vy;//(vylr + vxlr);
-    //             // gyroRoutput = vy;//(vylr + vxlr);
-    //             // gyroHoutput = vx;//(vyh + vxh);
-    //             gyroLoutput = (40 * vt) / (40 + distanceHorizontal);
-
-    //             gyroRoutput = (40 * vt) / (40 + distanceHorizontal);
-    //             gyroHoutput = (distanceHorizontal * vt) / (distanceHorizontal + 40);
-    //             SmartDashboard.putNumber("distanceHorizontal", distanceHorizontal);
-    //             SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
-    //             SmartDashboard.putNumber("targetVisDistance", targetVisDistance);
-    //             SmartDashboard.putNumber("angle2", angle2);
-    //             SmartDashboard.putNumber("angle1", angle1);
-    //             SmartDashboard.putNumber("vy", vy);
-    //             SmartDashboard.putNumber("vx", vx);
-    //             SmartDashboard.putNumber("vt", vt);
-    //             // SmartDashboard.putNumber("vxh", vxh);
-    //             // SmartDashboard.putNumber("vxlr", vxlr);
-    //             // SmartDashboard.putNumber("vyh", vyh);
-    //             // SmartDashboard.putNumber("vylr", vylr);
-          
-
-    //     }
 
     public boolean reachedTarget() {
         //distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal * distanceHorizontal));
@@ -267,19 +212,16 @@ public class VisionMotion {
 
     
     public double outputGyroL(double yaw, double maxMotorOutput){
-       // this.gyroTargetLineUp(yaw, maxMotorOutput);
         double outputL = gyroLoutput;
         return outputL;
     }
 
     public double outputGyroR(double yaw, double maxMotorOutput){
-       // this.gyroTargetLineUp(yaw, maxMotorOutput);
         double outputR = gyroRoutput;
         return outputR;
     }
 
     public double outputGyroH(double yaw, double maxMotorOutput){
-       // this.gyroTargetLineUp(yaw, maxMotorOutput);
         double outputH = gyroHoutput;
         return outputH;
     }
@@ -299,8 +241,15 @@ public class VisionMotion {
         SmartDashboard.putNumber("Can Detect Target", vision.canSeeTarget());
         SmartDashboard.putNumber("distance", vision.findDistance());
         SmartDashboard.putBoolean("Is h down", isHDown);
-        SmartDashboard.putBoolean("has ball been followed", this.targetFound());
         SmartDashboard.putNumber("targetAngle", targetAngle);
+        SmartDashboard.putNumber("distanceHorizontal", distanceHorizontal);
+        SmartDashboard.putNumber("targetVisDistance", targetVisDistance);
+        SmartDashboard.putNumber("angle2", angle2);
+        SmartDashboard.putNumber("angle1", angle1);
+        SmartDashboard.putNumber("vy", vy);
+        SmartDashboard.putNumber("vx", vx);
+        SmartDashboard.putNumber("vt", vt);
+        SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
     }
 
 };

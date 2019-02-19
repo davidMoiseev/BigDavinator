@@ -89,12 +89,7 @@ public class DriveTrain {
         RFTalon.set(ControlMode.PercentOutput, 0.0);
         HTalon.set(ControlMode.PercentOutput, 0.0);
  
-        // LFTalon.setNeutralMode(NeutralMode.Brake);
-        // RFTalon.setNeutralMode(NeutralMode.Brake);
-        // HTalon.setNeutralMode(NeutralMode.Brake);
- 
         pigeon.setYaw(0);
-        // this.zeroSensors();
         RMTalon.set(ControlMode.Follower, RFTalon.getDeviceID());
         RBTalon.set(ControlMode.Follower, RFTalon.getDeviceID());
         LMTalon.set(ControlMode.Follower, LFTalon.getDeviceID());
@@ -165,9 +160,7 @@ public class DriveTrain {
 	
 	public void readSensors() {
         leftEncoder = LFTalon.getSelectedSensorPosition(0);
-        rightEncoder = RFTalon.getSelectedSensorPosition(0);    
-        // pigeon.getYawPitchRoll(xyz_dps);
-        // currentYaw = -1.0 * xyz_dps[0]; 
+        rightEncoder = RFTalon.getSelectedSensorPosition(0);     
 	}
 	
 	public void allOff() {
@@ -183,47 +176,6 @@ public class DriveTrain {
 		} else {
 			return false;
 		}
-    }
-
-    public void turnGyro(double heading){
-        if (heading > 0) {
-            LFTalon.set(ControlMode.PercentOutput, 0.2);
-            RFTalon.set(ControlMode.PercentOutput, 0.2); }
-            else if (heading < 0) {
-                LFTalon.set(ControlMode.PercentOutput, 0.2);
-                RFTalon.set(ControlMode.PercentOutput, 0.2);
-            }
-            else {
-                LFTalon.set(ControlMode.PercentOutput, 0.0);
-                RFTalon.set(ControlMode.PercentOutput, 0.0);
-            };
-    }
-    
-	public boolean driveStraight(double distance) {
-        LFTalon.set(ControlMode.PercentOutput, 0.2);
-        RFTalon.set(ControlMode.PercentOutput, 0.2);
-		if (rightEncoder > distance) {
-			return true;
-		} else {
-			return false;
-		}	
-    }
-    // public void basicTurnOutput(double speed){
-    //     LFTalon.set(ControlMode.PercentOutput, speed);
-    //     RFTalon.set(ControlMode.PercentOutput, -speed);
-    // }
-
-    // public void basicSideOutput(double speed){
-    //     HTalon.set(ControlMode.PercentOutput, speed);
-    // }
-
-    public void LRControlVis(){
-        LFTalon.set(ControlMode.PercentOutput, vmotion.turnVision());
-        RFTalon.set(ControlMode.PercentOutput, -vmotion.turnVision());
-    }
-
-    public void HControlVis(){
-        HTalon.set(ControlMode.PercentOutput, vmotion.shuffleVisionPID());
     }
     
     public boolean lineUp(double pipeline){
@@ -241,18 +193,19 @@ public class DriveTrain {
     public boolean gyroLineUp(double pipeline, double maxOutput){
             switch (state){
                 case 0:
-            vmotion.setPipeline(pipeline);
-            this.getYaw();
-            vmotion.getTargetAngle(currentYaw);
-            vmotion.setGyroLineUpVars();
-            state++;
+                    vmotion.setPipeline(pipeline);
+                    this.getYaw();
+                    vmotion.getTargetAngle(currentYaw);
+                    vmotion.setGyroLineUpVars();
+                    state++;
+                    break;
                 case 1:
-              
+                    vmotion.gyroTargetLineUp(currentYaw, maxOutput);
+                    HTalon.set(ControlMode.PercentOutput, vmotion.outputGyroH(currentYaw, maxOutput));
+                    LFTalon.set(ControlMode.PercentOutput, vmotion.outputGyroL(currentYaw, maxOutput));
+                    RFTalon.set(ControlMode.PercentOutput, -vmotion.outputGyroR(currentYaw, maxOutput));
+                    break;
             }
-            vmotion.gyroTargetLineUp(currentYaw, maxOutput);
-            HTalon.set(ControlMode.PercentOutput, vmotion.outputGyroH(currentYaw, maxOutput));
-            LFTalon.set(ControlMode.PercentOutput, vmotion.outputGyroL(currentYaw, maxOutput));
-            RFTalon.set(ControlMode.PercentOutput, -vmotion.outputGyroR(currentYaw, maxOutput));
             if(vmotion.reachedTarget() == true){
                 return true;
             }else{

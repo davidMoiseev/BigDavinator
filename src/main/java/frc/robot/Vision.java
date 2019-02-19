@@ -30,11 +30,6 @@ private double distance = 0.0;
     }
     */
   }
-  
-  public void update()
-  {
-    getNetworkTables();
-  }
 
   public void getNetworkTables() {
     tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv"). getDouble(0);
@@ -63,7 +58,7 @@ public double getHeading(){   // could return targetHeading or heading using a b
   } 
 //}
 
-public double findDistance(){
+public double findDistance(){ //to the vision target, NOT THE BALL
   // getNetworkTables();
   a2 = getTY(); 
  distance = (hatchHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + a2));

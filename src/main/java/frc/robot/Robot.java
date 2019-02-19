@@ -40,8 +40,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
       driveTrain.automaticDropH();
-    //driveTrain.shuffleVision(); 
-    //driveTrain.HControlVis();
         switch(state){
           case 0:
           if(driveTrain.turnComplete(0.0) == true){
@@ -67,11 +65,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
       driveTrain.driveManualH(1.0, 1.0, 1.0, 1.0);
-
-
-      //driveTrain.arcadeDrive((Math.abs(forward) < .05 ? 0 : forward ), (Math.abs(turn) < .05 ? 0 : turn ));
-
-      
     }
     
     @Override
