@@ -11,9 +11,10 @@ private  double tx = 0;
 private double ty = 0;
 private  double heading = 0;
 private double targetHeading = 0;
-private double h2 = 28.875;
-private double h1 = 10.75;
-private double a1 = -2.148;
+private double hatchHeight = 28.875;
+private double cargoHeight = 28.875;
+private double limelightHeight = 10.75;
+private double limelightAngle = 0.447;//-2.148;
 private double a2 = 0.0;
 private double distance = 0.0;
 
@@ -65,8 +66,8 @@ public double getHeading(){   // could return targetHeading or heading using a b
 public double findDistance(){
   // getNetworkTables();
   a2 = getTY(); 
- distance = (h2 - h1) / Math.tan(Math.toRadians(a1 + a2));
-  // a1 = Math.atan((h2-h1)/38) - a2; /*calculates angle of limelight crosshair relative to ground*/
+ distance = (hatchHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + a2));
+  // limelightAngle = Math.atan((h2-limelightHeight)/38) - a2; /*calculates angle of limelight crosshair relative to ground*/
   // return a1;
  double distanceInches = distance / 5.85;
  return distanceInches;
@@ -82,5 +83,6 @@ public double canSeeTarget() {
 public void setPipeline(double pipeline){
   NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(pipeline);
 }
+
 
 }

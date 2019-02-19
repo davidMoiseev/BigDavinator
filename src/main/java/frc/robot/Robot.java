@@ -19,18 +19,19 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-      driveTrain.zeroSensors();
+     // driveTrain.zeroSensors();
         }
 
     @Override
     public void robotPeriodic() {
       driveTrain.readSensors();
+      driveTrain.getYaw();
       driveTrain.writeDashBoard();
     }
 
     @Override
     public void autonomousInit() {
-    driveTrain.zeroSensors();
+    //driveTrain.zeroSensors();
     driveTrain.DrivetrainConfig();
     }
 
@@ -40,16 +41,21 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
       driveTrain.automaticDropH();
     //driveTrain.shuffleVision(); 
-    
     //driveTrain.HControlVis();
         switch(state){
           case 0:
-            if(driveTrain.followBall() == true){
+          if(driveTrain.turnComplete(0.0) == true){
+            state++;
+          }
+        break;
+          case 1:
+            if(driveTrain.gyroLineUp(1, 0.3) == true){
               state++;
             }
           break;
-          case 1:
-          
+         
+          case 2:
+          driveTrain.allOff();
           break;
         }
        
