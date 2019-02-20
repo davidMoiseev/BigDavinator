@@ -230,7 +230,7 @@ public class DriveTrain implements IPigeonWrapper
      double HDriveOutput = ((joystick.getRawAxis(3) - joystick.getRawAxis(2)) / 2.0);
      HDriveOutputOld = HDriveOutput;
      Hstate = 0;
-     k = 0.1;
+     k = 0.01;
      spike = 0.3;
      //start up if statements spike in the positive and negative/ or do nothing
         //Negative
