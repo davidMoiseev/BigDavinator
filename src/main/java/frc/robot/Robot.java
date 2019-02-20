@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 import org.hotteam67.Interpolation;
+import org.hotteam67.HotController;
+import edu.wpi.first.wpilibj.Relay;
 
 public class Robot extends TimedRobot
 {
@@ -41,7 +43,7 @@ public class Robot extends TimedRobot
     Interpolation operatorLTrigger;
     Interpolation operatorRTrigger;
     // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
-
+    Relay relay;
     DriveTrain driveTrain;
 
     /*
@@ -122,7 +124,7 @@ public class Robot extends TimedRobot
         // rumble(operator);
 
         HotLogger.Log("StickLY", -driver.getStickLY());
-        driveTrain.arcadeDrive(driver.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
+        driveTrain.Update(driver);
 
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
@@ -145,6 +147,8 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
+        
+        relay = new Relay(1);
        //More precise than x^2, change the denominator of constant to calibrate
         driverLstick = input -> {
             if(input>0) {

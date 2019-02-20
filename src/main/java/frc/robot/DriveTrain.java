@@ -22,6 +22,7 @@ import org.hotteam67.HotPathFollower.State;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
+import edu.wpi.first.wpilibj.Timer;
 
 public class DriveTrain implements IPigeonWrapper
 {
@@ -59,6 +60,10 @@ public class DriveTrain implements IPigeonWrapper
     private final TalonSRX rightEncoder;
     private final TalonSRX leftEncoder;
     private double[] xyz_dps = new double[3];
+    private double HDriveOutputOld;
+    private int Hstate;
+    double k;
+    double spike;
 
     // values without offset
     private double leftEncoderValue = 0;
@@ -211,14 +216,79 @@ public class DriveTrain implements IPigeonWrapper
      * @param side
      *                    the hdrive output value
      */
+  
     public void Update(HotController joystick)
     {
         //(joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
-        hDriveMotor.set((joystick.getRawAxis(3) - joystick.getRawAxis(2)) / 2.0);
+        
         rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
         leftMotor.set(-joystick.getStickLY() + joystick.getStickRX());
+        hDriveMotor.set(HDriveOutput(joystick));
     }
-
+    public double HDriveOutput(HotController joystick)
+    {
+     double HDriveOutput = ((joystick.getRawAxis(3) - joystick.getRawAxis(2)) / 2.0);
+     HDriveOutputOld = HDriveOutput;
+     Hstate = 0;
+     k = 0.1;
+     spike = 0.3;
+     //start up if statements spike in the positive and negative/ or do nothing
+        //Negative
+        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) < 0.0 && HDriveOutputOld == 0.0)
+        {   
+            HDriveOutput = HDriveOutput - spike;
+            Hstate++;
+        }
+        //Nothing
+        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) == 0.0) 
+        {
+            HDriveOutputOld = HDriveOutput;
+            Hstate = 0;
+        }
+        //Positive
+        if (((Hstate == 0) && (HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) == 0.0))
+        {
+               HDriveOutput = HDriveOutput + spike;
+               Hstate++;
+        }
+        //once moving, either no change, keep state, positive ramp up  or ramp down accordingly
+        //nothing
+        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+            HDriveOutput = HDriveOutputOld;
+            Hstate = 1;
+        }
+        //ramp up
+        if ((Hstate == 1) && Math.abs(HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+           if(HDriveOutput > 0.0)
+           {
+                HDriveOutput = Math.abs(HDriveOutput) + k;
+                Hstate = 1;
+           }
+           else
+           {
+                HDriveOutput = HDriveOutput - k;
+                Hstate = 1;
+           }
+        }
+        //ramp down
+        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) < 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+            if(HDriveOutput > 0.0)
+            {
+                HDriveOutput = Math.abs(HDriveOutput) + k;
+                Hstate = 0;
+            }
+            else 
+            {
+                HDriveOutput = HDriveOutput - k;
+                Hstate = 0;
+            }
+        }
+        //once moving, either no change, keep state, negative ramp up or ramp down accordingly
+        return HDriveOutput;
+    }
     /**
      * Configure the Talon to Calibrate once the robot is stable
      */
