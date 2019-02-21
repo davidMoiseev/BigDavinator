@@ -64,6 +64,7 @@ public class DriveTrain implements IPigeonWrapper
     private int Hstate;
     double k;
     double spike;
+    double kAlt;
 
     // values without offset
     private double leftEncoderValue = 0;
@@ -222,7 +223,7 @@ public class DriveTrain implements IPigeonWrapper
         //(joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
         
         rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
-        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX());
+        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX() + 0.16*(HDriveOutput(joystick)));
         hDriveMotor.set(HDriveOutput(joystick));
     }
     public double HDriveOutput(HotController joystick)
@@ -230,8 +231,9 @@ public class DriveTrain implements IPigeonWrapper
      double HDriveOutput = ((joystick.getRawAxis(3) - joystick.getRawAxis(2)) / 2.0);
      HDriveOutputOld = HDriveOutput;
      Hstate = 0;
-     k = 0.01;
+     k = 0.02;
      spike = 0.3;
+     kAlt = 0.5;
      //start up if statements spike in the positive and negative/ or do nothing
         //Negative
         if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) < 0.0 && HDriveOutputOld == 0.0)
@@ -252,6 +254,21 @@ public class DriveTrain implements IPigeonWrapper
                Hstate++;
         }
         //once moving, either no change, keep state, positive ramp up  or ramp down accordingly
+
+        //if at extremes of 0.5 + where spike should be lesser than 0.3
+        if ((Hstate == 1) && Math.abs(HDriveOutput- HDriveOutputOld)> 1.0 && HDriveOutputOld > 0.5)
+        {
+            if(HDriveOutput > 0.0)
+            {
+                HDriveOutput = Math.abs(HDriveOutput) + kAlt;
+                Hstate = 1;
+            }
+            else 
+            {
+                HDriveOutput = HDriveOutput - kAlt;
+                Hstate = 1;
+            }
+        }
         //nothing
         if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) > 0.0)
         {
