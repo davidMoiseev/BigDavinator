@@ -40,6 +40,7 @@ public class Manipulator {
     private InitailizationState initailizationState;
     private ManipulatorState manipulatorState;
     private boolean startButtonPrevious = true;
+    private boolean commandToBack = false;
 
     public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake,
             DriveTrain drivetrain) {
@@ -101,8 +102,6 @@ public class Manipulator {
 
     private void Control(ManipulatorSetPoint targetPosition) {
 
-        startButtonPrevious = operator.getButtonStart();
-
         if (manipulatorState == ManipulatorState.intializing) {
             elevator.disable();
             arm.disable();
@@ -125,7 +124,7 @@ public class Manipulator {
                 if (wrist.reachedTarget()) {
                     arm.setTarget(ManipulatorSetPoint.firstPostion);
                     if (arm.reachedTarget()) {
-
+                        manipulatorState = ManipulatorState.atTarget;
                     }
                 }
             }
@@ -168,12 +167,22 @@ public class Manipulator {
 
         }
 
+        if (operator.getButtonStart() && !startButtonPrevious) {
+            commandToBack = !commandToBack;
+        }
+
         if (frontTargetPosition != null || backTargetPosition != null) {
-            Control(frontTargetPosition, backTargetPosition);
+            if (commandToBack)
+                Control(frontTargetPosition);
+            else {
+                Control(backTargetPosition);
+            }
         } else {
             elevator.disable();
             arm.disable();
             wrist.disable();
         }
+
+        startButtonPrevious = operator.getButtonStart();
     }
 }
