@@ -223,7 +223,7 @@ public class DriveTrain implements IPigeonWrapper
         //(joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
         
         rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
-        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX() + 0.16*(HDriveOutput(joystick)));
+        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX() + 0.15*(HDriveOutput(joystick)));
         hDriveMotor.set(HDriveOutput(joystick));
     }
     public double HDriveOutput(HotController joystick)
