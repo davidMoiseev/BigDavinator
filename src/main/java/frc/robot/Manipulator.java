@@ -99,7 +99,7 @@ public class Manipulator {
         wrist.displaySensorsValue();
     }
 
-    private void Control(ManipulatorSetPoint frontTargetPosition, ManipulatorSetPoint backTargetPosition) {
+    private void Control(ManipulatorSetPoint targetPosition) {
 
         startButtonPrevious = operator.getButtonStart();
 

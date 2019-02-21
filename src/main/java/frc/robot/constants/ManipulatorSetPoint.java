@@ -27,7 +27,8 @@ public enum ManipulatorSetPoint {
     cargo_rocketMid_front(3,0,10),
     cargo_rocketMid_back (3,0,10),
     cargo_rocketHigh_front(3,0,10),
-    cargo_rocketHigh_back (3,0,10);
+    cargo_rocketHigh_back(3, 0, 10),
+    manipulator_safe_minimum(36, 0, 0);
     
 
     private ManipulatorSetPoint(double elevatorHeight, double armAngle, double wristAngle) {
