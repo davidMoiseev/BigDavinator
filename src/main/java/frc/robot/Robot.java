@@ -147,10 +147,9 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
-        
-        relay = new Relay(1);
        //More precise than x^2, change the denominator of constant to calibrate
-        driverLstick = input -> {
+        
+       driverLstick = input -> {
             if(input>0) {
                 return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
             }
@@ -163,7 +162,7 @@ public class Robot extends TimedRobot
             if(input>0) {
                 return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
             }
-            else {
+            else{
                 return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
             }
         };
@@ -187,6 +186,7 @@ public class Robot extends TimedRobot
                 return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
             }
         };
+        
         operatorLTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
         operatorRTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
 

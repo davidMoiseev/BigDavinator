@@ -12,5 +12,4 @@ package org.hotteam67;
  */
 public interface Interpolation {
     public double outputFunction(double temp);
-    
 }
