@@ -5,11 +5,10 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-//Made By: Nicholas Stankovich 2019
+//Made By: Aidan Sweeney 2019
 //         Mark Schang
-//         Donovan Porter
 
-package org.hotteam67;
+package frc.robot;
 
 /**
  * Add your docs here.
@@ -17,13 +16,11 @@ package org.hotteam67;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+public class HotSticks extends Joystick{
 
-public class HotController extends Joystick{
-
-    public HotController(int port) {
+    public HotSticks(int port) {
         super (port);
     }
-
     private double deadbandLeft_X = 0.0;
     private double deadbandLeft_Y = 0.0;
     private double deadbandRight_X = 0.0;
@@ -59,7 +56,7 @@ public class HotController extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
+        return (temp*temp);
     }
     
 	public double getStickLY() {
@@ -72,7 +69,7 @@ public class HotController extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
+        return (temp*temp);
     }
     
 	public double getStickRX() {
@@ -85,7 +82,7 @@ public class HotController extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
+        return (Math.abs(temp)*temp);
     }
     
 	public double getStickRY() {
@@ -98,9 +95,8 @@ public class HotController extends Joystick{
         } else {
             temp = 0.0;
         }
-        return temp;
-    }
-    
+        return (Math.abs(temp)*temp);
+    }    
 	public double getLeftTrigger() {
         double value = getRawAxis(2);
         double temp;
@@ -149,12 +145,12 @@ public class HotController extends Joystick{
     }
 
     public boolean getButtonRightBumper() {
-		boolean value = getRawButton(6);
+		boolean value = getRawButton(5);
 		return value;
     }
 
     public boolean getButtonLeftBumper() {
-		boolean value = getRawButton(5);
+		boolean value = getRawButton(6);
 		return value;
     }
 
@@ -170,8 +166,7 @@ public class HotController extends Joystick{
 
 	public boolean getButtonLeftStick() {
 		boolean value = getRawButton(9);
-        return value;
-        
+		return value;
     }
 
     public boolean getButtonRightStick() {

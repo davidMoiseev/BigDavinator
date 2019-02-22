@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMax.SensorType;
 import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
@@ -21,6 +22,7 @@ import org.hotteam67.HotPathFollower.State;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
+import edu.wpi.first.wpilibj.Timer;
 
 public class DriveTrain implements IPigeonWrapper
 {
@@ -58,6 +60,11 @@ public class DriveTrain implements IPigeonWrapper
     private final TalonSRX rightEncoder;
     private final TalonSRX leftEncoder;
     private double[] xyz_dps = new double[3];
+    private double HDriveOutputOld;
+    private int Hstate;
+    double k;
+    double spike;
+    double kAlt;
 
     // values without offset
     private double leftEncoderValue = 0;
@@ -214,13 +221,95 @@ public class DriveTrain implements IPigeonWrapper
      * @param side
      *                    the hdrive output value
      */
-    public void arcadeDrive(double turn, double forward, double side)
+  
+    public void Update(HotController joystick)
     {
-        hDriveMotor.set(side);
-        rightMotor.set(forward - turn);
-        leftMotor.set(forward + turn);
+        //(joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
+        
+        rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
+        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX() + 0.15*(HDriveOutput(joystick)));
+        hDriveMotor.set(HDriveOutput(joystick));
     }
+    public double HDriveOutput(HotController joystick)
+    {
+     double HDriveOutput = ((joystick.getRawAxis(3) - joystick.getRawAxis(2)) / 2.0);
+     HDriveOutputOld = HDriveOutput;
+     Hstate = 0;
+     k = 0.02;
+     spike = 0.3;
+     kAlt = 0.5;
+     //start up if statements spike in the positive and negative/ or do nothing
+        //Negative
+        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) < 0.0 && HDriveOutputOld == 0.0)
+        {   
+            HDriveOutput = HDriveOutput - spike;
+            Hstate++;
+        }
+        //Nothing
+        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) == 0.0) 
+        {
+            HDriveOutputOld = HDriveOutput;
+            Hstate = 0;
+        }
+        //Positive
+        if (((Hstate == 0) && (HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) == 0.0))
+        {
+               HDriveOutput = HDriveOutput + spike;
+               Hstate++;
+        }
+        //once moving, either no change, keep state, positive ramp up  or ramp down accordingly
 
+        //if at extremes of 0.5 + where spike should be lesser than 0.3
+        if ((Hstate == 1) && Math.abs(HDriveOutput- HDriveOutputOld)> 1.0 && HDriveOutputOld > 0.5)
+        {
+            if(HDriveOutput > 0.0)
+            {
+                HDriveOutput = Math.abs(HDriveOutput) + kAlt;
+                Hstate = 1;
+            }
+            else 
+            {
+                HDriveOutput = HDriveOutput - kAlt;
+                Hstate = 1;
+            }
+        }
+        //nothing
+        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+            HDriveOutput = HDriveOutputOld;
+            Hstate = 1;
+        }
+        //ramp up
+        if ((Hstate == 1) && Math.abs(HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+           if(HDriveOutput > 0.0)
+           {
+                HDriveOutput = Math.abs(HDriveOutput) + k;
+                Hstate = 1;
+           }
+           else
+           {
+                HDriveOutput = HDriveOutput - k;
+                Hstate = 1;
+           }
+        }
+        //ramp down
+        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) < 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+            if(HDriveOutput > 0.0)
+            {
+                HDriveOutput = Math.abs(HDriveOutput) + k;
+                Hstate = 0;
+            }
+            else 
+            {
+                HDriveOutput = HDriveOutput - k;
+                Hstate = 0;
+            }
+        }
+        //once moving, either no change, keep state, negative ramp up or ramp down accordingly
+        return HDriveOutput;
+    }
     /**
      * Configure the Talon to Calibrate once the robot is stable
      */

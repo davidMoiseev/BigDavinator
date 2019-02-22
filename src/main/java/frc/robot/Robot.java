@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
+import org.hotteam67.Interpolation;
+import org.hotteam67.HotController;
+import edu.wpi.first.wpilibj.Relay;
 
 public class Robot extends TimedRobot
 {
@@ -29,8 +32,17 @@ public class Robot extends TimedRobot
     public static final int JOYSTICK_OPERATOR = 1;
 
     HotController driver = new HotController(JOYSTICK_DRIVER);
-    // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
+    Interpolation driverLstick;
+    Interpolation driverRstick;
+    Interpolation driverLTrigger;
+    Interpolation driverRTrigger;
 
+    Interpolation operatorLstick;
+    Interpolation operatorRstick;
+    Interpolation operatorLTrigger;
+    Interpolation operatorRTrigger;
+    // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
+    Relay relay;
     DriveTrain driveTrain;
     Manipulator manipulator;
     Compressor compressor;
@@ -125,7 +137,7 @@ public class Robot extends TimedRobot
         // rumble(operator);
 
         HotLogger.Log("StickLY", -driver.getStickLY());
-        driveTrain.arcadeDrive(driver.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
+        driveTrain.Update(driver);
 
         manipulator.Update();
 
@@ -151,6 +163,49 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
+       //More precise than x^2, change the denominator of constant to calibrate
+        
+       driverLstick = input -> {
+            if(input>0) {
+                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
+            }
+            else {
+                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
+            }
+        };
+
+        driverRstick = input -> {
+            if(input>0) {
+                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
+            }
+            else{
+                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
+            }
+        };
+
+        driverLTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
+        driverRTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
+
+        operatorLstick = input -> {
+            if(input>0) {
+                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
+            }
+            else {
+                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
+            }
+        };
+        operatorRstick = input -> {
+            if(input>0) {
+                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
+            }
+            else {
+                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
+            }
+        };
+        
+        operatorLTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
+        operatorRTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
+
         driver.setRumble(RumbleType.kLeftRumble, 0);
         driver.setRumble(RumbleType.kRightRumble, 0);
         driveTrain.zeroSensors();
@@ -166,6 +221,7 @@ public class Robot extends TimedRobot
     @Override
     public void disabledPeriodic()
     {
+
         /**
          * Clicked for the first time, the robotj is stable so start boot calibrate
          */
