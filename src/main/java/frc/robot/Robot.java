@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 import org.hotteam67.Interpolation;
-import org.hotteam67.HotController;
 import edu.wpi.first.wpilibj.Relay;
 
 public class Robot extends TimedRobot

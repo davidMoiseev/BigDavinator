@@ -45,7 +45,7 @@ public class Wrist extends MotionMagicActuator {
     @Override
     public void displaySensorsValue() {
         SmartDashboard.putNumber("Wirst Position ticks", getSensorValue());
-        SmartDashboard.putNumber("Wirst Position degree", getPosition());
+        SmartDashboard.putNumber("A Wirst Position degree", getPosition());
         SmartDashboard.putNumber("Wirst Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
             SmartDashboard.putNumber("Wirst Error", primaryTalon.getClosedLoopError());

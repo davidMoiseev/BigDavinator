@@ -24,10 +24,10 @@ public class HotController extends Joystick{
         super (port);
     }
 
-    private double deadbandLeft_X = 0.0;
-    private double deadbandLeft_Y = 0.0;
-    private double deadbandRight_X = 0.0;
-    private double deadbandRight_Y = 0.0;
+    private double deadbandLeft_X = 0.1;
+    private double deadbandLeft_Y = 0.1;
+    private double deadbandRight_X = 0.1;
+    private double deadbandRight_Y = 0.1;
     private double deadbandLeftTrigger = 0.0;
     private double deadbandRightTrigger = 0.0;
 

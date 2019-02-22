@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.hotteam67.HotController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 import frc.robot.constants.ManipulatorSetPoint;
 
@@ -112,7 +113,7 @@ public class Manipulator {
             elevator.disable();
             arm.disable();
             wrist.disable();
-            if (frontTargetPosition != null || backTargetPosition != null) {
+            if (targetPosition != null) {
                 manipulatorState = ManipulatorState.outOfPackagePosition;
             }
         }
@@ -131,7 +132,9 @@ public class Manipulator {
         }
 
         if (manipulatorState == ManipulatorState.atTarget) {
-
+            elevator.setTarget(targetPosition);
+            wrist.setTarget(targetPosition);
+            arm.setTarget(targetPosition);
         }
 
         if (manipulatorState == ManipulatorState.transition) {
@@ -147,18 +150,22 @@ public class Manipulator {
 
         if (operator.getButtonBack()) {
             frontTargetPosition = ManipulatorSetPoint.carry_front;
-            backTargetPosition = ManipulatorSetPoint.carry_back;
-        } else if (operator.getButtonA()) {
-            frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
         } else if (operator.getButtonB()) {
-
+            frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
+        } else if (operator.getButtonA()) {
+            frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
         } else if (operator.getButtonX()) {
-
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
         } else if (operator.getButtonY()) {
-
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
         } else if (operator.getButtonLeftBumper()) {
-
+            frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
+            backTargetPosition = ManipulatorSetPoint.hatch_low_front;
         } else if (operator.getButtonRightBumper()) {
 
         } else if (operator.getButtonLeftStick()) {
@@ -167,15 +174,15 @@ public class Manipulator {
 
         }
 
-        if (operator.getButtonStart() && !startButtonPrevious) {
-            commandToBack = !commandToBack;
-        }
+        // if (operator.getButtonStart() && !startButtonPrevious) {
+        // commandToBack = !commandToBack;
+        // }
 
         if (frontTargetPosition != null || backTargetPosition != null) {
-            if (commandToBack)
+            if (commandToBack) {
+                // Control(backTargetPosition);
+            } else {
                 Control(frontTargetPosition);
-            else {
-                Control(backTargetPosition);
             }
         } else {
             elevator.disable();
