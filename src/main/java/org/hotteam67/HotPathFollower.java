@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory.Segment;
 import jaci.pathfinder.followers.DistanceFollower;
@@ -47,6 +48,10 @@ public class HotPathFollower
     
     // Whether we are running in reverse
     private boolean isInverted = false;
+
+    private Segment segLeftPrev;
+
+    private Segment segRightPrev;
 
     /**
      * State of the follower. Disabled - not yet run, or has been reset Enabled -
@@ -234,13 +239,22 @@ public class HotPathFollower
             pathState = State.Enabled;
 
         // Path is enabled and the points are not yet complete
-        if (pathState == State.Enabled && !leftFollower.isFinished() || !rightFollower.isFinished())
+        if (pathState == State.Enabled && (!leftFollower.isFinished() || !rightFollower.isFinished()))
         {
             l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
             r = rightFollower.calculate(currentPositionRight) * GetPolarity();
+               
+            if(leftFollower.isFinished()){
+                segLeft = segLeftPrev;
+            }else {
+                segLeft = leftFollower.getSegment();
+            }
 
-            segLeft = leftFollower.getSegment();
-            segRight = rightFollower.getSegment();
+            if(rightFollower.isFinished()){
+                segRight = segRightPrev;
+            }else {
+                segRight = rightFollower.getSegment();
+            }
 
             Log("Left", segLeft, l);
             Log("Right", segRight, r);
@@ -253,11 +267,15 @@ public class HotPathFollower
             HotLogger.Log("Turn Output", turn);
             l -= turn * GetPolarity();
             r += turn * GetPolarity();
+
+            segLeftPrev = segLeft;
+            segRightPrev = segRight;
         }
 
         // We are done
         else
             pathState = State.Complete;
+            SmartDashboard.putNumber("working", 1);
 
         // We are there, no output
         if (pathState == State.Complete)

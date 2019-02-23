@@ -1,9 +1,0 @@
-[
-  {
-    "artifact": "frcJava (in project 2017DriverTryOut)",
-    "target": "roborio",
-    "debugfile": "frcJava_roborio.debugconfig",
-    "project": "2017DriverTryOut",
-    "language": "java"
-  }
-]

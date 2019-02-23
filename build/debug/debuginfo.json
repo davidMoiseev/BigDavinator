@@ -1,12 +1,5 @@
 [
   {
-    "artifact": "frcJava (in project 2017DriverTryOut)",
-    "target": "roborio",
-    "debugfile": "frcJava_roborio.debugconfig",
-    "project": "2017DriverTryOut",
-    "language": "java"
-  },
-  {
     "artifact": "frcJava (in project bigdavinator-1)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",

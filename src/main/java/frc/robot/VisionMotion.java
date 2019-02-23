@@ -63,6 +63,10 @@ public class VisionMotion {
     public double vxh;
     public double vxlr;
     public double distance = 0;
+    public double currentYaw;
+    public double referenceAngle;
+    private int target;
+
 
     public double findProportional(double targetHeading) {
         double error = vision.getHeading() - targetHeading;
@@ -128,7 +132,7 @@ public class VisionMotion {
     }
 
      public double driveToVisionDistance() {
-        if(vision.findDistance() < 20.0) {
+        if(vision.findDistance(this.selectTarget()) < 20.0) {
             motorOutput = 0.0;
             return motorOutput;
         }else{
@@ -139,6 +143,89 @@ public class VisionMotion {
 
     public void setPipeline(double pipeline){
         vision.setPipeline(pipeline);
+    }
+
+    public void sendAngle(double yaw){
+        if((currentYaw < 2 * Math.PI) && (currentYaw > -2 * Math.PI)){
+            currentYaw = yaw;
+        }
+        while (currentYaw > 2 * Math.PI){
+            currentYaw = currentYaw -2 * Math.PI;
+        }
+        while (currentYaw < -2 * Math.PI){
+            currentYaw = currentYaw + 2 * Math.PI;
+        }
+    }
+
+    public boolean getHigh(){ //true = high, false = low
+        if (vision.getTY() > 6) {
+            return true;
+        }
+        else if (vision.getTY() < 3) {
+            return false;
+        }
+        else if (vision.getTY() > 3 && vision.getTY() < 6) {
+            if(vision.getTA() < 5) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+    
+
+    public int selectTarget(){
+        if((currentYaw < (Math.PI / 8)) && (currentYaw > (Math.PI / -8))){ //if angle is zero
+            referenceAngle = 0;
+            target = 0; //front cargo ship
+            
+        }
+        else if((currentYaw > (3 * Math.PI / 8)) && (currentYaw < (5 * Math.PI / -8))){ //if angle is pi/2
+            referenceAngle = Math.PI / 2;
+            if(getHigh() == true){ //if it is high
+                target = 1; //right rocket center
+            }else if(getHigh() == false){ //if it is low
+                target = 2; //left side cargo
+            }   
+        }
+        else if((currentYaw < (-3 * Math.PI / 8)) && (currentYaw > (-5 * Math.PI / -8))){ //if angle is -pi/2
+            referenceAngle = Math.PI / -2;
+            if(getHigh() == true){ //if it is high
+                target = 3; //left rocket center
+            }else if( getHigh() == false){ //if it is low
+                target = 4; //right side cargo
+            } 
+        }
+        else if((currentYaw > (Math.PI / 8)) && (currentYaw < (3 * Math.PI / 8))){ //if angle is pi/4
+            referenceAngle = Math.PI / 4;
+            target = 5; //right rocket near
+            
+        }
+        else if((currentYaw < (-Math.PI / 8)) && (currentYaw > (-3 * Math.PI / 8))){ //if angle is -pi/4
+            referenceAngle = Math.PI / -4;
+            target = 6; //left rocket near
+            
+        }
+        else if((currentYaw > (5 * Math.PI / 8)) && (currentYaw < (7 * Math.PI / 8))){ //if angle is 3pi/4
+            referenceAngle = 3 * Math.PI / 4;
+            target = 7; //right rocket far 
+        }
+        else if((currentYaw < (-5 * Math.PI / 8)) && (currentYaw > (-7 * Math.PI / 8))){ //if angle is -3pi/4
+            referenceAngle = -3 * Math.PI / 4;
+            target = 8; //left rocket far 
+        }
+        else if((currentYaw > (Math.PI / -8)) && (currentYaw < (Math.PI / 8))){ //if angle is zero
+            referenceAngle = (Math.PI);
+            target = 0; //front cargo ship
+        }
+        return target;
+    }
+
+    public double getReferenceAngle(){
+        return referenceAngle;
     }
 
     public void targetLineUp(){ //faster but sloppier than gyroTargetLineUp
@@ -175,15 +262,16 @@ public class VisionMotion {
         return outputR;
     }
 
-    public void getTargetAngle(double yaw){
-        targetAngle = yaw + Math.toRadians(vision.getHeading());
+    public void getTargetAngle(){
+        targetAngle = referenceAngle + Math.toRadians(vision.getHeading());
     }
 
     public boolean setGyroLineUpVars(){
-        distance = vision.findDistance();
-        distanceHorizontal = vision.findDistance() * Math.tan(targetAngle);
-        angle2 = Math.atan((vision.findDistance() - targetVisDistance) / distanceHorizontal);
+        distance = vision.findDistance(this.selectTarget());
+        distanceHorizontal = distance * Math.tan(targetAngle);
+        angle2 = Math.atan((distance - targetVisDistance) / distanceHorizontal);
         angle1 = ((Math.PI / 2) - targetAngle) - angle2;
+        SmartDashboard.putNumber("distance", distance);
         return true;
     }
     public void gyroTargetLineUp(double yaw, double vt){ //vt is the motor output of the resultant
@@ -202,18 +290,9 @@ public class VisionMotion {
                 SmartDashboard.putNumber("vt", vt);
              }
 
-    public boolean reachedTarget() {
-        //distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal * distanceHorizontal));
-        if(vision.findDistance() <= targetVisDistance){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
     public boolean targetReached(double target) {
         //distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal * distanceHorizontal));
-        if(vision.findDistance() <= target){
+        if(vision.findDistance(this.selectTarget()) <= target){
             return true;
         }else{
             return false;
@@ -249,7 +328,6 @@ public class VisionMotion {
     public void writeDashBoardVis() {
         SmartDashboard.putNumber("heading", vision.getHeading());
         SmartDashboard.putNumber("Can Detect Target", vision.canSeeTarget());
-        SmartDashboard.putNumber("distance", vision.findDistance());
         SmartDashboard.putBoolean("Is h down", isHDown);
         SmartDashboard.putNumber("targetAngle", targetAngle);
         SmartDashboard.putNumber("distanceHorizontal", distanceHorizontal);

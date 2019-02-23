@@ -152,7 +152,7 @@ public class DriveTrain implements IPigeonWrapper
     public boolean FollowPath()
     {
         double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, -heading);
+        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, heading);
 
         rightMotor.set(pathOutput.Left);
         leftMotor.set(pathOutput.Right);
@@ -238,13 +238,23 @@ public class DriveTrain implements IPigeonWrapper
 			return false;
 		}
     }
-
+    public boolean turnToReferenceAngle() {
+        vmotion.sendAngle(xyz_dps[0]);
+        vmotion.selectTarget();
+        leftMotor.set(0.2);
+        rightMotor.set(0.2);
+        if (currentYaw > Math.toDegrees(vmotion.getReferenceAngle())) {
+			return true;
+		} else {
+			return false;
+		}
+    }
 	public boolean lineUp(double pipeline){
         vmotion.setPipeline(pipeline);
         hDriveMotor.set(vmotion.shuffleVisionPID());
         leftMotor.set(vmotion.outputL());
         rightMotor.set(-vmotion.outputR());
-        if(vmotion.reachedTarget() == true){
+        if(vmotion.targetReached(20.0) == true){
             return true;
         }else{
             return false;
@@ -256,14 +266,16 @@ public class DriveTrain implements IPigeonWrapper
                 case 0:
                     vmotion.setPipeline(pipeline);
                     this.getYaw();
-                    vmotion.getTargetAngle(currentYaw);
+                    vmotion.sendAngle(xyz_dps[0]);
+                    vmotion.getTargetAngle();
                     vmotion.setGyroLineUpVars();
                     state++;
                     break;
                 case 1:
                     vmotion.gyroTargetLineUp(currentYaw, maxOutput);
-                    hDriveMotor.set(vmotion.outputGyroH(currentYaw, maxOutput));
-                    leftMotor.set(vmotion.outputGyroL(currentYaw, maxOutput));
+                    double hOutput = vmotion.outputGyroH(currentYaw, maxOutput);
+                    hDriveMotor.set(hOutput);
+                    leftMotor.set(vmotion.outputGyroL(currentYaw, maxOutput) + (0.15 * hOutput));
                     rightMotor.set(-vmotion.outputGyroR(currentYaw, maxOutput));
                     break;
             }

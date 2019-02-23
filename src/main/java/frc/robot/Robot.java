@@ -54,6 +54,7 @@ public class Robot extends TimedRobot
      */
 
     public int state = 0;
+    boolean profileFinished = false;
 
     @Override
     public void robotInit()
@@ -86,20 +87,21 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-     // driveTrain.zeroSensors();
+     driveTrain.zeroSensors();
         driveTrain.zeroMotors();
         profileFinished = false;
         }
 
-    boolean profileFinished = false;
+   
 
     @Override
     public void autonomousPeriodic()
     {
         // May have to invert driveturn/drivespeed
-		
+		SmartDashboard.putNumber("state", state);
         driveTrain.readSensors();
-		        switch(state){
+        driveTrain.writeLogs();
+		switch(state){
           case 0:
             if (!profileFinished)
              profileFinished = driveTrain.FollowPath();
@@ -107,15 +109,16 @@ public class Robot extends TimedRobot
                 state++;
              }
              else {
-                // state = state + 3;
-                state++;
+                state = state + 3;
+                // state++;
              }
+          break;
           case 1:
-          if(driveTrain.turnComplete(0.0) == true){
+          if(driveTrain.turnToReferenceAngle() == true){
             //state++;
             state = state + 2;
           }
-        break;
+          break;
           case 2:
             if(driveTrain.gyroLineUp(1, 0.3, 50.0) == true){
               state++;
