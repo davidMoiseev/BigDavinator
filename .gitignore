@@ -17,6 +17,7 @@ bin
 *.lock
 BigDavinator.jar
 build/tmp/
+build/lib/
 
 # Package Files #
 *.war

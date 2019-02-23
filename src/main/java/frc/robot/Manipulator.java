@@ -46,6 +46,7 @@ public class Manipulator {
     private ManipulatorState manipulatorState;
     private boolean startButtonPrevious = true;
     private boolean commandToBack = false;
+<<<<<<< HEAD
 
     private double prevElevHeight;
     private double prevArmAngle;
@@ -60,6 +61,8 @@ public class Manipulator {
     private final double FRAME_COLLISION = 20;
     private final double SUPPORTS_COLLISION = 14; //need?
     private final double FRAME_LENGTH = 16; //14
+=======
+>>>>>>> 950a1522d3eeec2baddb81756d05c0729b5d7fbd
 
     public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake,
             DriveTrain drivetrain) {
@@ -111,6 +114,7 @@ public class Manipulator {
 
             }
         }
+        
     }
 
     public void DisplaySensors() {
@@ -125,6 +129,7 @@ public class Manipulator {
             targetPosition.armAngle(), targetPosition.wristAngle()) ||
             willCollideWithSupports(targetPosition.elevatorHeight(), targetPosition.armAngle(), targetPosition.wristAngle())) {
 
+<<<<<<< HEAD
                 setTargets(ManipulatorSetPoint.limit_front_high, ManipulatorSetPoint.limit_front_high,
                     ManipulatorSetPoint.limit_front_high);
         }
@@ -258,6 +263,31 @@ public class Manipulator {
                             //Making sure that the arm is safe before we move the wrist
                             setTargets(prevElevHeight, ManipulatorSetPoint.limit_back_high.armAngle(), prevWristAngle);
                         }
+=======
+        if (manipulatorState == ManipulatorState.intializing) {
+            elevator.disable();
+            arm.disable();
+            wrist.disable();
+        }
+
+        if (manipulatorState == ManipulatorState.packagePosition) {
+            elevator.disable();
+            arm.disable();
+            wrist.disable();
+            if (targetPosition != null) {
+                manipulatorState = ManipulatorState.outOfPackagePosition;
+            }
+        }
+
+        if (manipulatorState == ManipulatorState.outOfPackagePosition) {
+            elevator.setTarget(ManipulatorSetPoint.firstPostion);
+            if (elevator.reachedTarget()) {
+                wrist.setTarget(ManipulatorSetPoint.firstPostion);
+                if (wrist.reachedTarget()) {
+                    arm.setTarget(ManipulatorSetPoint.firstPostion);
+                    if (arm.reachedTarget()) {
+                        manipulatorState = ManipulatorState.atTarget;
+>>>>>>> 950a1522d3eeec2baddb81756d05c0729b5d7fbd
                     }
                 }
             }
@@ -265,8 +295,13 @@ public class Manipulator {
 
         if (manipulatorState == ManipulatorState.atTarget) {
             elevator.setTarget(targetPosition);
+<<<<<<< HEAD
             arm.setTarget(targetPosition);
             wrist.setTarget(targetPosition);
+=======
+            wrist.setTarget(targetPosition);
+            arm.setTarget(targetPosition);
+>>>>>>> 950a1522d3eeec2baddb81756d05c0729b5d7fbd
         }
 
         if (manipulatorState == ManipulatorState.transition) {
@@ -348,6 +383,7 @@ public class Manipulator {
         ManipulatorSetPoint targetPosition = null;
 
         if (operator.getButtonBack()) {
+<<<<<<< HEAD
             
         } else if (operator.getButtonB()) {
             
@@ -359,6 +395,25 @@ public class Manipulator {
             
         } else if (operator.getButtonLeftBumper()) {
             
+=======
+            frontTargetPosition = ManipulatorSetPoint.carry_front;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
+        } else if (operator.getButtonB()) {
+            frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
+        } else if (operator.getButtonA()) {
+            frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
+        } else if (operator.getButtonX()) {
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
+            backTargetPosition = ManipulatorSetPoint.carry_front;
+        } else if (operator.getButtonY()) {
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
+        } else if (operator.getButtonLeftBumper()) {
+            frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
+            backTargetPosition = ManipulatorSetPoint.hatch_low_front;
+>>>>>>> 950a1522d3eeec2baddb81756d05c0729b5d7fbd
         } else if (operator.getButtonRightBumper()) {
 
         } else if (operator.getButtonLeftStick()) {
@@ -371,20 +426,33 @@ public class Manipulator {
         // commandToBack = !commandToBack;
         // }
 
+<<<<<<< HEAD
         if (targetPosition != null)
         {
             Control(targetPosition);
         }
         else {
+=======
+        if (frontTargetPosition != null || backTargetPosition != null) {
+            if (commandToBack) {
+                // Control(backTargetPosition);
+            } else {
+                Control(frontTargetPosition);
+            }
+        } else {
+>>>>>>> 950a1522d3eeec2baddb81756d05c0729b5d7fbd
             elevator.disable();
             arm.disable();
             wrist.disable();
         }
 
         startButtonPrevious = operator.getButtonStart();
+<<<<<<< HEAD
 
         prevElevHeight = elevator.getPosition();
         prevArmAngle = arm.getPosition();
         prevWristAngle = wrist.getPosition();
+=======
+>>>>>>> 950a1522d3eeec2baddb81756d05c0729b5d7fbd
     }
 }

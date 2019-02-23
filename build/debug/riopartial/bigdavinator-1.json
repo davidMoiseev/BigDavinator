@@ -5,12 +5,5 @@
     "debugfile": "frcJava_roborio.debugconfig",
     "project": "bigdavinator-1",
     "language": "java"
-  },
-  {
-    "artifact": "frcJava (in project BigDavinator)",
-    "target": "roborio",
-    "debugfile": "frcJava_roborio.debugconfig",
-    "project": "BigDavinator",
-    "language": "java"
   }
 ]
