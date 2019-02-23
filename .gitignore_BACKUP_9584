@@ -16,7 +16,10 @@ bin
 *.bin
 *.lock
 BigDavinator.jar
+<<<<<<< HEAD
+=======
 build/tmp/
+>>>>>>> origin/master
 
 # Package Files #
 *.war
