@@ -93,6 +93,7 @@ public class Manipulator {
 
             }
         }
+        
     }
 
     public void DisplaySensors() {

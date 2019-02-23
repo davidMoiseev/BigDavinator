@@ -25,7 +25,7 @@ public class ElevatorConstants {
     public static final int timeoutms = 100;
     public static final int slotIdx = 0;
     public static final int pidIdx = 0;
-    public static final double feedForward = 0.18;
+    public static final double feedForward = 0.2;
     public static final double proportional = 0.2;//.71 initially
     public static final double derivative = 0.001;
     public static final double integral = 0.0020;//.0016 initially

@@ -30,11 +30,11 @@ public class Intake {
     this.joystick = joystick;      
     }
     public void Update() {
-        if(joystick.getButtonLeftBumper()) {
+        if(joystick.getButtonRightBumper()) {
             runIntake(Outspeed);
         
         }
-        if(joystick.getButtonRightBumper()) {
+        if(joystick.getButtonLeftBumper()) {
             runIntake(Inputspeed);
         }
         if(!joystick.getButtonLeftBumper() && !joystick.getButtonRightBumper()) {
