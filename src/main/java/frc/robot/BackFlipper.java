@@ -13,37 +13,37 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 //import com.ctre.phoenix.motorcfontrol.can.WPI_TalonSRX;
-import frc.robot.constants.FrontFlipperConstants;
+import frc.robot.constants.BackFlipperConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Add your docs here.
  */
 
-public class FrontFlipper extends MotionMagicActuator {
-    TalonSRX frontFlipper = new TalonSRX(13);
-    TalonSRX frontFlipperBack = new TalonSRX(14);
+public class BackFlipper extends MotionMagicActuator {
+    TalonSRX BackFlipper = new TalonSRX(15);
+    TalonSRX BackFlipperBack = new TalonSRX(16);
     double output = 0.0;
     
-public FrontFlipper(TalonSRX frontFlipper, TalonSRX frontFlipperBack)
+public BackFlipper(TalonSRX BackFlipper, TalonSRX BackFlipperBack)
 {
-    super(frontFlipper, frontFlipperBack);
-    SRX_PID_0.setSlotIdx(FrontFlipperConstants.slotIdx);
-    SRX_PID_0.setPidIdx(FrontFlipperConstants.pidIdx);
-    SRX_PID_0.setFeedForward(FrontFlipperConstants.feedForward);
-    SRX_PID_0.setProportional(FrontFlipperConstants.proportional);
-    SRX_PID_0.setDerivative(FrontFlipperConstants.derivative);
-    SRX_PID_0.setIntegral(FrontFlipperConstants.integral);
-    SRX_PID_0.setFeedbackDevice(FrontFlipperConstants.feedbackDevice);
+    super(BackFlipper, BackFlipperBack);
+    SRX_PID_0.setSlotIdx(BackFlipperConstants.slotIdx);
+    SRX_PID_0.setPidIdx(BackFlipperConstants.pidIdx);
+    SRX_PID_0.setFeedForward(BackFlipperConstants.feedForward);
+    SRX_PID_0.setProportional(BackFlipperConstants.proportional);
+    SRX_PID_0.setDerivative(BackFlipperConstants.derivative);
+    SRX_PID_0.setIntegral(BackFlipperConstants.integral);
+    SRX_PID_0.setFeedbackDevice(BackFlipperConstants.feedbackDevice);
 
 }
 public void Update(HotController joystick)
 	{
-        frontFlipper.set(ControlMode.PercentOutput, FrontFlipperOutput(joystick));
-        frontFlipperBack.set(ControlMode.PercentOutput, -FrontFlipperOutput(joystick));
+        BackFlipper.set(ControlMode.PercentOutput, BackFlipperOutput(joystick));
+        BackFlipperBack.set(ControlMode.PercentOutput, -BackFlipperOutput(joystick));
     }
 
-public double FrontFlipperOutput(HotController joystick)
+public double BackFlipperOutput(HotController joystick)
     {
         int flipperstate = 0;
         double flipperoutput = 0.0;
@@ -75,23 +75,23 @@ public double FrontFlipperOutput(HotController joystick)
     @Override
     public void displaySensorsValue()
     {
-        SmartDashboard.putNumber("FrontFlipper Position ticks", getSensorValue());
-        SmartDashboard.putNumber("FrontFlipper Power", frontFlipper.getMotorOutputPercent());
-        SmartDashboard.putBoolean("FrontFlipper Reached", reachedTarget());
+        SmartDashboard.putNumber("BackFlipper Position ticks", getSensorValue());
+        SmartDashboard.putNumber("BackFlipper Power", BackFlipper.getMotorOutputPercent());
+        SmartDashboard.putBoolean("BackFlipper Reached", reachedTarget());
     }
     @Override
     public void initialize() {
         super.initialize();
-        frontFlipper.setInverted(false);
+        BackFlipper.setInverted(false);
     }
     @Override
     public boolean reachedTarget(){
-        return Math.abs(getError()) <= FrontFlipperConstants.allowableError;
+        return Math.abs(getError()) <= BackFlipperConstants.allowableError;
     }
     @Override
     public double getPosition()
     {
-        return getSensorValue() * FrontFlipperConstants.TICKS_TO_INCHES;
+        return getSensorValue() * BackFlipperConstants.TICKS_TO_INCHES;
     }
     
 }

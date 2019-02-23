@@ -6,13 +6,12 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.constants;
-
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 /**
  * Add your docs here.
  */
-public class FrontFlipperConstants {
+public class BackFlipperConstants {
     public static final double nominalOutputForward = 0;
     public static final double nominalOutputReverse = 0;
     public static final int forwardSoftLimitThreshold = 30000;
