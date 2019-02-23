@@ -71,9 +71,7 @@ public class Wrist extends MotionMagicActuator {
         setTarget(targetPoint.wristAngle());
     }
 
-    @Override
     public boolean reachedTarget() {
-        return Math.abs(getError()) <= WristConstants.allowableError;
-    }
-
+        return super.reachedTarget(WristConstants.allowableError, WristConstants.minimumTimeToReachTarget);
+	}
 }

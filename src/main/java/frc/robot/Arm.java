@@ -67,10 +67,9 @@ public class Arm extends MotionMagicActuator {
         primaryTalon.setSelectedSensorPosition((int) (angle / ArmConstants.TICKS_TO_DEGREES));
     }
 
-    @Override
-    public boolean reachedTarget() {
-        return Math.abs(getError()) <= ArmConstants.allowableError;
-    }
+	public boolean reachedTarget() {
+        return super.reachedTarget(ArmConstants.allowableError, ArmConstants.minimumTimeToReachTarget);
+	}
 
     @Override
     public double getPosition() {

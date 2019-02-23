@@ -28,7 +28,10 @@ public enum ManipulatorSetPoint {
     cargo_rocketMid_back (9.5,-10,-83),//LT
     cargo_rocketHigh_front(33,1.5,61),//RT
     cargo_rocketHigh_back(33,-1.5,-61),//RT
-    manipulator_safe_minimum(36, 0, 0);//
+    limit_front_low(4, 90, 90),
+    limit_front_high(4, 50, 32),
+    limit_back_low(4, -90, -90),
+    limit_back_high(4, -50, -32);
     
     //Flip on M1 || M2
 

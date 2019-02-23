@@ -34,4 +34,5 @@ public class WristConstants {
 	public static final double TICKS_TO_DEGREES = 0.12 * 360/4096;
 	public static double lenght = 10;
     public static final int allowableError = (int) (1.5 / TICKS_TO_DEGREES);
+	public static final double minimumTimeToReachTarget = 0.3;
 }
