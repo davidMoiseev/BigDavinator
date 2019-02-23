@@ -73,7 +73,7 @@ public class Elevator extends MotionMagicActuator {
     }
 
 	public boolean reachedTarget() {
-        return Math.abs(getError()) <= ElevatorConstants.allowableError;
+        return super.reachedTarget(ElevatorConstants.allowableError, ElevatorConstants.minimumTimeToReachTarget);
 	}
 
     @Override
