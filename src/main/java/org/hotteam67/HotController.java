@@ -33,6 +33,7 @@ public class HotController extends Joystick{
 
     public void setDeadBandLX(double band){
         deadbandLeft_X = band;
+
     }
     public void setDeadBandLY(double band){
         deadbandLeft_Y = band;

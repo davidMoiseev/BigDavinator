@@ -44,7 +44,6 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
         SRX_PID_0 = new SRX_PID();
         secondaryTalon.set(ControlMode.Follower, this.primaryTalon.getDeviceID());
     }
-
     @Override
     public void initialize() {
         primaryTalon.configFactoryDefault();
