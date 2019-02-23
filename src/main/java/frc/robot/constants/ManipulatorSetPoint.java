@@ -9,7 +9,7 @@ package frc.robot.constants;
 
 public enum ManipulatorSetPoint {
 //0 16 115
-    firstPostion(3,0,0),
+    firstPosition(3,0,0),
     carry_front(5,0,20),
     carry_back (5,0,-20),
     hatch_low_front(17,167,90),
