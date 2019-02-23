@@ -13,6 +13,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcfontrol.can.WPI_TalonSRX;
+import frc.robot.constants.FrontFlipperConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Add your docs here.
@@ -33,22 +35,33 @@ public void Update(HotController joystick)
     }
 
 public double FrontFlipperOutput(HotController joystick)
-    //HotController joystick;
-    //this.joystick = new joystick(driver);
     {
+        int flipperstate = 0;
         double flipperoutput = 0.0;
-        if(joystick.getButtonB() == true) //move to out position
+        if((joystick.getButtonB() == false) && joystick.getButtonA()== false)
+        {
+            reached = 0;
+            flipperoutput = 0.0;
+        }
+        if(flipperstate == 0 && (joystick.getButtonB() == true) && (getSensorValue() == 0.0)) //move to out position
 		{
             reached = 180;
             flipperoutput = 0.2; //change to actual value later
+            flipperstate ++;
 		}
-		if (joystick.getButtonA()==true) //back to carry position
+        if (flipperstate == 1 && joystick.getButtonA()== false && getSensorValue() == 100)//actual encoder value //stopped at extended
+        {
+            reached = 180;
+            flipperoutput = 0.0;
+            flipperstate ++;
+        }
+        if (flipperstate == 1 && joystick.getButtonA()==true && getSensorValue() != 0.0) //back to carry position
 		{
-            
             reached = 0;
             flipperoutput = -0.2; // change to actual value later
+            flipperstate ++;
         }
-        else 
+        if (flipperstate == 2 && getSensorValue() == 0.0)
         {
             reached = 0;
             flipperoutput = 0.0;
@@ -58,6 +71,9 @@ public double FrontFlipperOutput(HotController joystick)
     @Override
     public void displaySensorsValue()
     {
+        SmartDashboard.putNumber("FrontFlipper Position ticks", getSensorValue());
+        SmartDashboard.putNumber("FrontFlipper Power", frontFlipper.getMotorOutputPercent());
+        SmartDashboard.putBoolean("FrontFlipper Reached", reachedTarget());
     }
 
     @Override
@@ -75,7 +91,7 @@ public double FrontFlipperOutput(HotController joystick)
     @Override
     public double getPosition()
     {
-        return 0;
+        return getSensorValue() * FrontFlipperConstants.TICKS_TO_INCHES;
     }
     
 }
