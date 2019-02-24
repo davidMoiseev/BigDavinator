@@ -473,19 +473,19 @@ public class Manipulator {
         } else if (operator.getButtonB()) {
             frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
             backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
-        } else if (operator.getButtonY()) {
+        } /* else if (operator.getButtonY()) {
             frontTargetPosition = ManipulatorSetPoint.hatch_high_front;
             backTargetPosition = ManipulatorSetPoint.hatch_high_back;
-        } else if (operator.getButtonLeftBumper()) {
+        } */ else if (operator.getButtonLeftBumper()) {
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
         } else if (isLeftTriggerPressed == true) {
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-        } else if (isRightTriggerPressed == true) {
+        } /*else if (isRightTriggerPressed == true) {
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
-        } else if (operator.getButtonRightBumper()) {
+        } */ else if (operator.getButtonRightBumper()) {
             frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
             backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
         } else if (operator.getButtonLeftStick()) {
