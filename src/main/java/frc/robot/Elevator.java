@@ -18,9 +18,11 @@ import frc.robot.constants.ManipulatorSetPoint;
  * Add your docs here.
  */
 
-public class Elevator extends MotionMagicActuator {
+public class Elevator extends MotionMagicActuator
+{
 
-    public Elevator(TalonSRX primaryTalon, TalonSRX secondaryTalon) {
+    public Elevator(TalonSRX primaryTalon, TalonSRX secondaryTalon)
+    {
         super(primaryTalon, secondaryTalon);
 
         setNominalOutputForward(ElevatorConstants.nominalOutputForward);
@@ -46,38 +48,45 @@ public class Elevator extends MotionMagicActuator {
     }
 
     @Override
-    public void initialize() {
+    public void initialize()
+    {
         super.initialize();
         primaryTalon.setInverted(true);
         secondaryTalon.setInverted(true);
     }
 
     @Override
-    public void displaySensorsValue() {
+    public void displaySensorsValue()
+    {
         SmartDashboard.putNumber("Elevator Position ticks", getSensorValue());
         SmartDashboard.putNumber("Elevator Position inches", getPosition());
         SmartDashboard.putNumber("Elevator Power", primaryTalon.getMotorOutputPercent());
         SmartDashboard.putNumber("Elevator Error", getError());
-        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
+        {
             SmartDashboard.putNumber("Elevator target", primaryTalon.getClosedLoopTarget());
         }
     }
 
     @Override
-    public void setTarget(double target) {
+    public void setTarget(double target)
+    {
         super.setTarget(target / ElevatorConstants.TICKS_TO_INCHES);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint) {
+    public void setTarget(ManipulatorSetPoint targetPoint)
+    {
         setTarget(targetPoint.elevatorHeight());
     }
 
-	public boolean reachedTarget() {
+    public boolean reachedTarget()
+    {
         return Math.abs(getError()) <= ElevatorConstants.allowableError;
-	}
+    }
 
     @Override
-    public double getPosition() {
+    public double getPosition()
+    {
         return getSensorValue() * ElevatorConstants.TICKS_TO_INCHES;
     }
 }

@@ -7,27 +7,27 @@ import org.hotteam67.HotController;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.constants.WiringIDs;
- 
 
-
-public class IntakePneumatics {
+public class IntakePneumatics
+{
 
 	Solenoid intakeSingle = new Solenoid(WiringIDs.SOLENOID_INTAKE);
 	HotController joystick;
-	
-	public IntakePneumatics(HotController joystick) {
+
+	public IntakePneumatics(HotController joystick)
+	{
 		this.joystick = joystick;
 	}
 
 	public void Update()
 	{
-		if(joystick.getButtonX()) 
+		if (joystick.getButtonX())
 		{
-	
-            intakeSingle.set(true);
-            
+
+			intakeSingle.set(true);
+
 		}
-		if(joystick.getButtonY()) 
+		if (joystick.getButtonY())
 		{
 
 			intakeSingle.set(false);
@@ -35,4 +35,3 @@ public class IntakePneumatics {
 		}
 	}
 }
-	

@@ -52,16 +52,16 @@ public class Robot extends TimedRobot
      * TalonSRX shoulder; TalonSRX wrist; TalonSRX intake;
      */
 
-     private boolean forceInitailization;
+    private boolean forceInitailization;
 
     @Override
     public void robotInit()
     {
-    compressor = new Compressor(0);
-    compressor.setClosedLoopControl(true);
+        compressor = new Compressor(0);
+        compressor.setClosedLoopControl(true);
 
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
-        TalonSRX frontFlipper = new TalonSRX(-1);//new TalonSRX(WiringIDs.FRONT_FLIPPER);
+        TalonSRX frontFlipper = new TalonSRX(-1);// new TalonSRX(WiringIDs.FRONT_FLIPPER);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
         HotController driver = new HotController(0);
         HotController operator = new HotController(1);
@@ -106,7 +106,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        
+
         driveTrain.readSensors();
         driveTrain.writeLogs();
         if (!profileFinished)
@@ -144,7 +144,7 @@ public class Robot extends TimedRobot
 
         driveTrain.readSensors();
         driveTrain.writeLogs();
-       
+
     }
 
     /**
@@ -162,48 +162,72 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
-       //More precise than x^2, change the denominator of constant to calibrate
-        
-       driverLstick = input -> {
-            if(input>0) {
-                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
+        // More precise than x^2, change the denominator of constant to calibrate
+
+        driverLstick = input ->
+        {
+            if (input > 0)
+            {
+                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
             }
-            else {
-                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
+            else
+            {
+                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
             }
         };
 
-        driverRstick = input -> {
-            if(input>0) {
-                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
+        driverRstick = input ->
+        {
+            if (input > 0)
+            {
+                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
             }
-            else{
-                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
+            else
+            {
+                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
             }
         };
 
-        driverLTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
-        driverRTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
+        driverLTrigger = input ->
+        {
+            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
+        };
+        driverRTrigger = input ->
+        {
+            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
+        };
 
-        operatorLstick = input -> {
-            if(input>0) {
-                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
+        operatorLstick = input ->
+        {
+            if (input > 0)
+            {
+                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
             }
-            else {
-                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
-            }
-        };
-        operatorRstick = input -> {
-            if(input>0) {
-                return (Math.sqrt(Math.pow(10, ((input)*5)-5)));
-            }
-            else {
-                return -1*(Math.sqrt(Math.pow(10, ((input)*-5)-5)));
+            else
+            {
+                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
             }
         };
-        
-        operatorLTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
-        operatorRTrigger = input -> { return (Math.sqrt(Math.pow(10, ((input)*5)-5)));};
+        operatorRstick = input ->
+        {
+            if (input > 0)
+            {
+                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
+            }
+            else
+            {
+                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
+            }
+        };
+
+        operatorLTrigger = input ->
+        {
+            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
+        };
+        operatorRTrigger = input ->
+        {
+            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
+        };
 
         driver.setRumble(RumbleType.kLeftRumble, 0);
         driver.setRumble(RumbleType.kRightRumble, 0);
@@ -224,7 +248,7 @@ public class Robot extends TimedRobot
         /**
          * Clicked for the first time, the robotj is stable so start boot calibrate
          */
-        if ((SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing) || forceInitailization )
+        if ((SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing) || forceInitailization)
         {
             forceInitailization = false;
             driveTrain.CalibratePigeon();

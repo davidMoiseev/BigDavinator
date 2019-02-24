@@ -7,15 +7,16 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * List of PI Gains that work:
- * P = .7; I = .0016 (Alright)
- * P = .71; I = .0016 (Best)
+ * List of PI Gains that work: P = .7; I = .0016 (Alright) P = .71; I = .0016
+ * (Best)
  * 
  */
-public class ElevatorOld {
+public class ElevatorOld
+{
     TalonSRX ElevatorTalon = new TalonSRX(5);
 
-    public void elevatorINIT(){
+    public void elevatorINIT()
+    {
         ElevatorTalon.configFactoryDefault();
         ElevatorTalon.selectProfileSlot(0, 0);
         ElevatorTalon.config_kF(0, .2378);
@@ -33,71 +34,91 @@ public class ElevatorOld {
         ElevatorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 100);
         ElevatorTalon.setSensorPhase(true);
     }
-public static int MAX_LIMIT = 20000;
-public static int MIN_LIMIT = 1000;
-public static double RAISE_CMD = 0.5;
-public static double LOWER_CMD = -0.5;
-public double TargetHeight = 0;
 
-public double position = 0;
+    public static int MAX_LIMIT = 20000;
+    public static int MIN_LIMIT = 1000;
+    public static double RAISE_CMD = 0.5;
+    public static double LOWER_CMD = -0.5;
+    public double TargetHeight = 0;
 
-public double getElevatorPosition() {
-    position = ElevatorTalon.getSelectedSensorPosition();
-    return position;
-}
-public void getElevatorPower() {
-    SmartDashboard.putNumber("Motor Power", ElevatorTalon.getMotorOutputPercent());
-}
+    public double position = 0;
 
-public void disableElevator(){
-    ElevatorTalon.set(ControlMode.PercentOutput, 0);
-}
+    public double getElevatorPosition()
+    {
+        position = ElevatorTalon.getSelectedSensorPosition();
+        return position;
+    }
 
-public void zeroElevatorPosition() {
-    ElevatorTalon.setSelectedSensorPosition(0);
-}
+    public void getElevatorPower()
+    {
+        SmartDashboard.putNumber("Motor Power", ElevatorTalon.getMotorOutputPercent());
+    }
 
-public double getClosedLoopError(){
-    return ElevatorTalon.getClosedLoopError(0);
-}
-
-public void raiseElevator(){
-    if (ElevatorTalon.getSelectedSensorPosition() < MAX_LIMIT){
-        ElevatorTalon.set(ControlMode.PercentOutput, RAISE_CMD);
-    } else{
+    public void disableElevator()
+    {
         ElevatorTalon.set(ControlMode.PercentOutput, 0);
     }
-}
 
-public void lowerElevator(){
-    if (ElevatorTalon.getSelectedSensorPosition() > MIN_LIMIT){
-        ElevatorTalon.set(ControlMode.PercentOutput, LOWER_CMD);
-    } else{
-        ElevatorTalon.set(ControlMode.PercentOutput, 0);
+    public void zeroElevatorPosition()
+    {
+        ElevatorTalon.setSelectedSensorPosition(0);
     }
-}
 
-public void motionMagicElevatorTop(){
+    public double getClosedLoopError()
+    {
+        return ElevatorTalon.getClosedLoopError(0);
+    }
+
+    public void raiseElevator()
+    {
+        if (ElevatorTalon.getSelectedSensorPosition() < MAX_LIMIT)
+        {
+            ElevatorTalon.set(ControlMode.PercentOutput, RAISE_CMD);
+        }
+        else
+        {
+            ElevatorTalon.set(ControlMode.PercentOutput, 0);
+        }
+    }
+
+    public void lowerElevator()
+    {
+        if (ElevatorTalon.getSelectedSensorPosition() > MIN_LIMIT)
+        {
+            ElevatorTalon.set(ControlMode.PercentOutput, LOWER_CMD);
+        }
+        else
+        {
+            ElevatorTalon.set(ControlMode.PercentOutput, 0);
+        }
+    }
+
+    public void motionMagicElevatorTop()
+    {
         TargetHeight = 15000;
         ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
-}
+    }
 
-public void motionMagicElevatorPrettyLow(){
-    TargetHeight = 2000;
-    ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
-}
+    public void motionMagicElevatorPrettyLow()
+    {
+        TargetHeight = 2000;
+        ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
+    }
 
-public void motionMagicElevatorMid(){
-    TargetHeight = 10000;
-    ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
-}
+    public void motionMagicElevatorMid()
+    {
+        TargetHeight = 10000;
+        ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
+    }
 
-public void motionMagicElevatorLow(){
+    public void motionMagicElevatorLow()
+    {
         TargetHeight = 1000;
         ElevatorTalon.set(ControlMode.MotionMagic, TargetHeight);
-}
+    }
 
-public void zeroElevator(){
+    public void zeroElevator()
+    {
         ElevatorTalon.setSelectedSensorPosition(0, 0, 0);
     }
 }

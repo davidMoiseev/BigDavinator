@@ -10,7 +10,9 @@ package frc.robot;
 /**
  * Add your docs here.
  */
-public interface IPigeonWrapper {
+public interface IPigeonWrapper
+{
     void CalibratePigeon();
+
     boolean PigeonReady();
 }

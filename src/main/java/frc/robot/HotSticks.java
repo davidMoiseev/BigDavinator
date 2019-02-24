@@ -16,11 +16,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 
-public class HotSticks extends Joystick{
+public class HotSticks extends Joystick
+{
 
-    public HotSticks(int port) {
-        super (port);
+    public HotSticks(int port)
+    {
+        super(port);
     }
+
     private double deadbandLeft_X = 0.0;
     private double deadbandLeft_Y = 0.0;
     private double deadbandRight_X = 0.0;
@@ -28,156 +31,214 @@ public class HotSticks extends Joystick{
     private double deadbandLeftTrigger = 0.0;
     private double deadbandRightTrigger = 0.0;
 
-    public void setDeadBandLX(double band){
+    public void setDeadBandLX(double band)
+    {
         deadbandLeft_X = band;
     }
-    public void setDeadBandLY(double band){
+
+    public void setDeadBandLY(double band)
+    {
         deadbandLeft_Y = band;
     }
-    public void setDeadBandRX(double band){
+
+    public void setDeadBandRX(double band)
+    {
         deadbandRight_X = band;
     }
-    public void setDeadBandRY(double band){
+
+    public void setDeadBandRY(double band)
+    {
         deadbandRight_Y = band;
     }
-    public void setDeadBandLT(double band){
+
+    public void setDeadBandLT(double band)
+    {
         deadbandLeftTrigger = band;
     }
-    public void setDeadBandRT(double band){
+
+    public void setDeadBandRT(double band)
+    {
         deadbandRightTrigger = band;
     }
-	public double getStickLX() {
+
+    public double getStickLX()
+    {
         double value = getRawAxis(0);
         double temp;
-		if (value < -1 * deadbandLeft_X) {
+        if (value < -1 * deadbandLeft_X)
+        {
             temp = (value + deadbandLeft_X) / (1 - deadbandLeft_X);
-        } else if (value > deadbandLeft_X) {
+        }
+        else if (value > deadbandLeft_X)
+        {
             temp = (value - deadbandLeft_X) / (1 - deadbandLeft_X);
-        } else {
+        }
+        else
+        {
             temp = 0.0;
         }
-        return (temp*temp);
+        return (temp * temp);
     }
-    
-	public double getStickLY() {
+
+    public double getStickLY()
+    {
         double value = getRawAxis(1);
         double temp;
-		if (value < -1 * deadbandLeft_Y) {
+        if (value < -1 * deadbandLeft_Y)
+        {
             temp = (value + deadbandLeft_Y) / (1 - deadbandLeft_Y);
-        } else if (value > deadbandLeft_Y) {
+        }
+        else if (value > deadbandLeft_Y)
+        {
             temp = (value - deadbandLeft_Y) / (1 - deadbandLeft_Y);
-        } else {
+        }
+        else
+        {
             temp = 0.0;
         }
-        return (temp*temp);
+        return (temp * temp);
     }
-    
-	public double getStickRX() {
+
+    public double getStickRX()
+    {
         double value = getRawAxis(4);
         double temp;
-		if (value < -1 * deadbandRight_X) {
+        if (value < -1 * deadbandRight_X)
+        {
             temp = (value + deadbandRight_X) / (1 - deadbandRight_X);
-        } else if (value > deadbandRight_X) {
+        }
+        else if (value > deadbandRight_X)
+        {
             temp = (value - deadbandRight_X) / (1 - deadbandRight_X);
-        } else {
+        }
+        else
+        {
             temp = 0.0;
         }
-        return (Math.abs(temp)*temp);
+        return (Math.abs(temp) * temp);
     }
-    
-	public double getStickRY() {
+
+    public double getStickRY()
+    {
         double value = getRawAxis(5);
         double temp;
-		if (value < -1 * deadbandRight_Y) {
+        if (value < -1 * deadbandRight_Y)
+        {
             temp = (value + deadbandRight_Y) / (1 - deadbandRight_Y);
-        } else if (value > deadbandRight_Y) {
+        }
+        else if (value > deadbandRight_Y)
+        {
             temp = (value - deadbandRight_Y) / (1 - deadbandRight_Y);
-        } else {
+        }
+        else
+        {
             temp = 0.0;
         }
-        return (Math.abs(temp)*temp);
-    }    
-	public double getLeftTrigger() {
+        return (Math.abs(temp) * temp);
+    }
+
+    public double getLeftTrigger()
+    {
         double value = getRawAxis(2);
         double temp;
-		if (value < -1 * deadbandLeftTrigger) {
+        if (value < -1 * deadbandLeftTrigger)
+        {
             temp = (value + deadbandLeftTrigger) / (1 - deadbandLeftTrigger);
-        } else if (value > deadbandLeftTrigger) {
+        }
+        else if (value > deadbandLeftTrigger)
+        {
             temp = (value - deadbandLeftTrigger) / (1 - deadbandLeftTrigger);
-        } else {
+        }
+        else
+        {
             temp = 0.0;
         }
         return temp;
     }
-    
 
-	public double getRightTrigger() {
+    public double getRightTrigger()
+    {
         double value = getRawAxis(3);
         double temp;
-		if (value < -1 * deadbandRightTrigger) {
+        if (value < -1 * deadbandRightTrigger)
+        {
             temp = (value + deadbandRightTrigger) / (1 - deadbandRightTrigger);
-        } else if (value > deadbandRightTrigger) {
+        }
+        else if (value > deadbandRightTrigger)
+        {
             temp = (value - deadbandRightTrigger) / (1 - deadbandRightTrigger);
-        } else {
+        }
+        else
+        {
             temp = 0.0;
         }
         return temp;
     }
-    
-	public boolean getButtonA() {
-		boolean value = getRawButton(1);
-		return value;
-    }
-    
-	public boolean getButtonB() {
-		boolean value = getRawButton(2);
-		return value;
-    }
-    
-	public boolean getButtonX() {
-		boolean value = getRawButton(3);
-		return value;
-    }
-    
-	public boolean getButtonY() {
-		boolean value = getRawButton(4);
-		return value;
-    }
 
-    public boolean getButtonRightBumper() {
-		boolean value = getRawButton(5);
-		return value;
-    }
-
-    public boolean getButtonLeftBumper() {
-		boolean value = getRawButton(6);
-		return value;
-    }
-
-    public boolean getButtonBack() {
-		boolean value = getRawButton(7);
-		return value;
-    }
-
-	public boolean getButtonStart() {
-		boolean value = getRawButton(8);
-		return value;
-    }
-
-	public boolean getButtonLeftStick() {
-		boolean value = getRawButton(9);
-		return value;
-    }
-
-    public boolean getButtonRightStick() {
-		boolean value = getRawButton(10);
-		return value;
-    }
-
-    public int getDpad(){
-        int value = getPOV();
+    public boolean getButtonA()
+    {
+        boolean value = getRawButton(1);
         return value;
     }
 
+    public boolean getButtonB()
+    {
+        boolean value = getRawButton(2);
+        return value;
+    }
+
+    public boolean getButtonX()
+    {
+        boolean value = getRawButton(3);
+        return value;
+    }
+
+    public boolean getButtonY()
+    {
+        boolean value = getRawButton(4);
+        return value;
+    }
+
+    public boolean getButtonRightBumper()
+    {
+        boolean value = getRawButton(5);
+        return value;
+    }
+
+    public boolean getButtonLeftBumper()
+    {
+        boolean value = getRawButton(6);
+        return value;
+    }
+
+    public boolean getButtonBack()
+    {
+        boolean value = getRawButton(7);
+        return value;
+    }
+
+    public boolean getButtonStart()
+    {
+        boolean value = getRawButton(8);
+        return value;
+    }
+
+    public boolean getButtonLeftStick()
+    {
+        boolean value = getRawButton(9);
+        return value;
+    }
+
+    public boolean getButtonRightStick()
+    {
+        boolean value = getRawButton(10);
+        return value;
+    }
+
+    public int getDpad()
+    {
+        int value = getPOV();
+        return value;
+    }
 
 }

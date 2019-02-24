@@ -16,8 +16,10 @@ import frc.robot.constants.WristConstants;
 /**
  * Add your docs here.
  */
-public class Wrist extends MotionMagicActuator {
-    public Wrist(int primaryCAN_ID/* , int secondaryCAN_ID */) {
+public class Wrist extends MotionMagicActuator
+{
+    public Wrist(int primaryCAN_ID/* , int secondaryCAN_ID */)
+    {
         super(primaryCAN_ID/* , secondaryCAN_ID */);
 
         setNominalOutputForward(WristConstants.nominalOutputForward);
@@ -43,36 +45,43 @@ public class Wrist extends MotionMagicActuator {
     }
 
     @Override
-    public void displaySensorsValue() {
+    public void displaySensorsValue()
+    {
         SmartDashboard.putNumber("Wirst Position ticks", getSensorValue());
         SmartDashboard.putNumber("A Wirst Position degree", getPosition());
         SmartDashboard.putNumber("Wirst Power", primaryTalon.getMotorOutputPercent());
-        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
+        {
             SmartDashboard.putNumber("Wirst Error", primaryTalon.getClosedLoopError());
             SmartDashboard.putNumber("Wirst target", primaryTalon.getClosedLoopTarget());
         }
     }
 
-    public void setPosition(double angle) {
+    public void setPosition(double angle)
+    {
         primaryTalon.setSelectedSensorPosition((int) (angle / WristConstants.TICKS_TO_DEGREES));
     }
 
     @Override
-    public double getPosition() {
+    public double getPosition()
+    {
         return getSensorValue() * WristConstants.TICKS_TO_DEGREES;
     }
 
     @Override
-    public void setTarget(double target) {
+    public void setTarget(double target)
+    {
         super.setTarget(-target / WristConstants.TICKS_TO_DEGREES);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint) {
+    public void setTarget(ManipulatorSetPoint targetPoint)
+    {
         setTarget(targetPoint.wristAngle());
     }
 
     @Override
-    public boolean reachedTarget() {
+    public boolean reachedTarget()
+    {
         return Math.abs(getError()) <= WristConstants.allowableError;
     }
 

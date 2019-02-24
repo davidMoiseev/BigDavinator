@@ -158,7 +158,9 @@ public class DriveTrain implements IPigeonWrapper
         leftEncoderValue = leftEncoder.getSelectedSensorPosition();
         pigeon.getYawPitchRoll(xyz_dps);
     }
-    public double getPitch() {
+
+    public double getPitch()
+    {
         return xyz_dps[1];
     }
 

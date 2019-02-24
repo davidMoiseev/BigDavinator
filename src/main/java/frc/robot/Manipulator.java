@@ -18,13 +18,16 @@ import frc.robot.constants.ManipulatorSetPoint;
 /**
  * Add your docs here.
  */
-public class Manipulator {
+public class Manipulator
+{
 
-    private enum InitailizationState {
+    private enum InitailizationState
+    {
         UNINITALIZED, CALIBRATING, READY
     }
 
-    private enum ManipulatorState {
+    private enum ManipulatorState
+    {
         intializing, packagePosition, outOfPackagePosition, transition, atTarget;
     }
 
@@ -44,7 +47,8 @@ public class Manipulator {
     private boolean commandToBack = false;
 
     public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake,
-            DriveTrain drivetrain) {
+            DriveTrain drivetrain)
+    {
         this.elevator = new Elevator(new TalonSRX(WiringIDs.LEFT_ELEVATOR), rightElevator);
         this.wrist = new Wrist(WiringIDs.WRIST);
         this.arm = new Arm(WiringIDs.SHOULDER);
@@ -61,30 +65,37 @@ public class Manipulator {
 
     }
 
-    public void InitializeTalons() {
+    public void InitializeTalons()
+    {
         elevator.initialize();
         wrist.initialize();
         arm.initialize();
     }
 
-    public void RestartInitialization() {
+    public void RestartInitialization()
+    {
         initailizationState = InitailizationState.UNINITALIZED;
     }
 
-    public boolean isReady() {
+    public boolean isReady()
+    {
         return initailizationState == InitailizationState.READY;
     }
 
-    public void RunManipulatorInitialization() {
+    public void RunManipulatorInitialization()
+    {
 
-        if (initailizationState == InitailizationState.UNINITALIZED) {
+        if (initailizationState == InitailizationState.UNINITALIZED)
+        {
             armPigeon.RestartCalibration();
             initailizationState = InitailizationState.CALIBRATING;
         }
-        if (initailizationState == InitailizationState.CALIBRATING) {
+        if (initailizationState == InitailizationState.CALIBRATING)
+        {
 
             armPigeon.CalibratePigeon();
-            if (armPigeon.PigeonReady()) {
+            if (armPigeon.PigeonReady())
+            {
                 initailizationState = InitailizationState.READY;
                 manipulatorState = ManipulatorState.packagePosition;
                 arm.setPosition(armPigeon.GetAngle());
@@ -95,82 +106,111 @@ public class Manipulator {
         }
     }
 
-    public void DisplaySensors() {
+    public void DisplaySensors()
+    {
         elevator.displaySensorsValue();
         arm.displaySensorsValue();
         wrist.displaySensorsValue();
     }
 
-    private void Control(ManipulatorSetPoint targetPosition) {
+    private void Control(ManipulatorSetPoint targetPosition)
+    {
 
-        if (manipulatorState == ManipulatorState.intializing) {
+        if (manipulatorState == ManipulatorState.intializing)
+        {
             elevator.disable();
             arm.disable();
             wrist.disable();
         }
 
-        if (manipulatorState == ManipulatorState.packagePosition) {
+        if (manipulatorState == ManipulatorState.packagePosition)
+        {
             elevator.disable();
             arm.disable();
             wrist.disable();
-            if (targetPosition != null) {
+            if (targetPosition != null)
+            {
                 manipulatorState = ManipulatorState.outOfPackagePosition;
             }
         }
 
-        if (manipulatorState == ManipulatorState.outOfPackagePosition) {
+        if (manipulatorState == ManipulatorState.outOfPackagePosition)
+        {
             elevator.setTarget(ManipulatorSetPoint.firstPostion);
-            if (elevator.reachedTarget()) {
+            if (elevator.reachedTarget())
+            {
                 wrist.setTarget(ManipulatorSetPoint.firstPostion);
-                if (wrist.reachedTarget()) {
+                if (wrist.reachedTarget())
+                {
                     arm.setTarget(ManipulatorSetPoint.firstPostion);
-                    if (arm.reachedTarget()) {
+                    if (arm.reachedTarget())
+                    {
                         manipulatorState = ManipulatorState.atTarget;
                     }
                 }
             }
         }
 
-        if (manipulatorState == ManipulatorState.atTarget) {
+        if (manipulatorState == ManipulatorState.atTarget)
+        {
             elevator.setTarget(targetPosition);
             wrist.setTarget(targetPosition);
             arm.setTarget(targetPosition);
         }
 
-        if (manipulatorState == ManipulatorState.transition) {
+        if (manipulatorState == ManipulatorState.transition)
+        {
 
         }
     }
 
-    public void Update() {
+    public void Update()
+    {
         intake.Update();
         pneumaticIntake.Update();
         ManipulatorSetPoint frontTargetPosition = null;
         ManipulatorSetPoint backTargetPosition = null;
 
-        if (operator.getButtonBack()) {
+        if (operator.getButtonBack())
+        {
             frontTargetPosition = ManipulatorSetPoint.carry_front;
             backTargetPosition = ManipulatorSetPoint.carry_front;
-        } else if (operator.getButtonB()) {
+        }
+        else if (operator.getButtonB())
+        {
             frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
             backTargetPosition = ManipulatorSetPoint.carry_front;
-        } else if (operator.getButtonA()) {
+        }
+        else if (operator.getButtonA())
+        {
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.carry_front;
-        } else if (operator.getButtonX()) {
+        }
+        else if (operator.getButtonX())
+        {
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
             backTargetPosition = ManipulatorSetPoint.carry_front;
-        } else if (operator.getButtonY()) {
+        }
+        else if (operator.getButtonY())
+        {
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
-        } else if (operator.getButtonLeftBumper()) {
+        }
+        else if (operator.getButtonLeftBumper())
+        {
             frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
             backTargetPosition = ManipulatorSetPoint.hatch_low_front;
-        } else if (operator.getButtonRightBumper()) {
+        }
+        else if (operator.getButtonRightBumper())
+        {
 
-        } else if (operator.getButtonLeftStick()) {
+        }
+        else if (operator.getButtonLeftStick())
+        {
 
-        } else if (operator.getButtonRightStick()) {
+        }
+        else if (operator.getButtonRightStick())
+        {
 
         }
 
@@ -178,13 +218,19 @@ public class Manipulator {
         // commandToBack = !commandToBack;
         // }
 
-        if (frontTargetPosition != null || backTargetPosition != null) {
-            if (commandToBack) {
+        if (frontTargetPosition != null || backTargetPosition != null)
+        {
+            if (commandToBack)
+            {
                 // Control(backTargetPosition);
-            } else {
+            }
+            else
+            {
                 Control(frontTargetPosition);
             }
-        } else {
+        }
+        else
+        {
             elevator.disable();
             arm.disable();
             wrist.disable();

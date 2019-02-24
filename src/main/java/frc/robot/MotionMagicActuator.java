@@ -3,7 +3,8 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-public abstract class MotionMagicActuator implements IMotionMagicActuator {
+public abstract class MotionMagicActuator implements IMotionMagicActuator
+{
 
     protected TalonSRX primaryTalon;
     protected TalonSRX secondaryTalon;
@@ -19,33 +20,39 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
     private boolean sensorPhase;
     private int timeoutms;
 
-    public MotionMagicActuator(int primaryCAN_ID) {
+    public MotionMagicActuator(int primaryCAN_ID)
+    {
         primaryTalon = new TalonSRX(primaryCAN_ID);
         SRX_PID_0 = new SRX_PID();
         secondaryTalon = null;
     }
 
-    public MotionMagicActuator(TalonSRX primaryTalon) {
+    public MotionMagicActuator(TalonSRX primaryTalon)
+    {
         this.primaryTalon = primaryTalon;
         SRX_PID_0 = new SRX_PID();
         this.secondaryTalon = null;
     }
 
-    public MotionMagicActuator(int primaryCAN_ID, int secondaryCAN_ID) {
+    public MotionMagicActuator(int primaryCAN_ID, int secondaryCAN_ID)
+    {
         primaryTalon = new TalonSRX(primaryCAN_ID);
         secondaryTalon = new TalonSRX(secondaryCAN_ID);
         SRX_PID_0 = new SRX_PID();
         secondaryTalon.set(ControlMode.Follower, primaryCAN_ID);
     }
 
-    public MotionMagicActuator(TalonSRX primaryTalon, TalonSRX secondaryTalon) {
+    public MotionMagicActuator(TalonSRX primaryTalon, TalonSRX secondaryTalon)
+    {
         this.primaryTalon = primaryTalon;
         this.secondaryTalon = secondaryTalon;
         SRX_PID_0 = new SRX_PID();
         secondaryTalon.set(ControlMode.Follower, this.primaryTalon.getDeviceID());
     }
+
     @Override
-    public void initialize() {
+    public void initialize()
+    {
         primaryTalon.configFactoryDefault();
         primaryTalon.configNominalOutputForward(nominalOutputForward, timeoutms);
         primaryTalon.configNominalOutputReverse(nominalOutputReverse, timeoutms);
@@ -58,9 +65,10 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
         primaryTalon.setSensorPhase(sensorPhase);
         SRX_PID_0.initatlize(primaryTalon);
 
-        primaryTalon.set(ControlMode.PercentOutput,0.0);
+        primaryTalon.set(ControlMode.PercentOutput, 0.0);
 
-        if (secondaryTalon != null) {
+        if (secondaryTalon != null)
+        {
             secondaryTalon.configFactoryDefault();
             secondaryTalon.configNominalOutputForward(nominalOutputForward, timeoutms);
             secondaryTalon.configNominalOutputReverse(nominalOutputReverse, timeoutms);
@@ -75,177 +83,215 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator {
         }
 
     }
-    
+
     @Override
-    public int getError() {
-        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+    public int getError()
+    {
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
+        {
             return primaryTalon.getClosedLoopError();
-        } else {
+        }
+        else
+        {
             return 2147483647;
         }
     }
 
-    protected double getSensorValue(){
+    protected double getSensorValue()
+    {
         return primaryTalon.getSelectedSensorPosition();
     }
 
-
     @Override
-    public void zeroSensors() {
-       primaryTalon.setSelectedSensorPosition(0);
+    public void zeroSensors()
+    {
+        primaryTalon.setSelectedSensorPosition(0);
     }
 
     @Override
-    public void setTarget(double target) {
-        primaryTalon.set(ControlMode.MotionMagic,target);
+    public void setTarget(double target)
+    {
+        primaryTalon.set(ControlMode.MotionMagic, target);
     }
 
     @Override
-    public void disable() {
-        primaryTalon.set(ControlMode.PercentOutput,0);
+    public void disable()
+    {
+        primaryTalon.set(ControlMode.PercentOutput, 0);
     }
 
-    public void manual(double Command) {
-        primaryTalon.set(ControlMode.PercentOutput,Command);
+    public void manual(double Command)
+    {
+        primaryTalon.set(ControlMode.PercentOutput, Command);
     }
 
     /**
      * @return the timeoutms
      */
-    public int getTimeoutms() {
+    public int getTimeoutms()
+    {
         return timeoutms;
     }
 
     /**
-     * @param timeoutms the timeoutms to set
+     * @param timeoutms
+     *                      the timeoutms to set
      */
-    public void setTimeoutms(int timeoutms) {
+    public void setTimeoutms(int timeoutms)
+    {
         this.timeoutms = timeoutms;
     }
 
     /**
      * @return the sensorPhase
      */
-    public boolean getSensorPhase() {
+    public boolean getSensorPhase()
+    {
         return sensorPhase;
     }
 
     /**
-     * @param sensorPhase the sensorPhase to set
+     * @param sensorPhase
+     *                        the sensorPhase to set
      */
-    public void setSensorPhase(boolean sensorPhase) {
+    public void setSensorPhase(boolean sensorPhase)
+    {
         this.sensorPhase = sensorPhase;
     }
 
     /**
      * @return the motionAcceleration
      */
-    public double getMotionAcceleration() {
+    public double getMotionAcceleration()
+    {
         return motionAcceleration;
     }
 
     /**
-     * @param motionAcceleration the motionAcceleration to set
+     * @param motionAcceleration
+     *                               the motionAcceleration to set
      */
-    public void setMotionAcceleration(int motionAcceleration) {
+    public void setMotionAcceleration(int motionAcceleration)
+    {
         this.motionAcceleration = motionAcceleration;
     }
 
     /**
      * @return the motionCruiseVelocity
      */
-    public double getMotionCruiseVelocity() {
+    public double getMotionCruiseVelocity()
+    {
         return motionCruiseVelocity;
     }
 
     /**
-     * @param motionCruiseVelocity the motionCruiseVelocity to set
+     * @param motionCruiseVelocity
+     *                                 the motionCruiseVelocity to set
      */
-    public void setMotionCruiseVelocity(int motionCruiseVelocity) {
+    public void setMotionCruiseVelocity(int motionCruiseVelocity)
+    {
         this.motionCruiseVelocity = motionCruiseVelocity;
     }
 
     /**
      * @return the peakOutputReverse
      */
-    public double getPeakOutputReverse() {
+    public double getPeakOutputReverse()
+    {
         return peakOutputReverse;
     }
 
     /**
-     * @param peakOutputReverse the peakOutputReverse to set
+     * @param peakOutputReverse
+     *                              the peakOutputReverse to set
      */
-    public void setPeakOutputReverse(double peakOutputReverse) {
+    public void setPeakOutputReverse(double peakOutputReverse)
+    {
         this.peakOutputReverse = peakOutputReverse;
     }
 
     /**
      * @return the peakOutputForward
      */
-    public double getPeakOutputForward() {
+    public double getPeakOutputForward()
+    {
         return peakOutputForward;
     }
 
     /**
-     * @param peakOutputForward the peakOutputForward to set
+     * @param peakOutputForward
+     *                              the peakOutputForward to set
      */
-    public void setPeakOutputForward(double peakOutputForward) {
+    public void setPeakOutputForward(double peakOutputForward)
+    {
         this.peakOutputForward = peakOutputForward;
     }
 
     /**
      * @return the reverseSoftLimitThreshold
      */
-    public double getReverseSoftLimitThreshold() {
+    public double getReverseSoftLimitThreshold()
+    {
         return reverseSoftLimitThreshold;
     }
 
     /**
-     * @param reverseSoftLimitThreshold the reverseSoftLimitThreshold to set
+     * @param reverseSoftLimitThreshold
+     *                                      the reverseSoftLimitThreshold to set
      */
-    public void setReverseSoftLimitThreshold(int reverseSoftLimitThreshold) {
+    public void setReverseSoftLimitThreshold(int reverseSoftLimitThreshold)
+    {
         this.reverseSoftLimitThreshold = reverseSoftLimitThreshold;
     }
 
     /**
      * @return the forwardSoftLimitThreshold
      */
-    public double getForwardSoftLimitThreshold() {
+    public double getForwardSoftLimitThreshold()
+    {
         return forwardSoftLimitThreshold;
     }
 
     /**
-     * @param forwardSoftLimitThreshold the forwardSoftLimitThreshold to set
+     * @param forwardSoftLimitThreshold
+     *                                      the forwardSoftLimitThreshold to set
      */
-    public void setForwardSoftLimitThreshold(int forwardSoftLimitThreshold) {
+    public void setForwardSoftLimitThreshold(int forwardSoftLimitThreshold)
+    {
         this.forwardSoftLimitThreshold = forwardSoftLimitThreshold;
     }
 
     /**
      * @return the nominalOutputReverse
      */
-    public double getNominalOutputReverse() {
+    public double getNominalOutputReverse()
+    {
         return nominalOutputReverse;
     }
 
     /**
-     * @param nominalOutputReverse the nominalOutputReverse to set
+     * @param nominalOutputReverse
+     *                                 the nominalOutputReverse to set
      */
-    public void setNominalOutputReverse(double nominalOutputReverse) {
+    public void setNominalOutputReverse(double nominalOutputReverse)
+    {
         this.nominalOutputReverse = nominalOutputReverse;
     }
 
     /**
      * @return the nominalOutputForward
      */
-    public double getNominalOutputForward() {
+    public double getNominalOutputForward()
+    {
         return nominalOutputForward;
     }
 
     /**
-     * @param nominalOutputForward the nominalOutputForward to set
+     * @param nominalOutputForward
+     *                                 the nominalOutputForward to set
      */
-    public void setNominalOutputForward(double nominalOutputForward) {
+    public void setNominalOutputForward(double nominalOutputForward)
+    {
         this.nominalOutputForward = nominalOutputForward;
     }
 

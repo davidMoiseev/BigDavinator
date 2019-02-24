@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
+
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.hotteam67.HotController;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -20,46 +21,49 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Add your docs here.
  */
 
-public class FrontFlipper extends MotionMagicActuator {
+public class FrontFlipper extends MotionMagicActuator
+{
     private int reached = 0;
     TalonSRX frontFlipper = new TalonSRX(1);
     double output = 0.0;
-    
-public FrontFlipper(int ID)
-{
-    super(ID);
-}
-public void Update(HotController joystick)
-	{
+
+    public FrontFlipper(int ID)
+    {
+        super(ID);
+    }
+
+    public void Update(HotController joystick)
+    {
         frontFlipper.set(ControlMode.PercentOutput, FrontFlipperOutput(joystick));
     }
 
-public double FrontFlipperOutput(HotController joystick)
+    public double FrontFlipperOutput(HotController joystick)
     {
         int flipperstate = 0;
         double flipperoutput = 0.0;
-        if((joystick.getButtonB() == false) && joystick.getButtonA()== false)
+        if ((joystick.getButtonB() == false) && joystick.getButtonA() == false)
         {
             reached = 0;
             flipperoutput = 0.0;
         }
-        if(flipperstate == 0 && (joystick.getButtonB() == true) && (getSensorValue() == 0.0)) //move to out position
-		{
+        if (flipperstate == 0 && (joystick.getButtonB() == true) && (getSensorValue() == 0.0)) // move to out position
+        {
             reached = 180;
-            flipperoutput = 0.2; //change to actual value later
-            flipperstate ++;
-		}
-        if (flipperstate == 1 && joystick.getButtonA()== false && getSensorValue() == 100)//actual encoder value //stopped at extended
+            flipperoutput = 0.2; // change to actual value later
+            flipperstate++;
+        }
+        if (flipperstate == 1 && joystick.getButtonA() == false && getSensorValue() == 100)// actual encoder value
+                                                                                           // //stopped at extended
         {
             reached = 180;
             flipperoutput = 0.0;
-            flipperstate ++;
+            flipperstate++;
         }
-        if (flipperstate == 1 && joystick.getButtonA()==true && getSensorValue() != 0.0) //back to carry position
-		{
+        if (flipperstate == 1 && joystick.getButtonA() == true && getSensorValue() != 0.0) // back to carry position
+        {
             reached = 0;
             flipperoutput = -0.2; // change to actual value later
-            flipperstate ++;
+            flipperstate++;
         }
         if (flipperstate == 2 && getSensorValue() == 0.0)
         {
@@ -68,6 +72,7 @@ public double FrontFlipperOutput(HotController joystick)
         }
         return flipperoutput;
     }
+
     @Override
     public void displaySensorsValue()
     {
@@ -77,7 +82,8 @@ public double FrontFlipperOutput(HotController joystick)
     }
 
     @Override
-    public boolean reachedTarget(){
+    public boolean reachedTarget()
+    {
         if (reached == 180)
         {
             return true;
@@ -88,10 +94,11 @@ public double FrontFlipperOutput(HotController joystick)
         }
         return false;
     }
+
     @Override
     public double getPosition()
     {
         return getSensorValue() * FrontFlipperConstants.TICKS_TO_INCHES;
     }
-    
+
 }
