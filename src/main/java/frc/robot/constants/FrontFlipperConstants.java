@@ -7,6 +7,8 @@
 
 package frc.robot.constants;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+
 /**
  * Add your docs here.
  */
