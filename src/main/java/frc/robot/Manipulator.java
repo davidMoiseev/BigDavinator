@@ -472,7 +472,7 @@ public class Manipulator {
             backTargetPosition = ManipulatorSetPoint.hatch_low_back;
         } else if (operator.getButtonB()) {
             frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_mid_front;
+            backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
         } else if (operator.getButtonY()) {
             frontTargetPosition = ManipulatorSetPoint.hatch_high_front;
             backTargetPosition = ManipulatorSetPoint.hatch_high_back;
