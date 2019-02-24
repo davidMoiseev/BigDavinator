@@ -59,7 +59,7 @@ public class Wrist extends MotionMagicActuator {
 
     @Override
     public double getPosition() {
-        return getSensorValue() * WristConstants.TICKS_TO_DEGREES;
+        return -getSensorValue() * WristConstants.TICKS_TO_DEGREES;
     }
 
     @Override

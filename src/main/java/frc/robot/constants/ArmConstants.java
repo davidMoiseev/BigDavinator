@@ -33,6 +33,6 @@ public class ArmConstants {
 	public static final double TICKS_TO_DEGREES = 0.0288 * 360/4096;
     public static final double length = 20;
     
-    public static final int allowableError = (int) (2 / TICKS_TO_DEGREES);
-	public static final double minimumTimeToReachTarget = 0.15;
+    public static final int allowableError = (int) (5 / TICKS_TO_DEGREES);
+	public static final double minimumTimeToReachTarget = 0.1;
 }

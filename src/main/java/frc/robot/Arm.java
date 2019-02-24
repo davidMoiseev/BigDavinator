@@ -73,6 +73,6 @@ public class Arm extends MotionMagicActuator {
 
     @Override
     public double getPosition() {
-        return getSensorValue() * ArmConstants.TICKS_TO_DEGREES;
+        return -getSensorValue() * ArmConstants.TICKS_TO_DEGREES;
     }
 }

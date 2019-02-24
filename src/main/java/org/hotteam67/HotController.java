@@ -128,7 +128,8 @@ public class HotController extends Joystick{
         return temp;
     }
     
-	public boolean getButtonA() {
+    public boolean 
+    getButtonA() {
 		boolean value = getRawButton(1);
 		return value;
     }

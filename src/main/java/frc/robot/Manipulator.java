@@ -58,9 +58,10 @@ public class Manipulator {
     private final double ARM_LENGTH = 21;
     private final double WRIST_LENGTH = 14;
     private final double ELEVATOR_LENGTH = 19; 
-    private final double FRAME_COLLISION = 20;
+    private final double FRAME_COLLISION = 5;
     private final double SUPPORTS_COLLISION = 14; //need?
     private final double FRAME_LENGTH = 16; //14
+    private final double intakeHeight = 13.5;
 
     public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake,
             DriveTrain drivetrain) {
@@ -365,11 +366,6 @@ public class Manipulator {
                 }
             }
         }
-        SmartDashboard.putBoolean("COLLIDE FRAME", willCollideWithFrame(elevator.getPosition(),
-            arm.getPosition(), wrist.getPosition()));
-        SmartDashboard.putBoolean("COLLIDE SUPPORTS", willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
-                wrist.getPosition()));
-        SmartDashboard.putNumber("Wrist Width", widthManipulator(arm.getPosition(), wrist.getPosition()));
         prevArmAngle = arm.getPosition();
         prevWristAngle = wrist.getPosition();
     }
@@ -406,38 +402,53 @@ public class Manipulator {
     }
 
     private boolean willCollideWithFrame(double elevHeight, double armAngle, double wristAngle) {
-        if((arm.getPosition() > 90.0 || arm.getPosition() < -90.0) && 
-                widthManipulator(armAngle, wristAngle) < FRAME_LENGTH)
-            
-            return ELEVATOR_LENGTH + elevHeight - lengthManipulator(armAngle, wristAngle) < FRAME_COLLISION;
-        return false;
+        if((arm.getPosition() > 90.0 && widthManipulator(armAngle, wristAngle) < FRAME_LENGTH) || 
+           (arm.getPosition() < -90.0 && widthManipulator(armAngle, wristAngle) > -FRAME_LENGTH))
+            return ((heightManipulator(elevHeight,arm.getPosition(), wrist.getPosition())+13.5/2*Math.sin(Math.toRadians(wrist.getPosition())) < FRAME_COLLISION) ||
+                    (heightManipulator(elevHeight,arm.getPosition(), wrist.getPosition())-13.5/2*Math.sin(Math.toRadians(wrist.getPosition())) < FRAME_COLLISION));
+               return false;
     }
 
     private boolean willCollideWithSupports(double elevHeight, double armAngle, double wristAngle) {
-        if(armAngle > 120.0 || armAngle < -120.0 || (elevHeight < ELEVATOR_CLEAR_HEIGHT && 
-            wristAngle > ManipulatorSetPoint.limit_front_high.wristAngle()) || (elevHeight < ELEVATOR_CLEAR_HEIGHT &&
-            wristAngle < ManipulatorSetPoint.limit_back_high.wristAngle()))
-            
-            return widthManipulator(armAngle, wristAngle)  < SUPPORTS_COLLISION;
-        return false;
+       
+        double xTop = widthManipulator(armAngle, wristAngle)
+                - 13.5 / 2 * Math.cos(Math.toRadians(wristAngle));
+        double yTop = heightManipulator(elevHeight, armAngle, wristAngle)
+                + 13.5 / 2 * Math.sin(Math.toRadians(wristAngle));
+        
+        double xBottom = widthManipulator(armAngle, wristAngle)
+                + 13.5 / 2 * Math.cos(Math.toRadians(wristAngle));
+        double yBottom = heightManipulator(elevHeight, armAngle, wristAngle)
+                - 13.5 / 2 * Math.sin(Math.toRadians(wristAngle));
+
+                SmartDashboard.putNumber("xTop", xTop);
+                SmartDashboard.putNumber("yTop", yTop);
+                SmartDashboard.putNumber("xBottom", xBottom);
+                SmartDashboard.putNumber("yBottom", yBottom);
+        
+                if ((yBottom < 44 && Math.abs(xBottom) < 5) || (yTop < 44 && Math.abs(xTop) < 5)){
+                    return true;
+                } else {
+                    return false;
+                }
     }
 
     private double lengthWristY(double angle) {
         //in case we need to adjust this
-        return WRIST_LENGTH * Math.abs(Math.cos(Math.toRadians(angle)));
+        return WRIST_LENGTH * Math.cos(Math.toRadians(angle));
     }
 
     private double lengthWristX(double angle) {
         //in case we need to adjust this again
-        return WRIST_LENGTH * Math.abs(Math.sin(Math.toRadians(angle)));
+        return WRIST_LENGTH * Math.sin(Math.toRadians(angle));
     }
 
-    private double lengthManipulator(double armAngle, double wristAngle) {
-        return (ARM_LENGTH + lengthWristY(wristAngle)) * Math.abs(Math.cos(Math.toRadians(armAngle)));
+    private double heightManipulator(double elvatorHeight, double armAngle, double wristAngle) {
+        return elvatorHeight + ELEVATOR_LENGTH + lengthWristY(wristAngle) + ARM_LENGTH * Math.cos(Math.toRadians(armAngle));
     }
 
     private double widthManipulator(double armAngle, double wristAngle) {
-        return ARM_LENGTH * Math.abs(Math.sin(Math.toRadians(armAngle))) - lengthWristX(wristAngle);
+        return ARM_LENGTH * Math.sin(Math.toRadians(armAngle)) + lengthWristX(wristAngle);
     }
 
     public void Update() {
@@ -489,7 +500,22 @@ public class Manipulator {
             wrist.disable();
             SmartDashboard.putBoolean("Disabled thing", true);
         }
-
+        
+        SmartDashboard.putBoolean("COLLIDE FRAME", willCollideWithFrame(elevator.getPosition(),
+            arm.getPosition(), wrist.getPosition()));
+        SmartDashboard.putBoolean("COLLIDE SUPPORTS", willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
+                wrist.getPosition()));
+        SmartDashboard.putNumber("Wrist Width", widthManipulator(arm.getPosition(), wrist.getPosition()));
+        SmartDashboard.putNumber("Wrist Height", heightManipulator(elevator.getPosition(),arm.getPosition(), wrist.getPosition()));
+       
+        SmartDashboard.putNumber("WristTopPostitionX", widthManipulator(arm.getPosition(), wrist.getPosition())-13.5/2*Math.cos(Math.toRadians(wrist.getPosition())));
+        SmartDashboard.putNumber("WristBottonPostitionX", widthManipulator(arm.getPosition(), wrist.getPosition())+13.5/2*Math.cos(Math.toRadians(wrist.getPosition())));
+       
+        SmartDashboard.putNumber("WristTopPostitionY", heightManipulator(elevator.getPosition(),arm.getPosition(), wrist.getPosition())+13.5/2*Math.sin(Math.toRadians(wrist.getPosition())));
+        SmartDashboard.putNumber("WristBottonPostitionY", heightManipulator(elevator.getPosition(),arm.getPosition(), wrist.getPosition())-13.5/2*Math.sin(Math.toRadians(wrist.getPosition())));
+       
+       
+       
         startButtonPrevious = operator.getButtonStart();
 
         prevElevHeight = elevator.getPosition();
