@@ -115,8 +115,8 @@ public class Robot extends TimedRobot
           break;
           case 1:
           if(driveTrain.turnToReferenceAngle() == true){
-            //state++;
-            state = state + 2;
+            state++;
+           // state = state + 2;
           }
           break;
           case 2:
@@ -131,8 +131,6 @@ public class Robot extends TimedRobot
         }
        
     SmartDashboard.putNumber("state", state);
-      
-        
 		
     }
 

@@ -11,7 +11,6 @@ private  double tx = 0;
 private double ty = 0;
 private double ta = 0;
 private  double heading = 0;
-private double targetHeading = 0;
 private double targetHeight;
 private double rocketHeight = 38.000;
 private double normalHeight = 28.875;
@@ -36,7 +35,7 @@ private double distance = 0.0;
   public void getNetworkTables() {
     tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv"). getDouble(0);
     tx = -27;//NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx"). getDouble(0);
-    ty = 0;//NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty"). getDouble(0);
+    ty = 1;//NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty"). getDouble(0);
   }
 public double getTV(){
   tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv"). getDouble(0);
@@ -48,7 +47,7 @@ public double getTX(){
 }
 public double getTY(){
   ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty"). getDouble(0);
-  return 0;//ty;
+  return 1;//ty;
 }
 public double getTA(){
   ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta"). getDouble(0);
@@ -56,8 +55,6 @@ public double getTA(){
 }
 
 public double getHeading(){   // could return targetHeading or heading using a boolean if already reached heading
-  
-  targetHeading = tx; 
     getNetworkTables();
     heading = tx; 
     return heading;

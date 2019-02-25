@@ -146,15 +146,8 @@ public class VisionMotion {
     }
 
     public void sendAngle(double yaw){
-        if((currentYaw < 2 * Math.PI) && (currentYaw > -2 * Math.PI)){
             currentYaw = yaw;
-        }
-        while (currentYaw > 2 * Math.PI){
-            currentYaw = currentYaw -2 * Math.PI;
-        }
-        while (currentYaw < -2 * Math.PI){
-            currentYaw = currentYaw + 2 * Math.PI;
-        }
+       
     }
 
     public boolean getHigh(){ //true = high, false = low
@@ -221,6 +214,7 @@ public class VisionMotion {
             referenceAngle = (Math.PI);
             target = 0; //front cargo ship
         }
+        SmartDashboard.putNumber("referenceAngle", referenceAngle);
         return target;
     }
 
@@ -325,6 +319,9 @@ public class VisionMotion {
         }
     }
 
+    public double canSeeTarget(){
+        return vision.canSeeTarget();
+    }
     public void writeDashBoardVis() {
         SmartDashboard.putNumber("heading", vision.getHeading());
         SmartDashboard.putNumber("Can Detect Target", vision.canSeeTarget());

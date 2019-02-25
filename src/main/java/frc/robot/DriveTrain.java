@@ -82,6 +82,7 @@ public class DriveTrain implements IPigeonWrapper
     public double Lspeed;
     public double Rspeed;
     public double currentYaw;
+    public double singleRotationYaw;
     public int state;
     /**
      * Motion Profiling Constants
@@ -163,7 +164,13 @@ public class DriveTrain implements IPigeonWrapper
         pigeon.getYawPitchRoll(xyz_dps);
         currentYaw = -1.0 * Math.toRadians(xyz_dps[0]); 
     }
-
+    public void getSingleRotationYaw(){  //incomplete
+        double rotations;
+        pigeon.getYawPitchRoll(xyz_dps);
+        singleRotationYaw = -1.0 * Math.toRadians(xyz_dps[0]);
+        rotations = singleRotationYaw % (2 * Math.PI);
+        singleRotationYaw = singleRotationYaw - (2 * Math.PI) * Math.floor(rotations);
+    }
     /**
      * Read the sensors into memory
      */
@@ -174,7 +181,7 @@ public class DriveTrain implements IPigeonWrapper
         pigeon.getYawPitchRoll(xyz_dps);
     }
     public boolean canseeTarget() {
-        if (vmotion.definitelySeesTarget() == true) {
+        if (vmotion.canSeeTarget() == 1) {
             return true;
         }
         else {
@@ -238,16 +245,25 @@ public class DriveTrain implements IPigeonWrapper
 			return false;
 		}
     }
+
     public boolean turnToReferenceAngle() {
-        vmotion.sendAngle(xyz_dps[0]);
+        getSingleRotationYaw();
+        double referenceAngle;
+        vmotion.sendAngle(singleRotationYaw);
         vmotion.selectTarget();
-        leftMotor.set(0.2);
-        rightMotor.set(0.2);
-        if (currentYaw > Math.toDegrees(vmotion.getReferenceAngle())) {
-			return true;
-		} else {
+        referenceAngle = Math.toDegrees(vmotion.getReferenceAngle());
+        if (currentYaw == referenceAngle || currentYaw < (referenceAngle + 1) && currentYaw > (referenceAngle - 1)){
+            return true;
+        }
+        else if (currentYaw > referenceAngle) {
+            leftMotor.set(-0.2);
+            rightMotor.set(0.2);
 			return false;
-		}
+		}  else {
+            leftMotor.set(0.2);
+            rightMotor.set(-0.2);
+			return false;
+        }
     }
 	public boolean lineUp(double pipeline){
         vmotion.setPipeline(pipeline);
@@ -265,8 +281,8 @@ public class DriveTrain implements IPigeonWrapper
             switch (state){
                 case 0:
                     vmotion.setPipeline(pipeline);
-                    this.getYaw();
-                    vmotion.sendAngle(xyz_dps[0]);
+                    this.getSingleRotationYaw();
+                    vmotion.sendAngle(singleRotationYaw);
                     vmotion.getTargetAngle();
                     vmotion.setGyroLineUpVars();
                     state++;
