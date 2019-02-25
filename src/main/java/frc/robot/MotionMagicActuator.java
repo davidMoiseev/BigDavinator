@@ -65,7 +65,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         primaryTalon.configMotionAcceleration(motionAcceleration, timeoutms);
         primaryTalon.configMotionCruiseVelocity(motionCruiseVelocity, timeoutms);
         primaryTalon.setSensorPhase(sensorPhase);
-        SRX_PID_0.initatlize(primaryTalon);
+        SRX_PID_0.initialize(primaryTalon);
 
         primaryTalon.set(ControlMode.PercentOutput, 0.0);
 
@@ -81,7 +81,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
             secondaryTalon.configMotionAcceleration(motionAcceleration, timeoutms);
             secondaryTalon.configMotionCruiseVelocity(motionCruiseVelocity, timeoutms);
             secondaryTalon.setSensorPhase(sensorPhase);
-            SRX_PID_0.initatlize(secondaryTalon);
+            SRX_PID_0.initialize(secondaryTalon);
         }
 
     }

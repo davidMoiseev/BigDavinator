@@ -24,7 +24,7 @@ public class SRX_PID
     private FeedbackDevice feedbackDevice;
     private int timeoutms;
 
-    public void initatlize(TalonSRX talon)
+    public void initialize(TalonSRX talon)
     {
         talon.selectProfileSlot(slotIdx, pidIdx);
         talon.config_kF(slotIdx, feedForward);
