@@ -503,7 +503,6 @@ public class Manipulator
         // in case we need to adjust this
         return WRIST_LENGTH * Math.cos(Math.toRadians(angle));
     }
-
     private double lengthWristX(double angle)
     {
         // in case we need to adjust this again
@@ -523,6 +522,8 @@ public class Manipulator
 
     public void Update()
     {
+        arm.checkEncoders(); 
+        wrist.checkEncoders();
         intake.Update();
         pneumaticIntake.Update();
         ManipulatorSetPoint frontTargetPosition = null;
