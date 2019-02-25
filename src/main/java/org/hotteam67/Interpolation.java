@@ -10,6 +10,7 @@ package org.hotteam67;
 /**
  * Add your docs here.
  */
-public interface Interpolation {
+public interface Interpolation
+{
     public double outputFunction(double temp);
 }

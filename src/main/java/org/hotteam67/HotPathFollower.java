@@ -44,7 +44,7 @@ public class HotPathFollower
     private double POS_P = 0, POS_I = 0, POS_D = 0, POS_V = 0, POS_A = 0;
     // PID constants for the angle error. Stored for holding last point only
     private double ANGLE_P = 0;
-    
+
     // Whether we are running in reverse
     private boolean isInverted = false;
 
@@ -140,7 +140,9 @@ public class HotPathFollower
     }
 
     /**
-     * Whether to invert the encoder values, gyro, and output to run the robot backwards
+     * Whether to invert the encoder values, gyro, and output to run the robot
+     * backwards
+     * 
      * @param inverted
      */
     public void SetInverted(boolean inverted)

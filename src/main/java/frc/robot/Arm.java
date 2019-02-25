@@ -16,9 +16,11 @@ import frc.robot.constants.ManipulatorSetPoint;
 /**
  * Add your docs here.
  */
-public class Arm extends MotionMagicActuator {
+public class Arm extends MotionMagicActuator
+{
 
-    public Arm(int primaryCAN_ID/* , int secondaryCAN_ID */) {
+    public Arm(int primaryCAN_ID/* , int secondaryCAN_ID */)
+    {
         super(primaryCAN_ID/* , secondaryCAN_ID */);
 
         setNominalOutputForward(ArmConstants.nominalOutputForward);
@@ -44,35 +46,42 @@ public class Arm extends MotionMagicActuator {
     }
 
     @Override
-    public void displaySensorsValue() {
+    public void displaySensorsValue()
+    {
         SmartDashboard.putNumber("Arm Position ticks", getSensorValue());
         SmartDashboard.putNumber("Arm Position degrees", getPosition());
         SmartDashboard.putNumber("Arm Power", primaryTalon.getMotorOutputPercent());
-        if (primaryTalon.getControlMode() == ControlMode.MotionMagic) {
+        if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
+        {
             SmartDashboard.putNumber("Arm Error", primaryTalon.getClosedLoopError());
             SmartDashboard.putNumber("Arm target", primaryTalon.getClosedLoopTarget());
         }
     }
 
     @Override
-    public void setTarget(double target) {
+    public void setTarget(double target)
+    {
         super.setTarget(-target / ArmConstants.TICKS_TO_DEGREES);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint) {
+    public void setTarget(ManipulatorSetPoint targetPoint)
+    {
         setTarget(targetPoint.armAngle());
     }
 
-    public void setPosition(double angle) {
+    public void setPosition(double angle)
+    {
         primaryTalon.setSelectedSensorPosition((int) (angle / ArmConstants.TICKS_TO_DEGREES));
     }
 
-	public boolean reachedTarget() {
+    public boolean reachedTarget()
+    {
         return super.reachedTarget(ArmConstants.allowableError, ArmConstants.minimumTimeToReachTarget);
-	}
+    }
 
     @Override
-    public double getPosition() {
+    public double getPosition()
+    {
         return -getSensorValue() * ArmConstants.TICKS_TO_DEGREES;
     }
 }

@@ -18,49 +18,63 @@ import org.hotteam67.HotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 
-public class Intake {
+public class Intake
+{
     double Outspeed = 0.75;
     double Inputspeed = -0.75;
     HotController joystick;
 
-
     WPI_TalonSRX BeltTalon = new WPI_TalonSRX(WiringIDs.INTAKE);
-    
-    public Intake(HotController joystick) {
-    this.joystick = joystick;      
+
+    public Intake(HotController joystick)
+    {
+        this.joystick = joystick;
     }
-    public void Update() {
-        if(joystick.getButtonRightBumper()) {
+
+    public void Update()
+    {
+        if (joystick.getButtonRightBumper())
+        {
             runIntake(Outspeed);
-        
+
         }
-        if(joystick.getButtonLeftBumper()) {
+        if (joystick.getButtonLeftBumper())
+        {
             runIntake(Inputspeed);
         }
-        if(!joystick.getButtonLeftBumper() && !joystick.getButtonRightBumper()) {
+        if (!joystick.getButtonLeftBumper() && !joystick.getButtonRightBumper())
+        {
             allOff();
         }
         writeDashboard();
     }
-    public void allOff() {
+
+    public void allOff()
+    {
 
         BeltTalon.set(ControlMode.PercentOutput, 0.0);
     }
-    public void runIntake(double Shootspeed) {
-        BeltTalon.set(ControlMode.PercentOutput, Shootspeed);  
-    }
-     // double Tspeed = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
-      /*ideally if joystick is forward, then intake spits out, if joystick is backward, intake pulls in */
 
-      public void writeDashboard() {
+    public void runIntake(double Shootspeed)
+    {
+        BeltTalon.set(ControlMode.PercentOutput, Shootspeed);
+    }
+    // double Tspeed = /*HotSticks.DriverLY()*/ joystick.getRawAxis(1);
+    /*
+     * ideally if joystick is forward, then intake spits out, if joystick is
+     * backward, intake pulls in
+     */
+
+    public void writeDashboard()
+    {
         SmartDashboard.putNumber("Outputspeed", Outspeed);
         SmartDashboard.putNumber("Inputspeed", Inputspeed);
         SmartDashboard.putBoolean("Left Bumper", joystick.getButtonLeftBumper());
         SmartDashboard.putBoolean("Right Bumper", joystick.getButtonRightBumper());
     }
-     //   SmartDashboard.putBoolean("valueA", valueA);
-        //SmartDashboard.putBoolean("valueB", valueB);
-        //SmartDashboard.putNumber("speedR", );
-        //SmartDashboard.putNumber("JoystickL", ());
-        //SmartDashboard.putNumber("JoystickR", ());
+    // SmartDashboard.putBoolean("valueA", valueA);
+    // SmartDashboard.putBoolean("valueB", valueB);
+    // SmartDashboard.putNumber("speedR", );
+    // SmartDashboard.putNumber("JoystickL", ());
+    // SmartDashboard.putNumber("JoystickR", ());
 }

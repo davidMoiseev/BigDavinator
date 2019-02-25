@@ -90,7 +90,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     protected boolean reachedTarget(int allowableError, double requiredTime)
     {
         boolean reached = false;
-        
+
         if (Math.abs(getError()) <= allowableError)
         {
             if (reachedTargetTimer >= requiredTime)
