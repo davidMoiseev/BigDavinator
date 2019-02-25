@@ -228,33 +228,42 @@ public class HotPathFollower
         if (leftFollower == null || rightFollower == null)
             return new Output(0, 0);
         double l = 0, r = 0;
-        Segment segLeft = null;
-        Segment segRight = null;
 
         // Path is not currently being followed, so start it
         if (pathState == State.Disabled)
             pathState = State.Enabled;
 
         // Path is enabled and the points are not yet complete
-        if (pathState == State.Enabled && !leftFollower.isFinished() || !rightFollower.isFinished())
+        if (pathState == State.Enabled && !(leftFollower.isFinished() && rightFollower.isFinished()))
         {
-            l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
-            r = rightFollower.calculate(currentPositionRight) * GetPolarity();
+            double targetHeadingRadians = -1;
+            if (!leftFollower.isFinished())
+            {
+                l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
+                Segment segLeft = leftFollower.getSegment();
+                Log("Left", segLeft, l);
+                targetHeadingRadians = segLeft.heading;
+            }
+            if (!rightFollower.isFinished())
+            {
+                r = rightFollower.calculate(currentPositionRight) * GetPolarity();
+                Segment segRight = rightFollower.getSegment();
+                Log("Right", segRight, r);
+                targetHeadingRadians = segRight.heading;
 
-            segLeft = leftFollower.getSegment();
-            segRight = rightFollower.getSegment();
+            }
 
-            Log("Left", segLeft, l);
-            Log("Right", segRight, r);
-
-            // Add angle error, in degrees
-            double targetHeading = -Pathfinder.boundHalfDegrees(Pathfinder.r2d(segLeft.heading));
-            double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
-            double turn = ANGLE_P * headingError;
-            HotLogger.Log("Heading Error", headingError);
-            HotLogger.Log("Turn Output", turn);
-            l -= turn * GetPolarity();
-            r += turn * GetPolarity();
+            // Add angle error feedback
+            if (targetHeadingRadians != -1)
+            {
+                double targetHeading = -Pathfinder.boundHalfDegrees(Pathfinder.r2d(targetHeadingRadians));
+                double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
+                double turn = ANGLE_P * headingError;
+                HotLogger.Log("Heading Error", headingError);
+                HotLogger.Log("Turn Output", turn);
+                l -= turn * GetPolarity();
+                r += turn * GetPolarity();
+            }
         }
 
         // We are done
