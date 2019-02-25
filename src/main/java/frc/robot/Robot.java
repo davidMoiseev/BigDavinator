@@ -41,7 +41,6 @@ public class Robot extends TimedRobot
     Interpolation operatorLTrigger;
     Interpolation operatorRTrigger;
     // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
-    Relay relay;
     DriveTrain driveTrain;
     Manipulator manipulator;
     Compressor compressor;
@@ -62,6 +61,7 @@ public class Robot extends TimedRobot
         compressor.setClosedLoopControl(true);
 
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
+        TalonSRX frontFlipper = new TalonSRX(-1);// new TalonSRX(WiringIDs.FRONT_FLIPPER);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
         HotController driver = new HotController(0);
         HotController operator = new HotController(1);

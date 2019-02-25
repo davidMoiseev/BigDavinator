@@ -10,7 +10,8 @@ package frc.robot.constants;
 public enum ManipulatorSetPoint
 {
     // 0 16 115
-    firstPosition(3, 0, 0), carry_front(5, 0, 10), // X
+    firstPosition(3, 0, 0), 
+    carry_front(5, 0, 10), // X
     carry_back(5, 0, -10), // X
     hatch_low_front(17, 167, 90), // A
     hatch_low_back(17, -167, -90), // A
@@ -28,7 +29,10 @@ public enum ManipulatorSetPoint
     cargo_rocketMid_back(9.5, -10, -83), // LT
     cargo_rocketHigh_front(33, 1.5, 61), // RT
     cargo_rocketHigh_back(33, -1.5, -61), // RT
-    limit_front_low(4, 90, 90), limit_front_high(4, 50, 32), limit_back_low(4, -90, -90), limit_back_high(4, -50, -32);
+    limit_front_low(4, 90, 90), 
+    limit_front_high(4, 50, 32), 
+    limit_back_low(4, -90, -90), 
+    limit_back_high(4, -50, -32);
 
     // Flip on M1 || M2
 
