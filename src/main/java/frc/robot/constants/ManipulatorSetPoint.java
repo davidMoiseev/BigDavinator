@@ -9,56 +9,47 @@ package frc.robot.constants;
 
 public enum ManipulatorSetPoint
 {
+    // Inches and degrees :)
+
     // 0 16 115
-    firstPosition(3, 0, 0), 
-    carry_front(5, 0, 10), // X
-    carry_back(5, 0, -10), // X
-    hatch_low_front(17, 167, 90), // A
-    hatch_low_back(17, -167, -90), // A
-    hatch_mid_front(5, 14, 90), // B
-    hatch_mid_back(5, -14, -90), // B
-    hatch_high_front(33, 8.5, 90), // Y
-    hatch_high_back(33, -8.5, -90), // Y
-    cargo_pickup_front(.5, 111, 134), // M3-M6
-    cargo_pickup_back(.5, -111, -134), // M3-M6
-    cargo_shuttle_front(3, 29, 107), // RB
-    cargo_shuttle_back(3, -29, -107), // RB
-    cargo_rocketLow_front(21, 160, 72), // LB
-    cargo_rocketLow_back(21, -160, -72), // LB
-    cargo_rocketMid_front(9.5, 10, 83), // LT
-    cargo_rocketMid_back(9.5, -10, -83), // LT
-    cargo_rocketHigh_front(33, 1.5, 61), // RT
-    cargo_rocketHigh_back(33, -1.5, -61), // RT
-    limit_front_low(4, 90, 90), 
-    limit_front_high(4, 50, 32), 
-    limit_back_low(4, -90, -90), 
-    limit_back_high(4, -50, -32);
+    firstPosition(3, 0, 0, 0, 0), 
+    carry_front(5, 0, 10, 0, 0), // X
+    carry_back(5, 0, -10, 0, 0), // X
+    hatch_low_front(17, 167, 90, 110, 0), // A
+    hatch_low_back(17, -167, -90, 0, 110), // A
+    hatch_mid_front(5, 14, 90, 0, 0), // B
+    hatch_mid_back(5, -14, -90, 0, 0), // B
+    hatch_high_front(33, 8.5, 90, 0, 0), // Y
+    hatch_high_back(33, -8.5, -90, 0, 0), // Y
+    cargo_pickup_front(.5, 111, 134, 0, 0), // M3-M6
+    cargo_pickup_back(.5, -111, -134, 0, 0), // M3-M6
+    cargo_shuttle_front(3, 29, 107, 110, 0), // RB
+    cargo_shuttle_back(3, -29, -107, 0, 110), // RB
+    cargo_rocketLow_front(21, 160, 72, 0, 0), // LB
+    cargo_rocketLow_back(21, -160, -72, 0, 0), // LB
+    cargo_rocketMid_front(9.5, 10, 83, 0, 0), // LT
+    cargo_rocketMid_back(9.5, -10, -83, 0, 0), // LT
+    cargo_rocketHigh_front(33, 1.5, 61, 0, 0), // RT
+    cargo_rocketHigh_back(33, -1.5, -61, 0, 0), // RT
+    limit_front_low(4, 90, 90, 0, 0),
+    limit_front_high(4, 50, 32, 0, 0), 
+    limit_back_low(4, -90, -90, 0, 0), 
+    limit_back_high(4, -50, -32, 0, 0);
 
     // Flip on M1 || M2
 
-    private ManipulatorSetPoint(double elevatorHeight, double armAngle, double wristAngle)
+    private ManipulatorSetPoint(double elevatorHeight, double armAngle, double wristAngle, double frontFlipperPosition, double backFlipperPosition)
     {
         this.elevatorHeight = elevatorHeight;
         this.armAngle = armAngle;
         this.wristAngle = wristAngle;
+        frontFlipper = frontFlipperPosition;
+        backFlipper = backFlipperPosition;
     }
 
-    private final double armAngle;
-    private final double wristAngle;
-    private final double elevatorHeight;
-
-    public double wristAngle()
-    {
-        return this.wristAngle;
-    }
-
-    public double armAngle()
-    {
-        return this.armAngle;
-    }
-
-    public double elevatorHeight()
-    {
-        return this.elevatorHeight;
-    }
+    public final double armAngle;
+    public final double wristAngle;
+    public final double elevatorHeight;
+    public final double frontFlipper;
+    public final double backFlipper;
 }

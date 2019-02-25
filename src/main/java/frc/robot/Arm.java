@@ -66,7 +66,7 @@ public class Arm extends MotionMagicActuator
 
     public void setTarget(ManipulatorSetPoint targetPoint)
     {
-        setTarget(targetPoint.armAngle());
+        setTarget(targetPoint.armAngle);
     }
 
     public void setPosition(double angle)

@@ -76,7 +76,7 @@ public class Elevator extends MotionMagicActuator
 
     public void setTarget(ManipulatorSetPoint targetPoint)
     {
-        setTarget(targetPoint.elevatorHeight());
+        setTarget(targetPoint.elevatorHeight);
     }
 
     public boolean reachedTarget()

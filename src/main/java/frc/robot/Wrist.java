@@ -76,7 +76,7 @@ public class Wrist extends MotionMagicActuator
 
     public void setTarget(ManipulatorSetPoint targetPoint)
     {
-        setTarget(targetPoint.wristAngle());
+        setTarget(targetPoint.wristAngle);
     }
 
     public boolean reachedTarget()

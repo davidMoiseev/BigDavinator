@@ -40,4 +40,7 @@ public class WiringIDs
 
     public static final int CLIMBER_1 = 11;
     public static final int CLIMBER_2 = 12;
+
+    public static final int FLIPPER_FRONT = -1;
+    public static final int FLIPPER_BACK = -1;
 }

@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import frc.robot.constants.FrontFlipperConstants;
+import frc.robot.constants.ManipulatorSetPoint;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -23,9 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FrontFlipper extends MotionMagicActuator
 {
-    private int reached = 0;
-    TalonSRX frontFlipper = new TalonSRX(1);
     double output = 0.0;
+    public static final int ANGLE_TO_TICKS = 0;
+
 
     public FrontFlipper(int ID)
     {
@@ -34,65 +35,51 @@ public class FrontFlipper extends MotionMagicActuator
 
     public void Update(HotController joystick)
     {
-        frontFlipper.set(ControlMode.PercentOutput, FrontFlipperOutput(joystick));
+        primaryTalon.set(ControlMode.PercentOutput, .2);
     }
 
-    public double FrontFlipperOutput(HotController joystick)
+    @Override
+    public void initialize()
     {
-        int flipperstate = 0;
-        double flipperoutput = 0.0;
-        if ((joystick.getButtonB() == false) && joystick.getButtonA() == false)
-        {
-            reached = 0;
-            flipperoutput = 0.0;
-        }
-        if (flipperstate == 0 && (joystick.getButtonB() == true) && (getSensorValue() == 0.0)) // move to out position
-        {
-            reached = 180;
-            flipperoutput = 0.2; // change to actual value later
-            flipperstate++;
-        }
-        if (flipperstate == 1 && joystick.getButtonA() == false && getSensorValue() == 100)// actual encoder value
-                                                                                           // //stopped at extended
-        {
-            reached = 180;
-            flipperoutput = 0.0;
-            flipperstate++;
-        }
-        if (flipperstate == 1 && joystick.getButtonA() == true && getSensorValue() != 0.0) // back to carry position
-        {
-            reached = 0;
-            flipperoutput = -0.2; // change to actual value later
-            flipperstate++;
-        }
-        if (flipperstate == 2 && getSensorValue() == 0.0)
-        {
-            reached = 0;
-            flipperoutput = 0.0;
-        }
-        return flipperoutput;
+        super.initialize();
+        primaryTalon.setSelectedSensorPosition(-20 * ANGLE_TO_TICKS);
     }
+
+    /**
+     * Set Motion Magic Target
+     */
+    public void setTarget(double setPoint)
+    {
+        super.setTarget(setPoint * ANGLE_TO_TICKS);
+    }
+
+    public void setTarget(ManipulatorSetPoint targetPoint)
+    {
+        setTarget(targetPoint.frontFlipper * ANGLE_TO_TICKS);
+    }
+
+    /**
+     * Set angle in degrees
+     * @param angle
+     */
+    public void setPosition(double angle)
+    {
+        primaryTalon.setSelectedSensorPosition((int)(angle * ANGLE_TO_TICKS));
+    }
+    
 
     @Override
     public void displaySensorsValue()
     {
         SmartDashboard.putNumber("FrontFlipper Position ticks", getSensorValue());
-        SmartDashboard.putNumber("FrontFlipper Power", frontFlipper.getMotorOutputPercent());
+        SmartDashboard.putNumber("FrontFlipper Power", primaryTalon.getMotorOutputPercent());
         SmartDashboard.putBoolean("FrontFlipper Reached", reachedTarget());
     }
 
     @Override
     public boolean reachedTarget()
     {
-        if (reached == 180)
-        {
-            return true;
-        }
-        else if (reached != 180)
-        {
-            return false;
-        }
-        return false;
+        return super.reachedTarget((int)(1.0  * ANGLE_TO_TICKS), .07);
     }
 
     @Override
