@@ -21,14 +21,14 @@ import frc.robot.constants.ManipulatorSetPoint;
 public class Manipulator
 {
 
-    private enum InitailizationState
+    private enum InitializationState
     {
-        UNINITALIZED, CALIBRATING, READY
+        UNINITIALIZED, CALIBRATING, READY
     }
 
     private enum ManipulatorState
     {
-        intializing, packagePosition, outOfPackagePosition, transition, atTarget;
+        initializing, packagePosition, outOfPackagePosition, transition, atTarget;
     }
 
     private Elevator elevator;
@@ -41,7 +41,7 @@ public class Manipulator
     private HotController operator;
     private ArmPigeon armPigeon;
     private DriveTrain drivetrain;
-    private InitailizationState initailizationState;
+    private InitializationState initializationState;
     private ManipulatorState manipulatorState;
     private boolean startButtonPrevious = true;
     private boolean commandToBack = false;
@@ -61,7 +61,7 @@ public class Manipulator
         this.drivetrain = drivetrain;
 
         RestartInitialization();
-        manipulatorState = ManipulatorState.intializing;
+        manipulatorState = ManipulatorState.initializing;
 
     }
 
@@ -74,29 +74,29 @@ public class Manipulator
 
     public void RestartInitialization()
     {
-        initailizationState = InitailizationState.UNINITALIZED;
+        initializationState = InitializationState.UNINITIALIZED;
     }
 
     public boolean isReady()
     {
-        return initailizationState == InitailizationState.READY;
+        return initializationState == InitializationState.READY;
     }
 
     public void RunManipulatorInitialization()
     {
 
-        if (initailizationState == InitailizationState.UNINITALIZED)
+        if (initializationState == InitializationState.UNINITIALIZED)
         {
             armPigeon.RestartCalibration();
-            initailizationState = InitailizationState.CALIBRATING;
+            initializationState = InitializationState.CALIBRATING;
         }
-        if (initailizationState == InitailizationState.CALIBRATING)
+        if (initializationState == InitializationState.CALIBRATING)
         {
 
             armPigeon.CalibratePigeon();
             if (armPigeon.PigeonReady())
             {
-                initailizationState = InitailizationState.READY;
+                initializationState = InitializationState.READY;
                 manipulatorState = ManipulatorState.packagePosition;
                 arm.setPosition(armPigeon.GetAngle());
                 wrist.setPosition(armPigeon.GetAngle() - 134);
@@ -116,7 +116,7 @@ public class Manipulator
     private void Control(ManipulatorSetPoint targetPosition)
     {
 
-        if (manipulatorState == ManipulatorState.intializing)
+        if (manipulatorState == ManipulatorState.initializing)
         {
             elevator.disable();
             arm.disable();
