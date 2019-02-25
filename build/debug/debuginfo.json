@@ -7,10 +7,10 @@
     "language": "java"
   },
   {
-    "artifact": "frcJava (in project BigDavinator)",
+    "artifact": "frcJava (in project bigdavinator)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",
-    "project": "BigDavinator",
+    "project": "bigdavinator",
     "language": "java"
   }
 ]

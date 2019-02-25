@@ -71,8 +71,8 @@ public class Robot extends TimedRobot
         manipulator.RestartInitialization();
         forceInitailization = true;
 
-        HotLogger.Setup("leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft", "currentVelocityRight",
-                "leftStick", "StickLY", HotPathFollower.LoggerValues);
+        HotLogger.Setup("AA debug Arm", "leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft",
+                "currentVelocityRight", "leftStick", "StickLY", HotPathFollower.LoggerValues);
 
         driver.setDeadBandLY(.3);
         driver.setDeadBandLX(.3);

@@ -35,8 +35,8 @@ public class WiringIDs
     public static final int PIGEON_BASE = 20;
     public static final int PIGEON_ARM = 21;
 
-    public static final int SOLENOID_INTAKE = 4;
-    public static final int SOLENOID_CLIMBER = 5;
+    public static final int SOLENOID_INTAKE = 5;
+    public static final int SOLENOID_CLIMBER = 4;
 
     public static final int CLIMBER_1 = 11;
     public static final int CLIMBER_2 = 12;

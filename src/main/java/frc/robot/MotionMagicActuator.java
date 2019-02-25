@@ -19,6 +19,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     private int motionAcceleration;
     private boolean sensorPhase;
     private int timeoutms;
+    private double reachedTargetTimer;
 
     public MotionMagicActuator(int primaryCAN_ID)
     {
@@ -82,6 +83,25 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
             SRX_PID_0.initatlize(secondaryTalon);
         }
 
+    }
+
+    protected boolean reachedTarget(int allowableError, double requiredTime)
+    {
+        boolean reached = false;
+
+        if (Math.abs(getError()) <= allowableError)
+        {
+            if (reachedTargetTimer >= requiredTime)
+            {
+                reached = true;
+            }
+            reachedTargetTimer += 0.02;
+        }
+        else
+        {
+            reachedTargetTimer = 0;
+        }
+        return reached;
     }
 
     @Override
