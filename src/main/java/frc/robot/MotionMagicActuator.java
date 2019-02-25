@@ -20,6 +20,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     private boolean sensorPhase;
     private int timeoutms;
     private double reachedTargetTimer;
+    private double previousEncoderValue;
 
     public MotionMagicActuator(int primaryCAN_ID)
     {
@@ -315,4 +316,12 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         this.nominalOutputForward = nominalOutputForward;
     }
 
+    public double checkEncoders(double currentEncoderValue, double encoderValueChangeLimit ){
+
+        if((Math.abs(currentEncoderValue - previousEncoderValue) > encoderValueChangeLimit)) {
+            currentEncoderValue = currentEncoderValue + previousEncoderValue;
+        }
+        currentEncoderValue = previousEncoderValue;
+        return currentEncoderValue;
+    }
 }
