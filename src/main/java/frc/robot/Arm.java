@@ -84,4 +84,8 @@ public class Arm extends MotionMagicActuator
     {
         return -getSensorValue() * ArmConstants.TICKS_TO_DEGREES;
     }
+    
+    public void checkEncoder() {
+        checkEncoder(50);
+    }
 }

@@ -20,7 +20,8 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     private boolean sensorPhase;
     private int timeoutms;
     private double reachedTargetTimer;
-    private double previousEncoderValue;
+    private int previousEncoderValue;
+    private int currentEncoderValue;
 
     public MotionMagicActuator(int primaryCAN_ID)
     {
@@ -120,7 +121,9 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
 
     protected double getSensorValue()
     {
-        return primaryTalon.getSelectedSensorPosition();
+        previousEncoderValue = currentEncoderValue;
+        currentEncoderValue = primaryTalon.getSelectedSensorPosition();
+        return currentEncoderValue;
     }
 
     @Override
@@ -316,12 +319,10 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         this.nominalOutputForward = nominalOutputForward;
     }
 
-    public double checkEncoders(double currentEncoderValue, double encoderValueChangeLimit ){
-
+    public void checkEncoder(int encoderValueChangeLimit) {
         if((Math.abs(currentEncoderValue - previousEncoderValue) > encoderValueChangeLimit)) {
             currentEncoderValue = currentEncoderValue + previousEncoderValue;
+            primaryTalon.setSelectedSensorPosition(currentEncoderValue);
         }
-        currentEncoderValue = previousEncoderValue;
-        return currentEncoderValue;
     }
 }

@@ -84,10 +84,9 @@ public class Wrist extends MotionMagicActuator
         return super.reachedTarget(WristConstants.allowableError, WristConstants.minimumTimeToReachTarget);
     }
 
-    /*
     public void checkEncoder() {
-        checkEncoder(getPosition(), 50);
+        checkEncoder(50);
+
     }
-    */
 
 }
