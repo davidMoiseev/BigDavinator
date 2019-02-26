@@ -7,7 +7,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 import org.hotteam67.Interpolation;
 import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Robot extends TimedRobot
 {
@@ -44,6 +47,7 @@ public class Robot extends TimedRobot
     DriveTrain driveTrain;
     Manipulator manipulator;
     Compressor compressor;
+    Solenoid climber;
     /*
      * TalonSRX eleLeft; TalonSRX eleRight;
      */
@@ -52,11 +56,18 @@ public class Robot extends TimedRobot
      * TalonSRX shoulder; TalonSRX wrist; TalonSRX intake;
      */
 
-    private boolean forceInitailization;
+    private boolean forceInitialization;
+
+    VictorSPX leftClimber;
+    VictorSPX rightClimber;
 
     @Override
     public void robotInit()
     {
+        leftClimber = new VictorSPX(WiringIDs.CLIMBER_1);
+        rightClimber = new VictorSPX(WiringIDs.CLIMBER_2);
+
+        climber = new Solenoid(WiringIDs.SOLENOID_CLIMBER);
         compressor = new Compressor(0);
         compressor.setClosedLoopControl(true);
 
@@ -69,7 +80,7 @@ public class Robot extends TimedRobot
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
-        forceInitailization = true;
+        forceInitialization = true;
 
         HotLogger.Setup("AA debug Arm", "leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft",
                 "currentVelocityRight", "leftStick", "StickLY", HotPathFollower.LoggerValues);
@@ -138,8 +149,21 @@ public class Robot extends TimedRobot
         HotLogger.Log("StickLY", -driver.getStickLY());
         driveTrain.Update(driver);
 
+        driver.setDeadBandRX(0);
         manipulator.Update();
 
+        
+        leftClimber.set(ControlMode.PercentOutput, driver.getLeftTrigger());
+        rightClimber.set(ControlMode.PercentOutput, -driver.getLeftTrigger());
+
+        if (driver.getButtonY())
+            climber.set(true);
+        else
+            climber.set(false);
+        if (driver.getButtonX())
+            compressor.start();
+        else
+            compressor.stop();
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
         driveTrain.readSensors();
@@ -246,11 +270,11 @@ public class Robot extends TimedRobot
     {
 
         /**
-         * Clicked for the first time, the robotj is stable so start boot calibrate
+         * Clicked for the first time, the robot is stable so start boot calibrate
          */
-        if ((SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing) || forceInitailization)
+        if ((SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing) || forceInitialization)
         {
-            forceInitailization = false;
+            forceInitialization = false;
             driveTrain.CalibratePigeon();
             manipulator.RestartInitialization();
             pigeonInitializing = true;

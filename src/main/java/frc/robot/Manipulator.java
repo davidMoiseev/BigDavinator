@@ -7,11 +7,14 @@
 
 package frc.robot;
 
+import javax.lang.model.util.ElementScanner6;
+
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 import frc.robot.constants.ManipulatorSetPoint;
@@ -514,6 +517,7 @@ public class Manipulator
         // in case we need to adjust this
         return WRIST_LENGTH * Math.cos(Math.toRadians(angle));
     }
+
     private double lengthWristX(double angle)
     {
         // in case we need to adjust this again
@@ -533,8 +537,10 @@ public class Manipulator
 
     public void Update()
     {
-        arm.checkEncoders(); 
+        /*
+        arm.checkEncoders();
         wrist.checkEncoders();
+        */
         intake.Update();
         pneumaticIntake.Update();
         ManipulatorSetPoint frontTargetPosition = null;
@@ -596,6 +602,15 @@ public class Manipulator
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
+        else if (operator.getButtonY())
+        {
+            frontTargetPosition = ManipulatorSetPoint.climb;
+            backTargetPosition = ManipulatorSetPoint.climb;
+        }
+        else
+        {
+            elevator.manual(driver.getStickRX());
+        }
 
         if (operator.getButtonStart() && !startButtonPrevious)
         {
@@ -616,9 +631,11 @@ public class Manipulator
         }
         else
         {
+            /*
             elevator.disable();
             arm.disable();
             wrist.disable();
+            */
             SmartDashboard.putBoolean("Disabled thing", true);
         }
 

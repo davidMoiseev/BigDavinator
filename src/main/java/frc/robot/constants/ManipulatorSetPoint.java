@@ -31,6 +31,7 @@ public enum ManipulatorSetPoint
     cargo_rocketMid_back(9.5, -10, -83, 0, 0), // LT
     cargo_rocketHigh_front(33, 1.5, 61, 0, 0), // RT
     cargo_rocketHigh_back(33, -1.5, -61, 0, 0), // RT
+    climb(3, 0, 0, 0, 0),
     limit_front_low(4, 90, 90, 0, 0),
     limit_front_high(4, 50, 32, 0, 0), 
     limit_back_low(4, -90, -90, 0, 0), 
