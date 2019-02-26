@@ -19,12 +19,22 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class HotController extends Joystick
 {
+    private final double MAX_COUNT = 10;
 
-    public HotController(int port)
+    private enum Button
+    {
+        ButtonA, ButtonB, ButtonX, ButtonY;
+    };
+
+    Button lastButton;
+
+    public HotController(int port, boolean delay)
     {
         super(port);
-    }
+        this.delay = delay;
 
+    }
+    private boolean delay = true;
     private double deadbandLeft_X = 0.15;
     private double deadbandLeft_Y = 0.15;
     private double deadbandRight_X = 0.15;
@@ -161,7 +171,12 @@ public class HotController extends Joystick
     public double getRightTrigger()
     {
         double value = getRawAxis(3);
-        double temp;
+        double temp = 0.0;
+        double valueOld = temp;
+        if (Math.abs(valueOld) >= temp/10 && Math.abs(valueOld) >= 0.1)
+        {
+
+        }
         if (value < -1 * deadbandRightTrigger)
         {
             temp = (value + deadbandRightTrigger) / (1 - deadbandRightTrigger);
@@ -179,28 +194,117 @@ public class HotController extends Joystick
 
     public boolean getButtonA()
     {
-        boolean value = getRawButton(1);
-        return value;
+        lastButton = Button.ButtonA;
+        int counter = 0;
+        if(delay)
+        {
+            if(lastButton != Button.ButtonA && getRawButton(1))
+            {
+                lastButton = Button.ButtonA;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonA && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(1);
+            return value;
+        }
     }
 
     public boolean getButtonB()
     {
-        boolean value = getRawButton(2);
-        return value;
+        lastButton = Button.ButtonB;
+        int counter = 0;
+        if(delay)
+        {
+            if(lastButton != Button.ButtonB && getRawButton(1))
+            {
+                lastButton = Button.ButtonA;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonB && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(1);
+            return value;
+        }
     }
-
     public boolean getButtonX()
     {
-        boolean value = getRawButton(3);
-        return value;
+        lastButton = Button.ButtonX;
+        int counter = 0;
+        if(delay)
+        {
+            if(lastButton != Button.ButtonX && getRawButton(1))
+            {
+                lastButton = Button.ButtonX;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonX && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(1);
+            return value;
+        }
     }
-
     public boolean getButtonY()
     {
-        boolean value = getRawButton(4);
-        return value;
+        lastButton = Button.ButtonY;
+        int counter = 0;
+        if(delay)
+        {
+            if(lastButton != Button.ButtonY && getRawButton(1))
+            {
+                lastButton = Button.ButtonY;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonY && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(1);
+            return value;
+        }
     }
-
     public boolean getButtonRightBumper()
     {
         boolean value = getRawButton(6);
