@@ -85,7 +85,8 @@ public class Wrist extends MotionMagicActuator
     }
 
     public void checkEncoder() {
-        MotionMagicActuator.checkEncoder(getPosition(), 50);
+        checkEncoder(50);
+
     }
 
 }
