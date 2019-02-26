@@ -660,23 +660,7 @@ public class Manipulator
         startButtonPrevious = operator.getButtonStart();
         backButtonPrevious = operator.getButtonBack();
 
-        if (operator.getLeftTrigger() >= .25)
-        {
-            isLeftTriggerPressed = true;
-        }
-        else
-        {
-            isLeftTriggerPressed = false;
-        }
 
-        if (operator.getRightTrigger() >= .25)
-        {
-            isRightTriggerPressed = true;
-        }
-        else
-        {
-            isRightTriggerPressed = false;
-        }
         prevElevHeight = elevator.getPosition();
         prevArmAngle = arm.getPosition();
         prevWristAngle = wrist.getPosition();

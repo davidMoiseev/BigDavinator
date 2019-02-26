@@ -152,8 +152,8 @@ public class Robot extends TimedRobot
         manipulator.Update();
 
         
-        leftClimber.set(ControlMode.PercentOutput, driver.getLeftTrigger());
-        rightClimber.set(ControlMode.PercentOutput, -driver.getLeftTrigger());
+        leftClimber.set(ControlMode.PercentOutput, driver.getLeftTriggerAnalog());
+        rightClimber.set(ControlMode.PercentOutput, -driver.getLeftTriggerAnalog());
 
         if (driver.getButtonY())
             climber.set(true);
