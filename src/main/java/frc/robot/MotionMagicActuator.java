@@ -121,8 +121,6 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
 
     protected double getSensorValue()
     {
-        previousEncoderValue = currentEncoderValue;
-        currentEncoderValue = primaryTalon.getSelectedSensorPosition();
         return currentEncoderValue;
     }
 
@@ -319,10 +317,14 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         this.nominalOutputForward = nominalOutputForward;
     }
 
-    public void checkEncoder(int encoderValueChangeLimit) {
-        if((Math.abs(currentEncoderValue - previousEncoderValue) > encoderValueChangeLimit)) {
+    public void checkEncoder(int encoderValueChangeLimit)
+    {
+        currentEncoderValue = primaryTalon.getSelectedSensorPosition();
+        if ((Math.abs(currentEncoderValue - previousEncoderValue) > encoderValueChangeLimit))
+        {
             currentEncoderValue = currentEncoderValue + previousEncoderValue;
             primaryTalon.setSelectedSensorPosition(currentEncoderValue);
         }
+        previousEncoderValue = currentEncoderValue;
     }
 }
