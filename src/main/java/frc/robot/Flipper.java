@@ -22,15 +22,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Add your docs here.
  */
 
-public class FrontFlipper extends MotionMagicActuator
+public class Flipper extends MotionMagicActuator
 {
     double output = 0.0;
-    public static final int ANGLE_TO_TICKS = 0;
+    public static final int ANGLE_TO_TICKS = (int)((4096.0 / 360.0) * (50.0 / 18.0));
+    private final double startingAngle;
+    private final boolean inverted;
 
 
-    public FrontFlipper(int ID)
+    public Flipper(int ID, boolean inverted, double startingAngle)
     {
         super(ID);
+        this.startingAngle = startingAngle;
+        this.inverted = inverted;
     }
 
     public void Update(HotController joystick)
@@ -42,7 +46,8 @@ public class FrontFlipper extends MotionMagicActuator
     public void initialize()
     {
         super.initialize();
-        primaryTalon.setSelectedSensorPosition(-20 * ANGLE_TO_TICKS);
+        primaryTalon.setInverted(inverted);
+        primaryTalon.setSelectedSensorPosition((int)(startingAngle * ANGLE_TO_TICKS));
     }
 
     /**

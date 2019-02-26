@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
@@ -55,6 +56,11 @@ public class DriveTrain implements IPigeonWrapper
 
     private final CANSparkMax hDriveMotor;
 
+    private final VictorSPX leftClimber;
+    private final VictorSPX rightClimber;
+
+    private boolean allowClimberMotors = false;
+
     private final PigeonIMU pigeon;
 
     private final TalonSRX rightEncoder;
@@ -104,6 +110,10 @@ public class DriveTrain implements IPigeonWrapper
         leftFollower = new CANSparkMax(WiringIDs.LEFT_DRIVE_2, MotorType.kBrushless);
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
+
+        leftClimber = new VictorSPX(WiringIDs.CLIMBER_1);
+        rightClimber = new VictorSPX(WiringIDs.CLIMBER_2);
+        rightClimber.setInverted(true);
 
         this.rightEncoder = rightEncoder;
         this.leftEncoder = leftEncoder;
@@ -229,9 +239,16 @@ public class DriveTrain implements IPigeonWrapper
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
 
-        rightMotor.set(-joystick.getStickLY());// joystick.getStickRX());
-        leftMotor.set(-joystick.getStickLY());//  + joystick.getStickRX());// + 0.15 * (HDriveOutput(joystick)));
-        //hDriveMotor.set(HDriveOutput(joystick));
+        rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
+        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX() + 0.15 * (HDriveOutput(joystick)));
+
+        if (allowClimberMotors)
+        {
+            rightClimber.set(ControlMode.PercentOutput, -joystick.getStickLY());
+            rightClimber.set(ControlMode.PercentOutput, -joystick.getStickLY());
+        }
+        
+        hDriveMotor.set(HDriveOutput(joystick));
     }
 
     public double HDriveOutput(HotController joystick)
@@ -338,5 +355,10 @@ public class DriveTrain implements IPigeonWrapper
     public boolean PigeonReady()
     {
         return (pigeon.getState() == PigeonState.Ready);
+    }
+
+    public void SetAllowClimberMotors(boolean allowed)
+    {
+        allowClimberMotors = allowed;
     }
 }

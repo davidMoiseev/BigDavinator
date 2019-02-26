@@ -58,21 +58,13 @@ public class Robot extends TimedRobot
 
     private boolean forceInitialization;
 
-    VictorSPX leftClimber;
-    VictorSPX rightClimber;
-
     @Override
     public void robotInit()
     {
-        leftClimber = new VictorSPX(WiringIDs.CLIMBER_1);
-        rightClimber = new VictorSPX(WiringIDs.CLIMBER_2);
-
-        climber = new Solenoid(WiringIDs.SOLENOID_CLIMBER);
         compressor = new Compressor(0);
         compressor.setClosedLoopControl(true);
 
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
-        TalonSRX frontFlipper = new TalonSRX(-1);// new TalonSRX(WiringIDs.FRONT_FLIPPER);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
         HotController driver = new HotController(0);
         HotController operator = new HotController(1);
@@ -148,22 +140,7 @@ public class Robot extends TimedRobot
 
         HotLogger.Log("StickLY", -driver.getStickLY());
         driveTrain.Update(driver);
-
-        driver.setDeadBandRX(0);
         manipulator.Update();
-
-        
-        leftClimber.set(ControlMode.PercentOutput, driver.getLeftTrigger());
-        rightClimber.set(ControlMode.PercentOutput, -driver.getLeftTrigger());
-
-        if (driver.getButtonY())
-            climber.set(true);
-        else
-            climber.set(false);
-        if (driver.getButtonX())
-            compressor.start();
-        else
-            compressor.stop();
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
         driveTrain.readSensors();

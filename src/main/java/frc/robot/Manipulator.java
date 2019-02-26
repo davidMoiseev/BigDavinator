@@ -45,7 +45,9 @@ public class Manipulator
     private IntakePneumatics pneumaticIntake;
     private Wrist wrist;
     private Arm arm;
-    private FrontFlipper frontFlipper;
+    private Flipper frontFlipper;
+    private Flipper backFlipper;
+    private Solenoid climber;
 
     private HotController driver;
     private HotController operator;
@@ -83,7 +85,8 @@ public class Manipulator
         this.armPigeon = new ArmPigeon(WiringIDs.PIGEON_ARM);
         this.intake = new Intake(driver);
         this.pneumaticIntake = new IntakePneumatics(driver);
-        this.frontFlipper = new FrontFlipper(WiringIDs.FLIPPER_FRONT);
+        this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT, false, -20);
+        this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK, false, -20);
 
         this.operator = operator;
         this.driver = driver;
@@ -99,6 +102,8 @@ public class Manipulator
         elevator.initialize();
         wrist.initialize();
         arm.initialize();
+        frontFlipper.initialize();
+        backFlipper.initialize();
     }
 
     public void RestartInitialization()
@@ -142,6 +147,7 @@ public class Manipulator
         arm.displaySensorsValue();
         wrist.displaySensorsValue();
         frontFlipper.displaySensorsValue();
+        backFlipper.displaySensorsValue();
     }
 
     private void Control(ManipulatorSetPoint targetPosition)
@@ -153,6 +159,7 @@ public class Manipulator
             arm.disable();
             wrist.disable();
             frontFlipper.disable();
+            backFlipper.disable();
         }
         else if (manipulatorState == ManipulatorState.packagePosition)
         {
@@ -160,6 +167,7 @@ public class Manipulator
             arm.disable();
             wrist.disable();
             frontFlipper.disable();
+            backFlipper.disable();
             if (targetPosition != null)
             {
                 manipulatorState = ManipulatorState.outOfPackagePosition;
@@ -169,21 +177,19 @@ public class Manipulator
         {
             double tmpArm = arm.getPosition();
             elevator.setTarget(ManipulatorSetPoint.firstPosition);
+            frontFlipper.setTarget(ManipulatorSetPoint.firstPosition);
+            backFlipper.setTarget(ManipulatorSetPoint.firstPosition);
             if (elevator.reachedTarget())
             {
-                frontFlipper.setTarget(ManipulatorSetPoint.firstPosition);
-                if (frontFlipper.reachedTarget())
+                arm.setTarget(tmpArm);
+                wrist.setTarget(ManipulatorSetPoint.firstPosition);
+                if (wrist.reachedTarget())
                 {
-                    arm.setTarget(tmpArm);
-                    wrist.setTarget(ManipulatorSetPoint.firstPosition);
-                    if (wrist.reachedTarget())
+                    arm.setTarget(ManipulatorSetPoint.firstPosition);
+                    if (arm.reachedTarget())
                     {
-                        arm.setTarget(ManipulatorSetPoint.firstPosition);
-                        if (arm.reachedTarget())
-                        {
-                            manipulatorState = ManipulatorState.atTarget;
-                            // manipulatorState = ManipulatorState.transition;
-                        }
+                        manipulatorState = ManipulatorState.atTarget;
+                        // manipulatorState = ManipulatorState.transition;
                     }
                 }
             }
@@ -434,15 +440,18 @@ public class Manipulator
 
     private void setTargets(double elevTarget, double armTarget, double wristTarget)
     {
-        setTargets(elevTarget, armTarget, wristTarget, ManipulatorSetPoint.firstPosition.frontFlipper);
+        setTargets(elevTarget, armTarget, wristTarget, ManipulatorSetPoint.firstPosition.frontFlipper,
+                ManipulatorSetPoint.firstPosition.backFlipper);
     }
 
-    private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget)
+    private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
+            double backFlipperTarget)
     {
         elevator.setTarget(elevTarget);
         arm.setTarget(armTarget);
         wrist.setTarget(wristTarget);
         frontFlipper.setTarget(frontFlipperTarget);
+        backFlipper.setTarget(backFlipperTarget);
     }
 
     private void setTargets(ManipulatorSetPoint elevTarget, ManipulatorSetPoint armTarget,
@@ -537,7 +546,7 @@ public class Manipulator
 
     public void Update()
     {
-        arm.checkEncoder(); 
+        arm.checkEncoder();
         wrist.checkEncoder();
         intake.Update();
         pneumaticIntake.Update();
@@ -605,9 +614,18 @@ public class Manipulator
             frontTargetPosition = ManipulatorSetPoint.climb;
             backTargetPosition = ManipulatorSetPoint.climb;
         }
-        else
+        else if (driver.getButtonA())
         {
-            elevator.manual(driver.getStickRX());
+            if (elevator.getPosition() > 22)
+            {
+                drivetrain.SetAllowClimberMotors(true);
+                climber.set(true);
+            }
+        }
+        else if (driver.getButtonB())
+        {
+            drivetrain.SetAllowClimberMotors(false);
+            climber.set(false);
         }
 
         if (operator.getButtonStart() && !startButtonPrevious)
@@ -629,11 +647,16 @@ public class Manipulator
         }
         else
         {
-            /*
             elevator.disable();
             arm.disable();
             wrist.disable();
-            */
+
+            elevator.manual(operator.getStickLY());
+            if (commandToBack)
+                backFlipper.manual(operator.getStickRY());
+            else
+                frontFlipper.manual(operator.getStickRY());
+
             SmartDashboard.putBoolean("Disabled thing", true);
         }
 
