@@ -54,10 +54,12 @@ public class Manipulator
     private boolean commandToBack = false;
     private boolean isLeftTriggerPressed;
     private boolean isRightTriggerPressed;
+    private boolean inCarry = false;
 
     private double prevElevHeight;
     private double prevArmAngle;
     private double prevWristAngle;
+    public double armAngleBalance;
 
     private final double ELEVATOR_CLEAR_HEIGHT = 18;
     private final double ARM_TOLERANCE = 3; // need
@@ -528,6 +530,25 @@ public class Manipulator
         ManipulatorSetPoint frontTargetPosition = null;
         ManipulatorSetPoint backTargetPosition = null;
 
+        if (operator.getLeftTrigger() >= .25)
+        {
+            isLeftTriggerPressed = true;
+        }
+        else
+        {
+            isLeftTriggerPressed = false;
+        }
+
+        if (operator.getRightTrigger() >= .25)
+        {
+            isRightTriggerPressed = true;
+        }
+        else
+        {
+            isRightTriggerPressed = false;
+        }
+        
+
         if (operator.getButtonBack())
         {
             // flip code
@@ -540,6 +561,24 @@ public class Manipulator
         {
             frontTargetPosition = ManipulatorSetPoint.carry_front;
             backTargetPosition = ManipulatorSetPoint.carry_back;
+            
+            if (commandToBack == false)
+            {
+                if (arm.reachedTarget() == true) 
+                {
+                    arm.isInCarry(true, ManipulatorSetPoint.carry_front);
+                } else {
+                    arm.isInCarry(false, ManipulatorSetPoint.carry_front);
+                }
+            } else if (commandToBack == true)
+            {
+                if (arm.reachedTarget() == true)
+                {
+                    arm.isInCarry(true, ManipulatorSetPoint.carry_back);
+                } else {
+                    arm.isInCarry(false, ManipulatorSetPoint.carry_back);
+                }
+            }
         }
         else if (operator.getButtonA())
         {
@@ -565,8 +604,7 @@ public class Manipulator
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
         }
-        /*
-         * else if (isRightTriggerPressed == true) { frontTargetPosition =
+        /*else if (isRightTriggerPressed == true) { frontTargetPosition =
          * ManipulatorSetPoint.cargo_rocketHigh_front; backTargetPosition =
          * ManipulatorSetPoint.cargo_rocketHigh_back; }
          */ else if (operator.getButtonRightBumper())
@@ -633,23 +671,6 @@ public class Manipulator
         startButtonPrevious = operator.getButtonStart();
         backButtonPrevious = operator.getButtonBack();
 
-        if (operator.getLeftTrigger() >= .25)
-        {
-            isLeftTriggerPressed = true;
-        }
-        else
-        {
-            isLeftTriggerPressed = false;
-        }
-
-        if (operator.getRightTrigger() >= .25)
-        {
-            isRightTriggerPressed = true;
-        }
-        else
-        {
-            isRightTriggerPressed = false;
-        }
         prevElevHeight = elevator.getPosition();
         prevArmAngle = arm.getPosition();
         prevWristAngle = wrist.getPosition();
