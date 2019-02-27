@@ -32,7 +32,7 @@ public class Robot extends TimedRobot
     public static final int JOYSTICK_DRIVER = 0;
     public static final int JOYSTICK_OPERATOR = 1;
 
-    HotController driver = new HotController(JOYSTICK_DRIVER, false);
+    HotController driver;
     Interpolation driverLstick;
     Interpolation driverRstick;
     Interpolation driverLTrigger;
@@ -65,8 +65,8 @@ public class Robot extends TimedRobot
 
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
-        HotController driver = new HotController(0, false);
-        HotController operator = new HotController(1, true);
+        this.driver = new HotController(0);
+        HotController operator = new HotController(1);
         driveTrain = new DriveTrain(rightElevator, intake);
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
         manipulator.InitializeTalons();

@@ -19,22 +19,12 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class HotController extends Joystick
 {
-    private final double MAX_COUNT = 10;
 
-    private enum Button
-    {
-        ButtonA, ButtonB, ButtonX, ButtonY, ButtonRTrigger, ButtonLTrigger, ButtonRStick, ButtonLStick, ButtonLBumper, ButtonRBumper, ButtonBack;
-    };
-
-    Button lastButton;
-
-    public HotController(int port, boolean delay)
+    public HotController(int port)
     {
         super(port);
-        this.delay = delay;
-
     }
-    private boolean delay = true;
+
     private double deadbandLeft_X = 0.15;
     private double deadbandLeft_Y = 0.15;
     private double deadbandRight_X = 0.15;
@@ -149,29 +139,7 @@ public class HotController extends Joystick
         return temp;
     }
 
-    public boolean getLeftTrigger()
-    {
-        
-        int counter = 0;
-        
-        if(getLeftTriggerAnalog() > 0.5)
-            {
-                lastButton = Button.ButtonLTrigger;
-                counter = 0;
-                return true;
-            }
-            if (lastButton == Button.ButtonLTrigger && counter < MAX_COUNT)
-            {
-                counter++;
-                return false; 
-            }
-            else
-            {
-            return false;
-            }
-        }
-
-    public double getLeftTriggerAnalog()
+    public double getLeftTrigger()
     {
         double value = getRawAxis(2);
         double temp;
@@ -190,32 +158,10 @@ public class HotController extends Joystick
         return temp;
     }
 
-    public boolean getRightTrigger()
+    public double getRightTrigger()
     {
-        
-        int counter = 0;
-        
-        if(getRightTriggerAnalog() > 0.5)
-            {
-                lastButton = Button.ButtonRTrigger;
-                counter = 0;
-                return true;
-            }
-            if (lastButton == Button.ButtonRTrigger && counter < MAX_COUNT)
-            {
-                counter++;
-                return false; 
-            }
-            else
-            {
-            return false;
-            }
-        }
-
-    public double getRightTriggerAnalog()
-    {
-    double value = getRawAxis(3);
-    double temp = 0.0;
+        double value = getRawAxis(3);
+        double temp;
         if (value < -1 * deadbandRightTrigger)
         {
             temp = (value + deadbandRightTrigger) / (1 - deadbandRightTrigger);
@@ -230,203 +176,49 @@ public class HotController extends Joystick
         }
         return temp;
     }
+
     public boolean getButtonA()
     {
-        lastButton = Button.ButtonA;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(1))
-            {
-                lastButton = Button.ButtonA;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonA && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(1);
-            return value;
-        }
+        boolean value = getRawButton(1);
+        return value;
     }
 
     public boolean getButtonB()
     {
-        lastButton = Button.ButtonB;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(2))
-            {
-                lastButton = Button.ButtonB;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonB && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(2);
-            return value;
-        }
+        boolean value = getRawButton(2);
+        return value;
     }
+
     public boolean getButtonX()
     {
-        lastButton = Button.ButtonX;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(3))
-            {
-                lastButton = Button.ButtonX;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonX && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(3);
-            return value;
-        }
+        boolean value = getRawButton(3);
+        return value;
     }
+
     public boolean getButtonY()
     {
-        lastButton = Button.ButtonY;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(4))
-            {
-                lastButton = Button.ButtonY;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonY && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(4);
-            return value;
-        }
+        boolean value = getRawButton(4);
+        return value;
     }
+
     public boolean getButtonRightBumper()
-   {
-        lastButton = Button.ButtonRBumper;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(6))
-            {
-                lastButton = Button.ButtonRBumper;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonRBumper && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(6);
-            return value;
-        }
+    {
+        boolean value = getRawButton(6);
+        return value;
     }
+
     public boolean getButtonLeftBumper()
     {
-        lastButton = Button.ButtonLBumper;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(5))
-            {
-                lastButton = Button.ButtonLBumper;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonLBumper && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(5);
-            return value;
-        }
+        boolean value = getRawButton(5);
+        return value;
     }
+
     public boolean getButtonBack()
     {
-        lastButton = Button.ButtonBack;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(7))
-            {
-                lastButton = Button.ButtonBack;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonBack && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(7);
-            return value;
-        }
+        boolean value = getRawButton(7);
+        return value;
     }
+
     public boolean getButtonStart()
     {
         boolean value = getRawButton(8);
@@ -435,60 +227,17 @@ public class HotController extends Joystick
 
     public boolean getButtonLeftStick()
     {
-        lastButton = Button.ButtonLStick;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(9))
-            {
-                lastButton = Button.ButtonLStick;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonLStick && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(9);
-            return value;
-        }
+        boolean value = getRawButton(9);
+        return value;
+
     }
+
     public boolean getButtonRightStick()
     {
-        lastButton = Button.ButtonRStick;
-        int counter = 0;
-        if(delay)
-        {
-            if(getRawButton(10))
-            {
-                lastButton = Button.ButtonRStick;
-                counter = 0;
-                return true;
-            }
-            else if (lastButton == Button.ButtonRStick && counter < MAX_COUNT)
-            {
-                counter++;
-                return true; 
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else 
-        {
-            boolean value = getRawButton(10);
-            return value;
-        }
+        boolean value = getRawButton(10);
+        return value;
     }
+
     public int getDpad()
     {
         int value = getPOV();

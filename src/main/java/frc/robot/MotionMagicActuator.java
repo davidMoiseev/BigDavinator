@@ -317,11 +317,8 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         this.nominalOutputForward = nominalOutputForward;
     }
 
-    public void checkEncoder(int encoderValueChangeLimit)
-    {
-        currentEncoderValue = primaryTalon.getSelectedSensorPosition();
-        if ((Math.abs(currentEncoderValue - previousEncoderValue) > encoderValueChangeLimit))
-        {
+    public void checkEncoder(int encoderValueChangeLimit) {
+        if(primaryTalon.hasResetOccurred()) {
             currentEncoderValue = currentEncoderValue + previousEncoderValue;
             primaryTalon.setSelectedSensorPosition(currentEncoderValue);
         }

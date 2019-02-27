@@ -175,8 +175,10 @@ public class Manipulator
         {
             double tmpArm = arm.getPosition();
             elevator.setTarget(ManipulatorSetPoint.firstPosition);
+            /*
             frontFlipper.setTarget(ManipulatorSetPoint.firstPosition);
             backFlipper.setTarget(ManipulatorSetPoint.firstPosition);
+            */
             if (elevator.reachedTarget())
             {
                 arm.setTarget(tmpArm);
@@ -448,8 +450,8 @@ public class Manipulator
         elevator.setTarget(elevTarget);
         arm.setTarget(armTarget);
         wrist.setTarget(wristTarget);
-        frontFlipper.setTarget(frontFlipperTarget);
-        backFlipper.setTarget(backFlipperTarget);
+        // frontFlipper.setTarget(frontFlipperTarget);
+        // backFlipper.setTarget(backFlipperTarget);
     }
 
     private void setTargets(ManipulatorSetPoint elevTarget, ManipulatorSetPoint armTarget,
