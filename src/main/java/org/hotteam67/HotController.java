@@ -23,7 +23,7 @@ public class HotController extends Joystick
 
     private enum Button
     {
-        ButtonA, ButtonB, ButtonX, ButtonY;
+        ButtonA, ButtonB, ButtonX, ButtonY, ButtonRTrigger, ButtonLTrigger, ButtonRStick, ButtonLStick, ButtonLBumper, ButtonRBumper, ButtonBack;
     };
 
     Button lastButton;
@@ -149,7 +149,29 @@ public class HotController extends Joystick
         return temp;
     }
 
-    public double getLeftTrigger()
+    public boolean getLeftTrigger()
+    {
+        
+        int counter = 0;
+        
+        if(getLeftTriggerAnalog() > 0.5)
+            {
+                lastButton = Button.ButtonLTrigger;
+                counter = 0;
+                return true;
+            }
+            if (lastButton == Button.ButtonLTrigger && counter < MAX_COUNT)
+            {
+                counter++;
+                return false; 
+            }
+            else
+            {
+            return false;
+            }
+        }
+
+    public double getLeftTriggerAnalog()
     {
         double value = getRawAxis(2);
         double temp;
@@ -168,15 +190,32 @@ public class HotController extends Joystick
         return temp;
     }
 
-    public double getRightTrigger()
+    public boolean getRightTrigger()
     {
-        double value = getRawAxis(3);
-        double temp = 0.0;
-        double valueOld = temp;
-        if (Math.abs(valueOld) >= temp/10 && Math.abs(valueOld) >= 0.1)
-        {
-
+        
+        int counter = 0;
+        
+        if(getRightTriggerAnalog() > 0.5)
+            {
+                lastButton = Button.ButtonRTrigger;
+                counter = 0;
+                return true;
+            }
+            if (lastButton == Button.ButtonRTrigger && counter < MAX_COUNT)
+            {
+                counter++;
+                return false; 
+            }
+            else
+            {
+            return false;
+            }
         }
+
+    public double getRightTriggerAnalog()
+    {
+    double value = getRawAxis(3);
+    double temp = 0.0;
         if (value < -1 * deadbandRightTrigger)
         {
             temp = (value + deadbandRightTrigger) / (1 - deadbandRightTrigger);
@@ -191,14 +230,13 @@ public class HotController extends Joystick
         }
         return temp;
     }
-
     public boolean getButtonA()
     {
         lastButton = Button.ButtonA;
         int counter = 0;
         if(delay)
         {
-            if(lastButton != Button.ButtonA && getRawButton(1))
+            if(getRawButton(1))
             {
                 lastButton = Button.ButtonA;
                 counter = 0;
@@ -227,9 +265,9 @@ public class HotController extends Joystick
         int counter = 0;
         if(delay)
         {
-            if(lastButton != Button.ButtonB && getRawButton(1))
+            if(getRawButton(2))
             {
-                lastButton = Button.ButtonA;
+                lastButton = Button.ButtonB;
                 counter = 0;
                 return true;
             }
@@ -245,7 +283,7 @@ public class HotController extends Joystick
         }
         else 
         {
-            boolean value = getRawButton(1);
+            boolean value = getRawButton(2);
             return value;
         }
     }
@@ -255,7 +293,7 @@ public class HotController extends Joystick
         int counter = 0;
         if(delay)
         {
-            if(lastButton != Button.ButtonX && getRawButton(1))
+            if(getRawButton(3))
             {
                 lastButton = Button.ButtonX;
                 counter = 0;
@@ -273,7 +311,7 @@ public class HotController extends Joystick
         }
         else 
         {
-            boolean value = getRawButton(1);
+            boolean value = getRawButton(3);
             return value;
         }
     }
@@ -283,7 +321,7 @@ public class HotController extends Joystick
         int counter = 0;
         if(delay)
         {
-            if(lastButton != Button.ButtonY && getRawButton(1))
+            if(getRawButton(4))
             {
                 lastButton = Button.ButtonY;
                 counter = 0;
@@ -301,28 +339,94 @@ public class HotController extends Joystick
         }
         else 
         {
-            boolean value = getRawButton(1);
+            boolean value = getRawButton(4);
             return value;
         }
     }
     public boolean getButtonRightBumper()
-    {
-        boolean value = getRawButton(6);
-        return value;
+   {
+        lastButton = Button.ButtonRBumper;
+        int counter = 0;
+        if(delay)
+        {
+            if(getRawButton(6))
+            {
+                lastButton = Button.ButtonRBumper;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonRBumper && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(6);
+            return value;
+        }
     }
-
     public boolean getButtonLeftBumper()
     {
-        boolean value = getRawButton(5);
-        return value;
+        lastButton = Button.ButtonLBumper;
+        int counter = 0;
+        if(delay)
+        {
+            if(getRawButton(5))
+            {
+                lastButton = Button.ButtonLBumper;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonLBumper && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(5);
+            return value;
+        }
     }
-
     public boolean getButtonBack()
     {
-        boolean value = getRawButton(7);
-        return value;
+        lastButton = Button.ButtonBack;
+        int counter = 0;
+        if(delay)
+        {
+            if(getRawButton(7))
+            {
+                lastButton = Button.ButtonBack;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonBack && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(7);
+            return value;
+        }
     }
-
     public boolean getButtonStart()
     {
         boolean value = getRawButton(8);
@@ -331,17 +435,60 @@ public class HotController extends Joystick
 
     public boolean getButtonLeftStick()
     {
-        boolean value = getRawButton(9);
-        return value;
-
+        lastButton = Button.ButtonLStick;
+        int counter = 0;
+        if(delay)
+        {
+            if(getRawButton(9))
+            {
+                lastButton = Button.ButtonLStick;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonLStick && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(9);
+            return value;
+        }
     }
-
     public boolean getButtonRightStick()
     {
-        boolean value = getRawButton(10);
-        return value;
+        lastButton = Button.ButtonRStick;
+        int counter = 0;
+        if(delay)
+        {
+            if(getRawButton(10))
+            {
+                lastButton = Button.ButtonRStick;
+                counter = 0;
+                return true;
+            }
+            else if (lastButton == Button.ButtonRStick && counter < MAX_COUNT)
+            {
+                counter++;
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            boolean value = getRawButton(10);
+            return value;
+        }
     }
-
     public int getDpad()
     {
         int value = getPOV();
