@@ -546,8 +546,9 @@ public class Manipulator
 
     public void Update()
     {
-        //arm.checkEncoder();
-        //wrist.checkEncoder();
+        arm.checkEncoder();
+        wrist.checkEncoder();
+        elevator.checkEncoder(0);
         intake.Update();
         pneumaticIntake.Update();
         ManipulatorSetPoint frontTargetPosition = null;

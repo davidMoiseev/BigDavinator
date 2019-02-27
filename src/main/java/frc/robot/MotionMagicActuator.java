@@ -321,6 +321,8 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         if(primaryTalon.hasResetOccurred()) {
             currentEncoderValue = currentEncoderValue + previousEncoderValue;
             primaryTalon.setSelectedSensorPosition(currentEncoderValue);
+        } else {
+            currentEncoderValue = primaryTalon.getSelectedSensorPosition();
         }
         previousEncoderValue = currentEncoderValue;
     }
