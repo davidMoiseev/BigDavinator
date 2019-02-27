@@ -58,8 +58,6 @@ public class Manipulator
     private boolean startButtonPrevious = true;
     private boolean backButtonPrevious = true;
     private boolean commandToBack = false;
-    private boolean isLeftTriggerPressed;
-    private boolean isRightTriggerPressed;
 
     private double prevElevHeight;
     private double prevArmAngle;
@@ -546,22 +544,21 @@ public class Manipulator
 
     public void Update()
     {
-        arm.checkEncoder();
-        wrist.checkEncoder();
+        //arm.checkEncoder();
+        //wrist.checkEncoder();
         intake.Update();
         pneumaticIntake.Update();
         ManipulatorSetPoint frontTargetPosition = null;
         ManipulatorSetPoint backTargetPosition = null;
 
-        if (operator.getButtonBack())
+        boolean isLeftTriggerPressed = false;
+        if (operator.getLeftTrigger() >= .25)
         {
-            // flip code
+            isLeftTriggerPressed = true;
         }
-        else if (operator.getButtonStart())
-        {
-            // flip code
-        }
-        else if (operator.getButtonX())
+
+        
+        if (operator.getButtonX())
         {
             frontTargetPosition = ManipulatorSetPoint.carry_front;
             backTargetPosition = ManipulatorSetPoint.carry_back;
@@ -580,21 +577,25 @@ public class Manipulator
          * else if (operator.getButtonY()) { frontTargetPosition =
          * ManipulatorSetPoint.hatch_high_front; backTargetPosition =
          * ManipulatorSetPoint.hatch_high_back; }
-         */ else if (operator.getButtonLeftBumper())
+         *//*if (operator.getButtonLeftBumper())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
-        }
+        }*/
+        /*
         else if (isLeftTriggerPressed == true)
         {
+            /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-        }
+        }*/
         /*
          * else if (isRightTriggerPressed == true) { frontTargetPosition =
          * ManipulatorSetPoint.cargo_rocketHigh_front; backTargetPosition =
          * ManipulatorSetPoint.cargo_rocketHigh_back; }
-         */ else if (operator.getButtonRightBumper())
+         */ 
+        
+        else if (operator.getButtonRightBumper())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
             backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
@@ -604,16 +605,20 @@ public class Manipulator
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
+        
         else if (operator.getButtonRightStick())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
+        
         else if (operator.getButtonY())
         {
             frontTargetPosition = ManipulatorSetPoint.climb;
             backTargetPosition = ManipulatorSetPoint.climb;
         }
+        
+        
         else if (driver.getButtonA())
         {
             if (elevator.getPosition() > 22)
@@ -627,6 +632,8 @@ public class Manipulator
             drivetrain.SetAllowClimberMotors(false);
             climber.set(false);
         }
+        
+        
 
         if (operator.getButtonStart() && !startButtonPrevious)
         {
@@ -683,23 +690,7 @@ public class Manipulator
         startButtonPrevious = operator.getButtonStart();
         backButtonPrevious = operator.getButtonBack();
 
-        if (operator.getLeftTrigger() >= .25)
-        {
-            isLeftTriggerPressed = true;
-        }
-        else
-        {
-            isLeftTriggerPressed = false;
-        }
 
-        if (operator.getRightTrigger() >= .25)
-        {
-            isRightTriggerPressed = true;
-        }
-        else
-        {
-            isRightTriggerPressed = false;
-        }
         prevElevHeight = elevator.getPosition();
         prevArmAngle = arm.getPosition();
         prevWristAngle = wrist.getPosition();

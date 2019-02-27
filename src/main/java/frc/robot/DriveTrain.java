@@ -56,8 +56,8 @@ public class DriveTrain implements IPigeonWrapper
 
     private final CANSparkMax hDriveMotor;
 
-    private final VictorSPX leftClimber;
-    private final VictorSPX rightClimber;
+    private VictorSPX leftClimber;
+    private VictorSPX rightClimber;
 
     private boolean allowClimberMotors = false;
 
@@ -111,9 +111,11 @@ public class DriveTrain implements IPigeonWrapper
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
 
+        /*
         leftClimber = new VictorSPX(WiringIDs.CLIMBER_1);
         rightClimber = new VictorSPX(WiringIDs.CLIMBER_2);
         rightClimber.setInverted(true);
+        */
 
         this.rightEncoder = rightEncoder;
         this.leftEncoder = leftEncoder;
@@ -244,7 +246,7 @@ public class DriveTrain implements IPigeonWrapper
 
         if (allowClimberMotors)
         {
-            rightClimber.set(ControlMode.PercentOutput, -joystick.getStickLY());
+            leftClimber.set(ControlMode.PercentOutput, -joystick.getStickLY());
             rightClimber.set(ControlMode.PercentOutput, -joystick.getStickLY());
         }
         

@@ -1,9 +1,9 @@
 [
   {
     "name": "BigDavinator (in project BigDavinator)",
-    "file": "C:\\Users\\Robotics\\Downloads\\FRCCode\\BigDavinator\\build\\libs\\BigDavinator.jar",
+    "file": "C:\\Users\\Jakob\\Documents\\GitHub\\BigDavinator\\build\\libs\\BigDavinator.jar",
     "extensions": [],
-    "librarydir": "C:\\Users\\Robotics\\Downloads\\FRCCode\\BigDavinator\\build\\tmp\\jniExtractDir",
+    "librarydir": "C:\\Users\\Jakob\\Documents\\GitHub\\BigDavinator\\build\\tmp\\jniExtractDir",
     "mainclass": "frc.robot.Main"
   }
 ]

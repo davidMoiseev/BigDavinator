@@ -14,7 +14,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import frc.robot.constants.FrontFlipperConstants;
+import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.ManipulatorSetPoint;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -33,6 +33,27 @@ public class Flipper extends MotionMagicActuator
     public Flipper(int ID, boolean inverted, double startingAngle)
     {
         super(ID);
+
+        setNominalOutputForward(FlipperConstants.nominalOutputForward);
+        setNominalOutputReverse(FlipperConstants.nominalOutputReverse);
+        setPeakOutputForward(FlipperConstants.peakOutputForward);
+        setPeakOutputReverse(FlipperConstants.peakOutputReverse);
+        setMotionAcceleration(FlipperConstants.motionAcceleration);
+        setMotionCruiseVelocity(FlipperConstants.motionCruiseVelocity);
+        setTimeoutms(FlipperConstants.timeoutms);
+        setSensorPhase(FlipperConstants.sensorPhase);
+
+        setForwardSoftLimitThreshold(FlipperConstants.forwardSoftLimitThreshold);
+        setReverseSoftLimitThreshold(FlipperConstants.reverseSoftLimitThreshold);
+
+        SRX_PID_0.setSlotIdx(FlipperConstants.slotIdx);
+        SRX_PID_0.setPidIdx(FlipperConstants.pidIdx);
+        SRX_PID_0.setFeedForward(FlipperConstants.feedForward);
+        SRX_PID_0.setProportional(FlipperConstants.proportional);
+        SRX_PID_0.setDerivative(FlipperConstants.derivative);
+        SRX_PID_0.setIntegral(FlipperConstants.integral);
+        SRX_PID_0.setFeedbackDevice(FlipperConstants.feedbackDevice);
+
         this.startingAngle = startingAngle;
         this.inverted = inverted;
     }
@@ -90,7 +111,7 @@ public class Flipper extends MotionMagicActuator
     @Override
     public double getPosition()
     {
-        return getSensorValue() * FrontFlipperConstants.TICKS_TO_INCHES;
+        return getSensorValue() * FlipperConstants.TICKS_TO_INCHES;
     }
 
 }

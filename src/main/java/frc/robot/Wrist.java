@@ -86,7 +86,6 @@ public class Wrist extends MotionMagicActuator
 
     public void checkEncoder() {
         checkEncoder(50);
-
     }
 
 }

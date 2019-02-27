@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 /**
  * Add your docs here.
  */
-public class FrontFlipperConstants
+public class FlipperConstants
 {
     public static final double nominalOutputForward = 0;
     public static final double nominalOutputReverse = 0;
