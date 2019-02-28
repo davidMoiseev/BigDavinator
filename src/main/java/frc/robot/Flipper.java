@@ -18,6 +18,7 @@ import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.FlipperConstants;
+import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 
 /**
@@ -30,9 +31,10 @@ public class Flipper extends MotionMagicActuator
     public static final int ANGLE_TO_TICKS = (int) ((4096.0 / 360.0) * (50.0 / 18.0));
     private final double startingAngle;
     private final boolean inverted;
+    private final boolean isBack;
 
 
-    public Flipper(int ID, boolean inverted, double startingAngle)
+    public Flipper(int ID, boolean inverted, double startingAngle, boolean isBack)
     {
         super(ID);
 
@@ -58,6 +60,7 @@ public class Flipper extends MotionMagicActuator
 
         this.startingAngle = startingAngle;
         this.inverted = inverted;
+        this.isBack = isBack;
     }
 
     public void Update(HotController joystick)
@@ -81,9 +84,10 @@ public class Flipper extends MotionMagicActuator
         super.setTarget(setPoint * ANGLE_TO_TICKS);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint)
+    public void setTarget(IManipulatorSetPoint targetPoint)
     {
-        setTarget(targetPoint.frontFlipper * ANGLE_TO_TICKS);
+        double target = isBack ? targetPoint.backFlipper() : targetPoint.frontFlipper();
+        setTarget(target * ANGLE_TO_TICKS);
     }
 
     /**

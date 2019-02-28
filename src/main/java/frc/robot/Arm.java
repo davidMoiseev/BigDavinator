@@ -17,6 +17,7 @@ import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ArmConstants;
+import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 
 /**
@@ -83,9 +84,9 @@ public class Arm extends MotionMagicActuator
         super.setTarget(-target / ArmConstants.TICKS_TO_DEGREES);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint)
+    public void setTarget(IManipulatorSetPoint targetPoint)
     {
-        setTarget(targetPoint.armAngle);
+        setTarget(targetPoint.armAngle());
     }
 
     public void setPosition(double angle)

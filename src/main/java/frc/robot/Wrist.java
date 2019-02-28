@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.WristConstants;
 
@@ -92,9 +93,9 @@ public class Wrist extends MotionMagicActuator
         super.setTarget(-target / WristConstants.TICKS_TO_DEGREES);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint)
+    public void setTarget(IManipulatorSetPoint targetPoint)
     {
-        setTarget(targetPoint.wristAngle);
+        setTarget(targetPoint.wristAngle());
     }
 
     public boolean reachedTarget()

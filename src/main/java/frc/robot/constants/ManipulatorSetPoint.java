@@ -7,13 +7,13 @@
 
 package frc.robot.constants;
 
-public enum ManipulatorSetPoint
+
+public enum ManipulatorSetPoint implements IManipulatorSetPoint
 {
     // Inches and degrees :)
 
     // 0 16 115
-    firstPosition(3, 0, 0, 0, 0), 
-    carry_front(5, 0, 10, 0, 0), // X
+    firstPosition(3, 0, 0, 0, 0), carry_front(5, 0, 10, 0, 0), // X
     carry_back(5, 0, -10, 0, 0), // X
     hatch_low_front(17, 167, 90, 110, 0), // A
     hatch_low_back(17, -167, -90, 0, 110), // A
@@ -31,26 +31,50 @@ public enum ManipulatorSetPoint
     cargo_rocketMid_back(9.5, -10, -83, 0, 0), // LT
     cargo_rocketHigh_front(33, 1.5, 61, 0, 0), // RT
     cargo_rocketHigh_back(33, -1.5, -61, 0, 0), // RT
-    climb(3, 0, 0, 0, 0),
-    limit_front_low(4, 90, 90, 0, 0),
-    limit_front_high(4, 50, 32, 0, 0), 
-    limit_back_low(4, -90, -90, 0, 0), 
-    limit_back_high(4, -50, -32, 0, 0);
+    climb(3, 0, 0, 0, 0), limit_front_low(4, 90, 90, 0, 0), limit_front_high(4, 50, 32, 0, 0), limit_back_low(4, -90,
+            -90, 0, 0), limit_back_high(4, -50, -32, 0, 0);
 
     // Flip on M1 || M2
 
-    private ManipulatorSetPoint(double elevatorHeight, double armAngle, double wristAngle, double frontFlipperPosition, double backFlipperPosition)
+    private ManipulatorSetPoint(double elevatorHeight, double armAngle, double wristAngle, double frontFlipperPosition,
+            double backFlipperPosition)
     {
         this.elevatorHeight = elevatorHeight;
         this.armAngle = armAngle;
         this.wristAngle = wristAngle;
-        frontFlipper = frontFlipperPosition;
-        backFlipper = backFlipperPosition;
+        this.frontFlipper = frontFlipperPosition;
+        this.backFlipper = backFlipperPosition;
     }
 
-    public double armAngle;
-    public double wristAngle;
-    public double elevatorHeight;
-    public double frontFlipper;
-    public double backFlipper;
+    private final double armAngle;
+    private final double wristAngle;
+    private final double elevatorHeight;
+    private final double frontFlipper;
+    private final double backFlipper;
+
+    public double wristAngle()
+    {
+        return this.wristAngle;
+    }
+
+    public double armAngle()
+    {
+        return this.armAngle;
+    }
+
+    public double elevatorHeight()
+    {
+        return this.elevatorHeight;
+    }
+
+    public double backFlipper()
+    {
+        return this.backFlipper;
+
+    }
+
+    public double frontFlipper()
+    {
+        return this.frontFlipper;
+    }
 }

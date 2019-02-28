@@ -19,6 +19,7 @@ import org.hotteam67.HotLogger;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ElevatorConstants;
+import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 
 /**
@@ -94,9 +95,9 @@ public class Elevator extends MotionMagicActuator
         super.setTarget(target / ElevatorConstants.TICKS_TO_INCHES);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint)
+    public void setTarget(IManipulatorSetPoint targetPoint)
     {
-        setTarget(targetPoint.elevatorHeight);
+        setTarget(targetPoint.elevatorHeight());
     }
 
     public boolean reachedTarget()
