@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
+import frc.robot.constants.ManualManipulatorSetPoint;
 
 /**
  * Add your docs here.
@@ -80,6 +81,7 @@ public class Manipulator
     private final double SUPPORTS_COLLISION = 14; // need?
     private final double FRAME_LENGTH = 16; // 14
     private final double intakeHeight = 13.5;
+    private final double SCORE_DISTANCE = 5; // inches to move arm/intake forward for scoring
 
     public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake,
             DriveTrain drivetrain)
@@ -654,49 +656,11 @@ public class Manipulator
         if (frontTargetPosition != null || backTargetPosition != null)
         {
             IManipulatorSetPoint setPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
-            Control(setPoint);
             if (score)
             {
-                double armAngle = setPoint.armAngle();
-                double armX = Math.sin(Math.toRadians(armAngle));
-                double newArmX = armX + (5 * ((armX > 0) ? 1 : -1));
-                double newArmAngle = Math.toDegrees(Math.asin(newArmX / ARM_LENGTH));
-                double newElevatorHeight = setPoint.elevatorHeight()
-                        + (ARM_LENGTH * (Math.cos(Math.toRadians(armAngle)) - Math.cos(Math.toRadians(newArmAngle))));
-                Control(new IManipulatorSetPoint()
-                {
-
-                    @Override
-                    public double wristAngle()
-                    {
-                        return setPoint.wristAngle();
-                    }
-
-                    @Override
-                    public double frontFlipper()
-                    {
-                        return setPoint.frontFlipper();
-                    }
-
-                    @Override
-                    public double elevatorHeight()
-                    {
-                        return newElevatorHeight;
-                    }
-
-                    @Override
-                    public double backFlipper()
-                    {
-                        return setPoint.backFlipper();
-                    }
-
-                    @Override
-                    public double armAngle()
-                    {
-                        return newArmAngle;
-                    }
-                });
+                setPoint = CreateScoreSetPoint(setPoint);
             }
+            Control(setPoint);
             SmartDashboard.putBoolean("Disabled thing", false);
         }
         else
@@ -740,5 +704,47 @@ public class Manipulator
         prevElevHeight = elevator.getPosition();
         prevArmAngle = arm.getPosition();
         prevWristAngle = wrist.getPosition();
+    }
+
+    private IManipulatorSetPoint CreateScoreSetPoint(IManipulatorSetPoint setPoint)
+    {
+        double armAngle = Math.toRadians(setPoint.armAngle());
+
+        double newArmX = Math.sin(armAngle) * ARM_LENGTH;
+        double newArmAngle;
+
+        if (getArmSide(setPoint.armAngle()) == RobotSide.FRONT)
+        {
+            newArmX += SCORE_DISTANCE;
+            if (newArmX > ARM_LENGTH)
+                newArmX = ARM_LENGTH;
+
+            // Inverse sin on -PI/2 < X < PI/2
+            newArmAngle = Math.asin(ARM_LENGTH / newArmX);
+
+            // For two solutions, pick the angle that is closer to the initial setpoint
+            if (Math.abs(armAngle - newArmAngle) > Math.abs(armAngle - (Math.PI - newArmAngle)))
+                newArmAngle = Math.PI - newArmAngle;
+        }
+        else
+        {
+            newArmX -= SCORE_DISTANCE;
+            if (newArmX < ARM_LENGTH)
+                newArmX = -ARM_LENGTH;
+
+            // Inverse sin on -PI/2 < X < PI/2
+            newArmAngle = Math.asin(ARM_LENGTH / newArmX);
+
+            // For two solutions, pick the angle that is closer to the initial setpoint
+            if (Math.abs(armAngle - newArmAngle) > Math.abs(armAngle - (-Math.PI - newArmAngle)))
+                newArmAngle = -Math.PI - newArmAngle;
+        }
+
+        double newElevatorHeight = setPoint.elevatorHeight()
+                + (ARM_LENGTH * (Math.cos(armAngle) - Math.cos(newArmAngle)));
+
+                
+        return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
+                setPoint.frontFlipper(), setPoint.backFlipper());
     }
 }
