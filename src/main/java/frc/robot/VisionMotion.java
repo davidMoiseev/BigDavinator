@@ -131,16 +131,6 @@ public class VisionMotion {
         }
     }
 
-     public double driveToVisionDistance() {
-        if(vision.findDistance(this.selectTarget()) < 20.0) {
-            motorOutput = 0.0;
-            return motorOutput;
-        }else{
-            motorOutput = 0.4;
-            return motorOutput;
-        }
-    }
-
     public void setPipeline(double pipeline){
         vision.setPipeline(pipeline);
     }
@@ -170,52 +160,67 @@ public class VisionMotion {
     }
     
 
-    public int selectTarget(){
-        if((currentYaw < (Math.PI / 8)) && (currentYaw > (Math.PI / -8))){ //if angle is zero
-            referenceAngle = 0;
-            target = 0; //front cargo ship
-            
-        }
-        else if((currentYaw > (3 * Math.PI / 8)) && (currentYaw < (5 * Math.PI / -8))){ //if angle is pi/2
-            referenceAngle = Math.PI / 2;
-            if(getHigh() == true){ //if it is high
-                target = 1; //right rocket center
-            }else if(getHigh() == false){ //if it is low
-                target = 2; //left side cargo
-            }   
-        }
-        else if((currentYaw < (-3 * Math.PI / 8)) && (currentYaw > (-5 * Math.PI / -8))){ //if angle is -pi/2
-            referenceAngle = Math.PI / -2;
-            if(getHigh() == true){ //if it is high
-                target = 3; //left rocket center
-            }else if( getHigh() == false){ //if it is low
-                target = 4; //right side cargo
-            } 
-        }
-        else if((currentYaw > (Math.PI / 8)) && (currentYaw < (3 * Math.PI / 8))){ //if angle is pi/4
-            referenceAngle = Math.PI / 4;
-            target = 5; //right rocket near
-            
-        }
-        else if((currentYaw < (-Math.PI / 8)) && (currentYaw > (-3 * Math.PI / 8))){ //if angle is -pi/4
-            referenceAngle = Math.PI / -4;
-            target = 6; //left rocket near
-            
-        }
-        else if((currentYaw > (5 * Math.PI / 8)) && (currentYaw < (7 * Math.PI / 8))){ //if angle is 3pi/4
-            referenceAngle = 3 * Math.PI / 4;
-            target = 7; //right rocket far 
-        }
-        else if((currentYaw < (-5 * Math.PI / 8)) && (currentYaw > (-7 * Math.PI / 8))){ //if angle is -3pi/4
-            referenceAngle = -3 * Math.PI / 4;
-            target = 8; //left rocket far 
-        }
-        else if((currentYaw > (Math.PI / -8)) && (currentYaw < (Math.PI / 8))){ //if angle is zero
-            referenceAngle = (Math.PI);
-            target = 0; //front cargo ship
+    public int selectTarget(double pipeline){
+        if(pipeline == 0){
+                target = 67;
+        }else{
+            if((currentYaw < (Math.PI / 8)) && (currentYaw > (Math.PI / -8))){ //if angle is zero
+                referenceAngle = 0;
+                target = 0; //front cargo ship
+                
+            }
+            else if((currentYaw > (3 * Math.PI / 8)) && (currentYaw < (5 * Math.PI / -8))){ //if angle is pi/2
+                referenceAngle = Math.PI / 2;
+                if(getHigh() == true){ //if it is high
+                    target = 1; //right rocket center
+                }else if(getHigh() == false){ //if it is low
+                    target = 2; //left side cargo
+                }   
+            }
+            else if((currentYaw < (-3 * Math.PI / 8)) && (currentYaw > (-5 * Math.PI / -8))){ //if angle is -pi/2
+                referenceAngle = Math.PI / -2;
+                if(getHigh() == true){ //if it is high
+                    target = 3; //left rocket center
+                }else if( getHigh() == false){ //if it is low
+                    target = 4; //right side cargo
+                } 
+            }
+            else if((currentYaw > (Math.PI / 8)) && (currentYaw < (3 * Math.PI / 8))){ //if angle is pi/4
+                referenceAngle = Math.PI / 4;
+                target = 5; //right rocket near
+                
+            }
+            else if((currentYaw < (-Math.PI / 8)) && (currentYaw > (-3 * Math.PI / 8))){ //if angle is -pi/4
+                referenceAngle = Math.PI / -4;
+                target = 6; //left rocket near
+                
+            }
+            else if((currentYaw > (5 * Math.PI / 8)) && (currentYaw < (7 * Math.PI / 8))){ //if angle is 3pi/4
+                referenceAngle = 3 * Math.PI / 4;
+                target = 7; //right rocket far 
+            }
+            else if((currentYaw < (-5 * Math.PI / 8)) && (currentYaw > (-7 * Math.PI / 8))){ //if angle is -3pi/4
+                referenceAngle = -3 * Math.PI / 4;
+                target = 8; //left rocket far 
+            }
+            else if((currentYaw > (Math.PI / -8)) && (currentYaw < (Math.PI / 8))){ //if angle is zero
+                referenceAngle = (Math.PI);
+                target = 0; //front cargo ship
+            }
         }
         SmartDashboard.putNumber("referenceAngle", referenceAngle);
         return target;
+    }
+
+
+    public double driveToVisionDistance(double pipeline) {
+        if(vision.findDistance(this.selectTarget(pipeline)) < 20.0) {
+            motorOutput = 0.0;
+            return motorOutput;
+        }else{
+            motorOutput = 0.4;
+            return motorOutput;
+        }
     }
 
     public double getReferenceAngle(){
@@ -224,10 +229,10 @@ public class VisionMotion {
 
     public void targetLineUp(){ //faster but sloppier than gyroTargetLineUp
         this.shuffleVisionPID();
-        this.turnVision();
-        this.driveToVisionDistance();
-        double Lspeed = this.driveToVisionDistance() + (this.turnVision());
-        double Rspeed = this.driveToVisionDistance() - (this.turnVision());
+        // this.turnVision();
+        // this.driveToVisionDistance();
+        // double Lspeed = this.driveToVisionDistance() + (this.turnVision());
+        // double Rspeed = this.driveToVisionDistance() - (this.turnVision());
         if(Lspeed > 1.0){
             Lspeed = 1.0;
         }else if(Lspeed < -1.0){
@@ -260,8 +265,8 @@ public class VisionMotion {
         targetAngle = referenceAngle + Math.toRadians(vision.getHeading());
     }
 
-    public boolean setGyroLineUpVars(){
-        distance = vision.findDistance(this.selectTarget());
+    public boolean setGyroLineUpVars(double pipeline){
+        distance = vision.findDistance(this.selectTarget(pipeline));
         distanceHorizontal = distance * Math.tan(targetAngle);
         angle2 = Math.atan((distance - targetVisDistance) / distanceHorizontal);
         angle1 = ((Math.PI / 2) - targetAngle) - angle2;
@@ -284,9 +289,13 @@ public class VisionMotion {
                 SmartDashboard.putNumber("vt", vt);
              }
 
-    public boolean targetReached(double target) {
+    public void ballTargetLineUp(){
+
+    }
+
+    public boolean targetReached(double distanceTarget, double pipeline) {
         //distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal * distanceHorizontal));
-        if(vision.findDistance(this.selectTarget()) <= target){
+        if(vision.findDistance(this.selectTarget(pipeline)) <= distanceTarget){
             return true;
         }else{
             return false;

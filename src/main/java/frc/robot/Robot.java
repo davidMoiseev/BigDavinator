@@ -120,7 +120,7 @@ public class Robot extends TimedRobot
           }
           break;
           case 2:
-            if(driveTrain.gyroLineUp(1, 0.3, 50.0) == true){
+            if(driveTrain.gyroLineUp(0.3, 50.0) == true){
               state++;
             }
           break;

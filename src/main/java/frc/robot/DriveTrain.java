@@ -164,7 +164,7 @@ public class DriveTrain implements IPigeonWrapper
         pigeon.getYawPitchRoll(xyz_dps);
         currentYaw = -1.0 * Math.toRadians(xyz_dps[0]); 
     }
-    public void getSingleRotationYaw(){  //incomplete
+    public void getSingleRotationYaw(){  
         double rotations;
         pigeon.getYawPitchRoll(xyz_dps);
         singleRotationYaw = -1.0 * Math.toRadians(xyz_dps[0]);
@@ -250,7 +250,7 @@ public class DriveTrain implements IPigeonWrapper
         getSingleRotationYaw();
         double referenceAngle;
         vmotion.sendAngle(singleRotationYaw);
-        vmotion.selectTarget();
+        vmotion.selectTarget(1.0);
         referenceAngle = Math.toDegrees(vmotion.getReferenceAngle());
         if (currentYaw == referenceAngle || currentYaw < (referenceAngle + 1) && currentYaw > (referenceAngle - 1)){
             return true;
@@ -270,37 +270,39 @@ public class DriveTrain implements IPigeonWrapper
         hDriveMotor.set(vmotion.shuffleVisionPID());
         leftMotor.set(vmotion.outputL());
         rightMotor.set(-vmotion.outputR());
-        if(vmotion.targetReached(20.0) == true){
+        if(vmotion.targetReached(20.0, 1) == true){
             return true;
         }else{
             return false;
         }
     }
 
-    public boolean gyroLineUp(double pipeline, double maxOutput, double target){
+    public boolean gyroLineUp(double maxOutput, double targetDistanceStop){
             switch (state){
                 case 0:
-                    vmotion.setPipeline(pipeline);
+                    vmotion.setPipeline(1);
                     this.getSingleRotationYaw();
                     vmotion.sendAngle(singleRotationYaw);
                     vmotion.getTargetAngle();
-                    vmotion.setGyroLineUpVars();
+                    vmotion.setGyroLineUpVars(1.0);
                     state++;
                     break;
                 case 1:
-                    vmotion.gyroTargetLineUp(currentYaw, maxOutput);
-                    double hOutput = vmotion.outputGyroH(currentYaw, maxOutput);
+                    this.getSingleRotationYaw();
+                    vmotion.gyroTargetLineUp(singleRotationYaw, maxOutput);
+                    double hOutput = vmotion.outputGyroH(singleRotationYaw, maxOutput);
                     hDriveMotor.set(hOutput);
-                    leftMotor.set(vmotion.outputGyroL(currentYaw, maxOutput) + (0.15 * hOutput));
-                    rightMotor.set(-vmotion.outputGyroR(currentYaw, maxOutput));
+                    leftMotor.set(vmotion.outputGyroL(singleRotationYaw, maxOutput) + (0.15 * hOutput));
+                    rightMotor.set(-vmotion.outputGyroR(singleRotationYaw, maxOutput));
                     break;
             }
-            if(vmotion.targetReached(target) == true){
+            if(vmotion.targetReached(targetDistanceStop, 1) == true){
                 return true;
             }else{
                 return false;
             }
     }
+    
 
 	/**
      * Manual control, includes deadband
@@ -314,8 +316,13 @@ public class DriveTrain implements IPigeonWrapper
      */	
     public void Update(HotController joystick)
     {
+        if(joystick.getButtonStart() == true){
+            this.gyroLineUp(0.5, 30);
+        }else if(joystick.getButtonBack() == true){
+            this.lineUp(0.0);
+        }
+
         //(joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
-        
         rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
         leftMotor.set(-joystick.getStickLY() + joystick.getStickRX() + 0.15*(HDriveOutput(joystick)));
         hDriveMotor.set(HDriveOutput(joystick));
