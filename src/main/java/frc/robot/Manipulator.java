@@ -7,6 +7,10 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.lang.model.util.ElementScanner6;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -39,6 +43,8 @@ public class Manipulator
     {
         FRONT, BACK
     }
+
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("AA debug Arm"));
 
     private Elevator elevator;
     private Intake intake;

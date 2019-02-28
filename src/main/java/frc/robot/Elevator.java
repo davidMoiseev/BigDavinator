@@ -7,9 +7,16 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import org.hotteam67.HotLogger;
+
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ElevatorConstants;
 import frc.robot.constants.ManipulatorSetPoint;
@@ -55,18 +62,31 @@ public class Elevator extends MotionMagicActuator
         secondaryTalon.setInverted(true);
     }
 
+    private static void Log(String input, double value)
+    {
+        SmartDashboard.putNumber(input, value);
+        HotLogger.Log(input, value);
+    }
+
     @Override
     public void displaySensorsValue()
     {
-        SmartDashboard.putNumber("Elevator Position ticks", getSensorValue());
-        SmartDashboard.putNumber("Elevator Position inches", getPosition());
-        SmartDashboard.putNumber("Elevator Power", primaryTalon.getMotorOutputPercent());
-        SmartDashboard.putNumber("Elevator Error", getError());
+        Log("Elevator Position ticks", getSensorValue());
+        Log("Elevator Position inches", getPosition());
+        Log("Elevator Power", primaryTalon.getMotorOutputPercent());
+        Log("Elevator Error", getError());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
-            SmartDashboard.putNumber("Elevator target", primaryTalon.getClosedLoopTarget());
+            Log("Elevator target", primaryTalon.getClosedLoopTarget());
         }
+        Log("Elevator Bus Voltage", primaryTalon.getBusVoltage());
+        Log("Elevator Output Voltage", primaryTalon.getMotorOutputVoltage());
+        Log("Elevator Current", primaryTalon.getOutputCurrent());
     }
+
+    public static final List<String> LoggerTags = new ArrayList<>(
+            Arrays.asList("Elevator Position ticks", "Elevator Position inches", "Elevator Power", "Elevator Error",
+                    "Elevator target", "Elevator Bus Voltage", "Elevator Output Voltage", "Elevator Current"));
 
     @Override
     public void setTarget(double target)

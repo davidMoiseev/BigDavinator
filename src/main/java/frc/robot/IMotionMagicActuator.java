@@ -17,5 +17,4 @@ public interface IMotionMagicActuator
     public int getError();
 
     public double getPosition();
-
 }

@@ -7,7 +7,13 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ArmConstants;
@@ -45,18 +51,31 @@ public class Arm extends MotionMagicActuator
 
     }
 
+    private static void Log(String input, double value)
+    {
+        SmartDashboard.putNumber(input, value);
+        HotLogger.Log(input, value);
+    }
+
     @Override
     public void displaySensorsValue()
     {
-        SmartDashboard.putNumber("Arm Position ticks", getSensorValue());
-        SmartDashboard.putNumber("Arm Position degrees", getPosition());
-        SmartDashboard.putNumber("Arm Power", primaryTalon.getMotorOutputPercent());
+        Log("Arm Position ticks", getSensorValue());
+        Log("Arm Position degrees", getPosition());
+        Log("Arm Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
-            SmartDashboard.putNumber("Arm Error", primaryTalon.getClosedLoopError());
-            SmartDashboard.putNumber("Arm target", primaryTalon.getClosedLoopTarget());
+            Log("Arm Error", primaryTalon.getClosedLoopError());
+            Log("Arm target", primaryTalon.getClosedLoopTarget());
         }
+        Log("Arm Bus Voltage", primaryTalon.getBusVoltage());
+        Log("Arm Output Voltage", primaryTalon.getMotorOutputVoltage());
+        Log("Arm Current", primaryTalon.getOutputCurrent());
     }
+
+    public static final List<String> LoggerTags = new ArrayList<>(
+            Arrays.asList("Arm Position ticks", "Arm Position degrees", "Arm Power", "Arm Error", "Arm target",
+                    "Arm Bus Voltage", "Arm Output Voltage", "Arm Current"));
 
     @Override
     public void setTarget(double target)
@@ -84,8 +103,9 @@ public class Arm extends MotionMagicActuator
     {
         return -getSensorValue() * ArmConstants.TICKS_TO_DEGREES;
     }
-    
-    public void checkEncoder() {
+
+    public void checkEncoder()
+    {
         checkEncoder(50);
     }
 }

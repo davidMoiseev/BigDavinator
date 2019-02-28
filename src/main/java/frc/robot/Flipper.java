@@ -7,16 +7,18 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import org.hotteam67.HotController;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import org.hotteam67.HotController;
+import org.hotteam67.HotLogger;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.ManipulatorSetPoint;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Add your docs here.
@@ -25,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Flipper extends MotionMagicActuator
 {
     double output = 0.0;
-    public static final int ANGLE_TO_TICKS = (int)((4096.0 / 360.0) * (50.0 / 18.0));
+    public static final int ANGLE_TO_TICKS = (int) ((4096.0 / 360.0) * (50.0 / 18.0));
     private final double startingAngle;
     private final boolean inverted;
 
@@ -98,8 +100,11 @@ public class Flipper extends MotionMagicActuator
     public void displaySensorsValue()
     {
         SmartDashboard.putNumber("FrontFlipper Position ticks", getSensorValue());
+        HotLogger.Log("FrontFlipper Position ticks", getSensorValue());
         SmartDashboard.putNumber("FrontFlipper Power", primaryTalon.getMotorOutputPercent());
+        HotLogger.Log("FrontFlipper Power", primaryTalon.getMotorOutputPercent());
         SmartDashboard.putBoolean("FrontFlipper Reached", reachedTarget());
+        HotLogger.Log("FrontFlipper Reached", reachedTarget() ? "True" : "False");
     }
 
     @Override
@@ -114,4 +119,5 @@ public class Flipper extends MotionMagicActuator
         return getSensorValue() * FlipperConstants.TICKS_TO_INCHES;
     }
 
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("FrontFlipper Position Ticks", "FrontFlipper Power", "FrontFlipper Reached"));
 }

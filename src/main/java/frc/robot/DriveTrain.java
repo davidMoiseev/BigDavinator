@@ -1,18 +1,17 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
-import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.SensorType;
-import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.hotteam67.HotController;
@@ -20,10 +19,8 @@ import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
 
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
-import edu.wpi.first.wpilibj.Timer;
 
 public class DriveTrain implements IPigeonWrapper
 {
@@ -176,28 +173,30 @@ public class DriveTrain implements IPigeonWrapper
         return xyz_dps[1];
     }
 
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch", "Drive currentVelocityLeft", "Drive currentVelocityRight"));
+
     /**
      * Write to logs and dashboards
      */
     public void writeLogs()
     {
-        SmartDashboard.putNumber("rightEncoder", rightEncoderValue);
-        SmartDashboard.putNumber("leftEncoder", leftEncoderValue);
-        SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
-        SmartDashboard.putNumber("currentPitch", xyz_dps[1]);
-        SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Drive rightEncoder", rightEncoderValue);
+        SmartDashboard.putNumber("Drive leftEncoder", leftEncoderValue);
+        SmartDashboard.putNumber("Drive currentYaw", xyz_dps[0]);
+        SmartDashboard.putNumber("Drive currentPitch", xyz_dps[1]);
+        SmartDashboard.putNumber("Drive currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
 
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
          * SmartDashboard.putNumber("motorEncoderConfiguration",
          * leftMotor.getParameterInt(ConfigParameter.kSensorType).get());
          */
-        HotLogger.Log("rightEncoder", rightEncoderValue);
-        HotLogger.Log("leftEncoder", leftEncoderValue);
-        HotLogger.Log("currentYaw", xyz_dps[0]);
-        HotLogger.Log("currentVelocityRight", rightEncoder.getSelectedSensorPosition());
-        HotLogger.Log("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+        HotLogger.Log("Drive rightEncoder", rightEncoderValue);
+        HotLogger.Log("Drive leftEncoder", leftEncoderValue);
+        HotLogger.Log("Drive currentYaw", xyz_dps[0]);
+        HotLogger.Log("Drive currentVelocityRight", rightEncoder.getSelectedSensorPosition());
+        HotLogger.Log("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
     }
 
     /**

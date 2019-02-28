@@ -7,22 +7,20 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
+import org.hotteam67.Interpolation;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
-import org.hotteam67.Interpolation;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class Robot extends TimedRobot
 {
@@ -73,8 +71,7 @@ public class Robot extends TimedRobot
         manipulator.RestartInitialization();
         forceInitialization = true;
 
-        HotLogger.Setup("AA debug Arm", "leftEncoder", "rightEncoder", "currentYaw", "currentVelocityLeft",
-                "currentVelocityRight", "leftStick", "StickLY", HotPathFollower.LoggerValues);
+        HotLogger.Setup("Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags);
 
         driver.setDeadBandLY(.3);
         driver.setDeadBandLX(.3);
@@ -137,9 +134,9 @@ public class Robot extends TimedRobot
         // rumble(driver);
         // rumble(operator);
 
-        HotLogger.Log("StickLY", -driver.getStickLY());
         driveTrain.Update(driver);
         manipulator.Update();
+        HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
         driveTrain.readSensors();

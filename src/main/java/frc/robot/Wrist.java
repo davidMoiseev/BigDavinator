@@ -7,7 +7,13 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ManipulatorSetPoint;
@@ -44,18 +50,30 @@ public class Wrist extends MotionMagicActuator
 
     }
 
+    private static void Log(String tag, double value)
+    {
+        SmartDashboard.putNumber(tag, value);
+        HotLogger.Log(tag, value);
+    }
+
     @Override
     public void displaySensorsValue()
     {
-        SmartDashboard.putNumber("Wirst Position ticks", getSensorValue());
-        SmartDashboard.putNumber("A Wirst Position degree", getPosition());
-        SmartDashboard.putNumber("Wirst Power", primaryTalon.getMotorOutputPercent());
+        Log("Wirst Position ticks", getSensorValue());
+        Log("A Wirst Position degree", getPosition());
+        Log("Wirst Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
-            SmartDashboard.putNumber("Wirst Error", primaryTalon.getClosedLoopError());
-            SmartDashboard.putNumber("Wirst target", primaryTalon.getClosedLoopTarget());
+            Log("Wirst Error", primaryTalon.getClosedLoopError());
+            Log("Wirst target", primaryTalon.getClosedLoopTarget());
         }
+        Log("Wrist Bus Voltage", primaryTalon.getBusVoltage());
+        Log("Wrist Output Voltage", primaryTalon.getMotorOutputVoltage());
+        Log("Wrist Current", primaryTalon.getOutputCurrent());
     }
+
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Wirst Position ticks",
+            "A Wirst Position degree", "Wirst Power", "Wirst Error", "Wirst target", "Wrist Bus Voltage", "Wrist Output Voltage", "Wrist Current"));
 
     public void setPosition(double angle)
     {
@@ -84,7 +102,8 @@ public class Wrist extends MotionMagicActuator
         return super.reachedTarget(WristConstants.allowableError, WristConstants.minimumTimeToReachTarget);
     }
 
-    public void checkEncoder() {
+    public void checkEncoder()
+    {
         checkEncoder(50);
     }
 
