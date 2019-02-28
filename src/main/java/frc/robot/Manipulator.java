@@ -567,11 +567,8 @@ public class Manipulator
         ManipulatorSetPoint frontTargetPosition = null;
         ManipulatorSetPoint backTargetPosition = null;
 
-        boolean isLeftTriggerPressed = false;
-        if (operator.getLeftTrigger() >= .25)
-        {
-            isLeftTriggerPressed = true;
-        }
+        boolean isLeftTriggerPressed = (operator.getLeftTrigger() >= .25);
+        boolean isRightTriggerPressed = (operator.getRightTrigger() >= .25);
 
         if (operator.getButtonX())
         {
@@ -588,30 +585,31 @@ public class Manipulator
             frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
             backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
         }
-        /*
-         * else if (operator.getButtonY()) { frontTargetPosition =
-         * ManipulatorSetPoint.hatch_high_front; backTargetPosition =
-         * ManipulatorSetPoint.hatch_high_back; }
-         *//*
-            * if (operator.getButtonLeftBumper()) { frontTargetPosition =
-            * ManipulatorSetPoint.cargo_rocketLow_front; backTargetPosition =
-            * ManipulatorSetPoint.cargo_rocketLow_back; }
-            */
-        /*
-         * else if (isLeftTriggerPressed == true) { /* frontTargetPosition =
-         * ManipulatorSetPoint.cargo_rocketMid_front; backTargetPosition =
-         * ManipulatorSetPoint.cargo_rocketMid_back; }
-         */
-        /*
-         * else if (isRightTriggerPressed == true) { frontTargetPosition =
-         * ManipulatorSetPoint.cargo_rocketHigh_front; backTargetPosition =
-         * ManipulatorSetPoint.cargo_rocketHigh_back; }
-         */
-
+        else if (operator.getButtonY())
+        {
+            frontTargetPosition = ManipulatorSetPoint.hatch_high_front;
+            backTargetPosition = ManipulatorSetPoint.hatch_high_back;
+        }
+        if (operator.getButtonLeftBumper())
+        {
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
+        }
         else if (operator.getButtonRightBumper())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
             backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
+        }
+        else if (isLeftTriggerPressed == true)
+        {
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
+        }
+
+        else if (isRightTriggerPressed == true)
+        {
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
         }
         else if (operator.getButtonLeftStick())
         {
@@ -625,11 +623,13 @@ public class Manipulator
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
 
+        /*
         else if (operator.getButtonY())
         {
             frontTargetPosition = ManipulatorSetPoint.climb;
             backTargetPosition = ManipulatorSetPoint.climb;
         }
+        */
 
         else if (driver.getButtonA())
         {
@@ -742,7 +742,6 @@ public class Manipulator
 
         double newElevatorHeight = setPoint.elevatorHeight()
                 + (ARM_LENGTH * (Math.cos(armAngle) - Math.cos(newArmAngle)));
-
 
         return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
                 setPoint.frontFlipper(), setPoint.backFlipper());
