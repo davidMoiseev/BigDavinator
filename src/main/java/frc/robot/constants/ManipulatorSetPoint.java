@@ -48,9 +48,9 @@ public enum ManipulatorSetPoint
         backFlipper = backFlipperPosition;
     }
 
-    public final double armAngle;
-    public final double wristAngle;
-    public final double elevatorHeight;
-    public final double frontFlipper;
-    public final double backFlipper;
+    public double armAngle;
+    public double wristAngle;
+    public double elevatorHeight;
+    public double frontFlipper;
+    public double backFlipper;
 }
