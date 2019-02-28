@@ -729,7 +729,7 @@ public class Manipulator
         else
         {
             newArmX -= SCORE_DISTANCE;
-            if (newArmX < ARM_LENGTH)
+            if (newArmX < -ARM_LENGTH)
                 newArmX = -ARM_LENGTH;
 
             // Inverse sin on -PI/2 < X < PI/2
@@ -743,7 +743,7 @@ public class Manipulator
         double newElevatorHeight = setPoint.elevatorHeight()
                 + (ARM_LENGTH * (Math.cos(armAngle) - Math.cos(newArmAngle)));
 
-                
+
         return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
                 setPoint.frontFlipper(), setPoint.backFlipper());
     }
