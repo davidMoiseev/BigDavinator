@@ -34,13 +34,14 @@ public class HotController extends Joystick
         this.delay = delay;
 
     }
-    private boolean delay = true;
+    private boolean delay = true;                                                            
     private double deadbandLeft_X = 0.15;
     private double deadbandLeft_Y = 0.15;
     private double deadbandRight_X = 0.15;
     private double deadbandRight_Y = 0.15;
     private double deadbandLeftTrigger = 0.0;
     private double deadbandRightTrigger = 0.0;
+    private int counter = 0;
 
     public void setDeadBandLX(double band)
     {
@@ -151,9 +152,6 @@ public class HotController extends Joystick
 
     public boolean getLeftTrigger()
     {
-        
-        int counter = 0;
-        
         if(getLeftTriggerAnalog() > 0.5)
             {
                 lastButton = Button.ButtonLTrigger;
@@ -193,8 +191,6 @@ public class HotController extends Joystick
     public boolean getRightTrigger()
     {
         
-        int counter = 0;
-        
         if(getRightTriggerAnalog() > 0.5)
             {
                 lastButton = Button.ButtonRTrigger;
@@ -233,7 +229,7 @@ public class HotController extends Joystick
     public boolean getButtonA()
     {
         lastButton = Button.ButtonA;
-        int counter = 0;
+    
         if(delay)
         {
             if(getRawButton(1))
@@ -262,7 +258,6 @@ public class HotController extends Joystick
     public boolean getButtonB()
     {
         lastButton = Button.ButtonB;
-        int counter = 0;
         if(delay)
         {
             if(getRawButton(2))
@@ -290,7 +285,6 @@ public class HotController extends Joystick
     public boolean getButtonX()
     {
         lastButton = Button.ButtonX;
-        int counter = 0;
         if(delay)
         {
             if(getRawButton(3))
@@ -318,7 +312,6 @@ public class HotController extends Joystick
     public boolean getButtonY()
     {
         lastButton = Button.ButtonY;
-        int counter = 0;
         if(delay)
         {
             if(getRawButton(4))
@@ -346,7 +339,7 @@ public class HotController extends Joystick
     public boolean getButtonRightBumper()
    {
         lastButton = Button.ButtonRBumper;
-        int counter = 0;
+         
         if(delay)
         {
             if(getRawButton(6))
@@ -374,7 +367,7 @@ public class HotController extends Joystick
     public boolean getButtonLeftBumper()
     {
         lastButton = Button.ButtonLBumper;
-        int counter = 0;
+          
         if(delay)
         {
             if(getRawButton(5))
@@ -402,7 +395,7 @@ public class HotController extends Joystick
     public boolean getButtonBack()
     {
         lastButton = Button.ButtonBack;
-        int counter = 0;
+        //
         if(delay)
         {
             if(getRawButton(7))
@@ -436,7 +429,7 @@ public class HotController extends Joystick
     public boolean getButtonLeftStick()
     {
         lastButton = Button.ButtonLStick;
-        int counter = 0;
+        //
         if(delay)
         {
             if(getRawButton(9))
@@ -464,7 +457,7 @@ public class HotController extends Joystick
     public boolean getButtonRightStick()
     {
         lastButton = Button.ButtonRStick;
-        int counter = 0;
+        //
         if(delay)
         {
             if(getRawButton(10))

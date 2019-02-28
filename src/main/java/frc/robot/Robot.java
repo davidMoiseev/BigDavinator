@@ -23,6 +23,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 import org.hotteam67.Interpolation;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.vision.*;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+//import com.ni.vision.NIVision;
+//import com.ni.vision.NIVision.Image;
+//import com.ni.vision.NIVision.ImageType;
 
 public class Robot extends TimedRobot
 {
@@ -63,6 +74,33 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
+        new Thread(() -> {
+            UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+            camera.setResolution(640, 480);
+            
+            CvSink cvSink = CameraServer.getInstance().getVideo();
+            CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+            
+            Mat source = new Mat();
+            Mat output = new Mat();
+           // NIVision.Image frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB,0);
+            //Mat.setBrightness(2);
+            //Mat.setExposureManual(exposure);
+            //Mat.UpdateSettings();
+            
+            // int exposure = Preferences.getInstance.getInt("camExposure", 50);
+            // int brightness = Preferences.getInstance.getInt("camBrightness", 50);
+            //CameraServer.getInstance().setImage(frame);
+           // Mat.getImage(frame);
+            while(!Thread.interrupted()) {
+                cvSink.grabFrame(source);
+                Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+                outputStream.putFrame(output);
+            }
+        }).start();
+
+        CameraServer.getInstance().startAutomaticCapture();
+        
         leftClimber = new VictorSPX(WiringIDs.CLIMBER_1);
         rightClimber = new VictorSPX(WiringIDs.CLIMBER_2);
 
