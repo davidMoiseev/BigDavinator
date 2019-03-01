@@ -28,8 +28,8 @@ public class WristConstants
     public static final int pidIdx = 0;
     public static final double feedForward = 0.314;
     public static final double proportional = 3.7;
-    public static final double derivative = 0.1;
-    public static final double integral = 0.0024;
+    public static final double derivative = 0.1 * 0;
+    public static final double integral = 0.0024 * 0;
     public static final FeedbackDevice feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative;
 
     public static final double TICKS_TO_DEGREES = 0.12 * 360 / 4096;

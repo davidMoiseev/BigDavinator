@@ -71,7 +71,8 @@ public class Robot extends TimedRobot
         manipulator.RestartInitialization();
         forceInitialization = true;
 
-        HotLogger.Setup("Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags);
+        HotLogger.Setup("Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
+                Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags);
 
         driver.setDeadBandLY(.3);
         driver.setDeadBandLX(.3);

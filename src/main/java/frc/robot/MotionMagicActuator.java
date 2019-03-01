@@ -3,6 +3,10 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import org.hotteam67.HotLogger;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public abstract class MotionMagicActuator implements IMotionMagicActuator
 {
 
@@ -319,6 +323,8 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
 
     public void checkEncoder(int encoderValueChangeLimit) {
         if(primaryTalon.hasResetOccurred()) {
+            SmartDashboard.putBoolean("Has Reset Occured", true);
+            HotLogger.Log("Has Reset Occured", 1);
             currentEncoderValue = currentEncoderValue + previousEncoderValue;
             primaryTalon.setSelectedSensorPosition(currentEncoderValue);
         } else {

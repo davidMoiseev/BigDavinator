@@ -25,7 +25,7 @@ public class HotLogger
     public static final String EMPTY = "";
     public static final Double ROW_TIMEOUT_SECONDS = .02;
     public static final Double LOG_PERIOD_SECONDS = 1.0;
-    public static final Integer ALLOWED_LOG_FILES = 10;
+    public static final Integer ALLOWED_LOG_FILES = 5;
 
     private static boolean onNewRow = true;
     private static Map<String, String> currentRow = new LinkedHashMap<String, String>();

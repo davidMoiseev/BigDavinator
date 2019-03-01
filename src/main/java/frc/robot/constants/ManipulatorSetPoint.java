@@ -13,14 +13,15 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     // Inches and degrees :)
 
     // 0 16 115
-    firstPosition(3, 0, 0, 0, 0), carry_front(5, 0, 10, 0, 0), // X
+    firstPosition(3, 0, 0, 0, 0), 
+    carry_front(5, 0, 10, 0, 0), // X
     carry_back(5, 0, -10, 0, 0), // X
-    hatch_low_front(17, 167, 90, 110, 0), // A
-    hatch_low_back(17, -167, -90, 0, 110), // A
+    hatch_low_front(17, 160, 90, 110, 0), // A
+    hatch_low_back(17, -160, -90, 0, 110), // A
     hatch_mid_front(5, 14, 90, 0, 0), // B
     hatch_mid_back(5, -14, -90, 0, 0), // B
-    hatch_high_front(33, 8.5, 90, 0, 0), // Y
-    hatch_high_back(33, -8.5, -90, 0, 0), // Y
+    hatch_high_front(32, 8.5, 90, 0, 0), // Y
+    hatch_high_back(32, -8.5, -90, 0, 0), // Y
     cargo_pickup_front(.5, 111, 134, 0, 0), // M3-M6
     cargo_pickup_back(.5, -111, -134, 0, 0), // M3-M6
     cargo_shuttle_front(3, 29, 107, 110, 0), // RB
@@ -33,9 +34,11 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     cargo_rocketHigh_back(33, -1.5, -61, 0, 0), // RT
     climb(3, 0, 0, 0, 0), 
     limit_front_low(4, 90, 90, 0, 0), 
-    limit_front_high(4, 50, 32, 0, 0), 
+    limit_front_high(4, 50, 32, 0, 0),
     limit_back_low(4, -90, -90, 0, 0), 
-    limit_back_high(4, -50, -32, 0, 0);
+    limit_back_high(4, -50, -32, 0, 0),
+    mikes_set_front(0, 90, 0, 0, 0),
+    mikes_set_back(0, -90, 0, 0, 0);
 
     // Flip on M1 || M2
 

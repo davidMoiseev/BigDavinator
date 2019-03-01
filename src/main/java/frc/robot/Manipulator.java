@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.lang.model.util.ElementScanner6;
-
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.hotteam67.HotController;
@@ -258,8 +256,8 @@ public class Manipulator
                                     || (willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
                                             wrist.getPosition())))
                             {
-                                setTargets(targetPosition, targetPosition, targetPosition);
-                                // setTargets(prevElevHeight, prevArmAngle, targetPosition.wristAngle());
+                                // setTargets(targetPosition, targetPosition, targetPosition);
+                                setTargets(prevElevHeight, targetPosition.armAngle(), targetPosition.wristAngle());
                                 HotLogger.Log("AA debug Arm", 4);
                                 System.out.println("LogStuff: 4");
                             }
@@ -293,7 +291,7 @@ public class Manipulator
                                     || (willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
                                             wrist.getPosition())))
                             {
-                                setTargets(prevElevHeight, prevArmAngle, targetPosition.wristAngle());
+                                setTargets(prevElevHeight, targetPosition.armAngle(), targetPosition.wristAngle());
                                 HotLogger.Log("AA debug Arm", 7);
                                 System.out.println("LogStuff: 7");
                             }
@@ -335,7 +333,7 @@ public class Manipulator
                         // If the target won't clear the top
                         else
                         {
-                            // arm and wrist are in position to move to the other side
+                            // arm and wrist are in the middle between limits
                             if (isArmSafe() && isWristSafe())
                             {
                                 setTargets(targetPosition, ManipulatorSetPoint.limit_front_high,
@@ -402,7 +400,7 @@ public class Manipulator
                         }
                         else
                         {
-                            // arm and wrist are in position to move to the other side
+                            // arm and wrist are in the middle area between limits
                             if (isArmSafe() && isWristSafe())
                             {
                                 setTargets(targetPosition, ManipulatorSetPoint.limit_back_high,
@@ -579,6 +577,10 @@ public class Manipulator
         {
             frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
             backTargetPosition = ManipulatorSetPoint.hatch_low_back;
+            /*
+            frontTargetPosition = ManipulatorSetPoint.mikes_set_front;
+            backTargetPosition = ManipulatorSetPoint.mikes_set_back;
+            */
         }
         else if (operator.getButtonB())
         {
@@ -616,7 +618,6 @@ public class Manipulator
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
-
         else if (operator.getButtonRightStick())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
@@ -624,12 +625,9 @@ public class Manipulator
         }
 
         /*
-        else if (operator.getButtonY())
-        {
-            frontTargetPosition = ManipulatorSetPoint.climb;
-            backTargetPosition = ManipulatorSetPoint.climb;
-        }
-        */
+         * else if (operator.getButtonY()) { frontTargetPosition =
+         * ManipulatorSetPoint.climb; backTargetPosition = ManipulatorSetPoint.climb; }
+         */
 
         else if (driver.getButtonA())
         {
@@ -646,13 +644,14 @@ public class Manipulator
         }
 
         boolean score = false;
-        score = operator.getButtonLeftBumper();
+        score = operator.getButtonBack();
 
         if (operator.getButtonStart() && !startButtonPrevious)
         {
             commandToBack = !commandToBack;
         }
 
+        // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());
         if (frontTargetPosition != null || backTargetPosition != null)
         {
             IManipulatorSetPoint setPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
@@ -661,6 +660,10 @@ public class Manipulator
                 setPoint = CreateScoreSetPoint(setPoint);
             }
             Control(setPoint);
+            /*
+            wrist.setTarget(setPoint);
+            arm.setTarget(setPoint);
+            */
             SmartDashboard.putBoolean("Disabled thing", false);
         }
         else
@@ -669,11 +672,12 @@ public class Manipulator
             arm.disable();
             wrist.disable();
 
-            elevator.manual(operator.getStickLY());
-            if (commandToBack)
-                backFlipper.manual(operator.getStickRY());
-            else
-                frontFlipper.manual(operator.getStickRY());
+            // elevator.manual(operator.getStickLY());
+            arm.manual(operator.getStickRY());
+            /*
+             * if (commandToBack) backFlipper.manual(operator.getStickRY()); else
+             * frontFlipper.manual(operator.getStickRY());
+             */
 
             SmartDashboard.putBoolean("Disabled thing", true);
         }
@@ -713,6 +717,8 @@ public class Manipulator
         double newArmX = Math.sin(armAngle) * ARM_LENGTH;
         double newArmAngle;
 
+        SmartDashboard.putNumber("New Arm X", newArmX);
+
         if (getArmSide(setPoint.armAngle()) == RobotSide.FRONT)
         {
             newArmX += SCORE_DISTANCE;
@@ -720,10 +726,10 @@ public class Manipulator
                 newArmX = ARM_LENGTH;
 
             // Inverse sin on -PI/2 < X < PI/2
-            newArmAngle = Math.asin(ARM_LENGTH / newArmX);
+            newArmAngle = Math.asin(newArmX / ARM_LENGTH);
 
             // For two solutions, pick the angle that is closer to the initial setpoint
-            if (Math.abs(armAngle - newArmAngle) > Math.abs(armAngle - (Math.PI - newArmAngle)))
+            if (armAngle > (Math.PI / 2.0))
                 newArmAngle = Math.PI - newArmAngle;
         }
         else
@@ -733,15 +739,18 @@ public class Manipulator
                 newArmX = -ARM_LENGTH;
 
             // Inverse sin on -PI/2 < X < PI/2
-            newArmAngle = Math.asin(ARM_LENGTH / newArmX);
+            newArmAngle = Math.asin(newArmX / ARM_LENGTH);
 
             // For two solutions, pick the angle that is closer to the initial setpoint
-            if (Math.abs(armAngle - newArmAngle) > Math.abs(armAngle - (-Math.PI - newArmAngle)))
+            if (armAngle < -(Math.PI / 2.0))
                 newArmAngle = -Math.PI - newArmAngle;
         }
 
         double newElevatorHeight = setPoint.elevatorHeight()
                 + (ARM_LENGTH * (Math.cos(armAngle) - Math.cos(newArmAngle)));
+
+        SmartDashboard.putNumber("New Arm Angle", Math.toDegrees(newArmAngle));
+        SmartDashboard.putNumber("New Elevator Height", newElevatorHeight);
 
         return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
                 setPoint.frontFlipper(), setPoint.backFlipper());
