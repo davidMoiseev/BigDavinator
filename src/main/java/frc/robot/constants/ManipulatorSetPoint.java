@@ -34,9 +34,9 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     cargo_rocketHigh_back(33, -1.5, -61, 0, 0), // RT
     climb(3, 0, 0, 0, 0), 
     limit_front_low(4, 90, 90, 0, 0), 
-    limit_front_high(4, 50, 32, 0, 0),
+    limit_front_high(18, 50, 32, 0, 0),
     limit_back_low(4, -90, -90, 0, 0), 
-    limit_back_high(4, -50, -32, 0, 0),
+    limit_back_high(18, -50, -32, 0, 0),
     mikes_set_front(0, 90, 0, 0, 0),
     mikes_set_back(0, -90, 0, 0, 0);
 

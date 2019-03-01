@@ -6,6 +6,7 @@ package frc.robot;
 import org.hotteam67.HotController;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
 
 public class IntakePneumatics
@@ -23,7 +24,6 @@ public class IntakePneumatics
 	{
 		if (joystick.getButtonX())
 		{
-
 			intakeSingle.set(true);
 
 		}

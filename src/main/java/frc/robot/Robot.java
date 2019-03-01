@@ -74,10 +74,10 @@ public class Robot extends TimedRobot
         HotLogger.Setup("Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
                 Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags);
 
-        driver.setDeadBandLY(.3);
-        driver.setDeadBandLX(.3);
-        driver.setDeadBandRX(.3);
-        driver.setDeadBandRY(.3);
+        driver.setDeadBandLY(.1);
+        driver.setDeadBandLX(.1);
+        driver.setDeadBandRX(.1);
+        driver.setDeadBandRY(.1);
 
         /*
          * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new
