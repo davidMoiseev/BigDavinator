@@ -330,12 +330,7 @@ public class Manipulator
                                 System.out.println("LogStuff: 10");
                             }
                         }
-                        else
-                        {
-                            setTargets(ELEVATOR_CLEAR_HEIGHT + 2, prevArmAngle, prevWristAngle);
-                        }
                         // If the target won't clear the top
-                        /*
                         else
                         {
                             // arm and wrist are in the middle between limits
@@ -379,7 +374,6 @@ public class Manipulator
                                 System.out.println("LogStuff: 14");
                             }
                         }
-                        */
                     }
                     // Swapping from front to back
                     else
@@ -404,11 +398,6 @@ public class Manipulator
                                 System.out.println("LogStuff: 16");
                             }
                         }
-                        else
-                        {
-                            setTargets(ELEVATOR_CLEAR_HEIGHT + 2, prevArmAngle, prevWristAngle);
-                        }
-                        /*
                         else
                         {
                             // arm and wrist are in the middle area between limits
@@ -452,7 +441,6 @@ public class Manipulator
                                 System.out.println("LogStuff: 20");
                             }
                         }
-                        */
                     }
                 }
             }
@@ -590,9 +578,9 @@ public class Manipulator
             frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
             backTargetPosition = ManipulatorSetPoint.hatch_low_back;
             /*
-             * frontTargetPosition = ManipulatorSetPoint.mikes_set_front; backTargetPosition
-             * = ManipulatorSetPoint.mikes_set_back;
-             */
+            frontTargetPosition = ManipulatorSetPoint.mikes_set_front;
+            backTargetPosition = ManipulatorSetPoint.mikes_set_back;
+            */
         }
         else if (operator.getButtonB())
         {
@@ -673,8 +661,9 @@ public class Manipulator
             }
             Control(setPoint);
             /*
-             * wrist.setTarget(setPoint); arm.setTarget(setPoint);
-             */
+            wrist.setTarget(setPoint);
+            arm.setTarget(setPoint);
+            */
             SmartDashboard.putBoolean("Disabled thing", false);
         }
         else
