@@ -587,10 +587,8 @@ public class Manipulator
         }
         else if (operator.getButtonLeftBumper())
         {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
-             */
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
         }
         else if (operator.getButtonRightBumper())
         {
@@ -601,18 +599,16 @@ public class Manipulator
         }
         else if (isLeftTriggerPressed == true)
         {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-             */
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
+
         }
 
         else if (isRightTriggerPressed == true)
         {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
-             */
+
+            frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
         }
         else if (operator.getButtonLeftStick())
         {
@@ -623,10 +619,8 @@ public class Manipulator
         }
         else if (operator.getButtonRightStick())
         {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
-             */
+            frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
 
         boolean score = false;

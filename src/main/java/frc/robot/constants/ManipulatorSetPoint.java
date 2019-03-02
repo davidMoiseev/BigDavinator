@@ -22,12 +22,12 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     hatch_mid_back(5, -14, -90, 0, 0), // B
     hatch_high_front(32, 8.5, 90, 0, 0), // Y
     hatch_high_back(32, -8.5, -90, 0, 0), // Y
-    cargo_pickup_front(.5, 111, 134, 0, 0), // M3-M6
-    cargo_pickup_back(.5, -111, -134, 0, 0), // M3-M6
+    cargo_pickup_front(.5, 105, 134, 0, 0), // M3-M6
+    cargo_pickup_back(.5, -105, -134, 0, 0), // M3-M6
     cargo_shuttle_front(3, 29, 107, 110, 0), // RB
     cargo_shuttle_back(3, -29, -107, 0, 110), // RB
-    cargo_rocketLow_front(21, 160, 72, 0, 0), // LB
-    cargo_rocketLow_back(21, -160, -72, 0, 0), // LB
+    cargo_rocketLow_front(21, 155, 72, 0, 0), // LB
+    cargo_rocketLow_back(21, -155, -72, 0, 0), // LB
     cargo_rocketMid_front(9.5, 10, 83, 0, 0), // LT
     cargo_rocketMid_back(9.5, -10, -83, 0, 0), // LT
     cargo_rocketHigh_front(33, 1.5, 61, 0, 0), // RT
