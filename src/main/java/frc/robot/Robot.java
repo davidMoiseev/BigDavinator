@@ -112,9 +112,9 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-
         driveTrain.readSensors();
         driveTrain.writeLogs();
+        
         if (!profileFinished)
             profileFinished = driveTrain.FollowPath();
         else

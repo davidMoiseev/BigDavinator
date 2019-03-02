@@ -169,7 +169,6 @@ public class Manipulator
         // Moving down, so wait for the arm first
         if (elevHeight < elevator.getPosition() - ELEVATOR_TOLERANCE && (Math.abs(arm.getPosition()) > 90))
         {
-            System.out.println("SAFE ELEVATOR");
             setTargets(prevElevHeight, armAngle, wristAngle);
             if (arm.reachedTarget() && wrist.reachedTarget())
             {
@@ -179,7 +178,6 @@ public class Manipulator
         // Might be moving the arm to a bad spot, so move the elevator first
         else
         {
-            System.out.println("UNSAFE ELEVATOR");
             setTargets(elevHeight, armAngle, wristAngle);
         }
     }
@@ -234,19 +232,14 @@ public class Manipulator
         if (manipulatorState == ManipulatorState.atTarget)
         {
             /*
-            if (willCollideWithFrame(targetPosition.elevatorHeight(), targetPosition.armAngle(),
-                    targetPosition.wristAngle())
-                    || willCollideWithSupports(targetPosition.elevatorHeight(), targetPosition.armAngle(),
-                            targetPosition.wristAngle()))
-            {
-
-                elevator.disable();
-                arm.disable();
-                wrist.disable();
-                HotLogger.Log("AA debug Arm", 0);
-                System.out.println("LogStuff: 0");
-            }
-            */
+             * if (willCollideWithFrame(targetPosition.elevatorHeight(),
+             * targetPosition.armAngle(), targetPosition.wristAngle()) ||
+             * willCollideWithSupports(targetPosition.elevatorHeight(),
+             * targetPosition.armAngle(), targetPosition.wristAngle())) {
+             * 
+             * elevator.disable(); arm.disable(); wrist.disable();
+             * HotLogger.Log("AA debug Arm", 0); System.out.println("LogStuff: 0"); }
+             */
             // If it isn't
             // else
             {
@@ -258,35 +251,30 @@ public class Manipulator
                     {
                         // If arm is in the range where it won't collide with the frame or elevator
                         // supports
-                        if (targetPosition.armAngle() > ManipulatorSetPoint.limit_front_high.armAngle()
-                                && targetPosition.armAngle() < ManipulatorSetPoint.limit_front_low.armAngle())
+                        if (arm.getPosition() + ARM_TOLERANCE < ManipulatorSetPoint.limit_front_extra_low.armAngle()
+                                && targetPosition.armAngle() > ManipulatorSetPoint.limit_front_extra_low.armAngle())
+                        {
+                            HotLogger.Log("AA debug Arm", 6);
+                            System.out.println("LogStuff: 6");
+                            setTargetSafeElevator(targetPosition.elevatorHeight(),
+                                    ManipulatorSetPoint.limit_front_extra_low.armAngle(),
+                                    ManipulatorSetPoint.limit_front_extra_low.wristAngle());
+                        }
+                        else if (targetPosition.armAngle() > ManipulatorSetPoint.limit_front_high.armAngle()
+                                && targetPosition.armAngle() < ManipulatorSetPoint.limit_front_low.armAngle()
+                                || (!(willCollideWithFrame(elevator.getPosition(), arm.getPosition(),
+                                        wrist.getPosition())
+                                        || (willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
+                                                wrist.getPosition())))))
                         {
                             setTargetSafeElevator(targetPosition);
-                            HotLogger.Log("AA debug Arm", 3);
-                            System.out.println("LogStuff: 3");
+
                         }
-                        // compare current locations, if the target is out of bounds, set to a high
-                        // value.
-                        // if the current is about to collide, then for the supports, adjust the arm, if
-                        // frame, the elev height
                         else
                         {
-                            if (willCollideWithFrame(elevator.getPosition(), arm.getPosition(), wrist.getPosition())
-                                    || (willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
-                                            wrist.getPosition())))
-                            {
-                                // setTargets(targetPosition, targetPosition, targetPosition);
-                                setTargetSafeElevator(prevElevHeight, targetPosition.armAngle(),
-                                        targetPosition.wristAngle());
-                                HotLogger.Log("AA debug Arm", 4);
-                                System.out.println("LogStuff: 4");
-                            }
-                            else
-                            {
-                                setTargetSafeElevator(targetPosition);
-                                HotLogger.Log("AA debug Arm", 5);
-                                System.out.println("LogStuff: 5");
-                            }
+                            // setTargets(targetPosition, targetPosition, targetPosition);
+                            setTargetSafeElevator(prevElevHeight, targetPosition.armAngle(),
+                                    targetPosition.wristAngle());
                         }
                     }
                     // Back side
@@ -294,43 +282,40 @@ public class Manipulator
                     {
                         // If arm is in the range where it won't collide with the frame or elevator
                         // supports
-                        if (targetPosition.armAngle() > ManipulatorSetPoint.limit_back_high.armAngle()
-                                && targetPosition.armAngle() < ManipulatorSetPoint.limit_back_low.armAngle())
+                        if (arm.getPosition() - ARM_TOLERANCE > ManipulatorSetPoint.limit_back_extra_low.armAngle()
+                                && targetPosition.armAngle() < ManipulatorSetPoint.limit_back_extra_low.armAngle())
+                        {
+                            HotLogger.Log("AA debug Arm", 7);
+                            System.out.println("LogStuff: 7");
+                            setTargetSafeElevator(targetPosition.elevatorHeight(),
+                                    ManipulatorSetPoint.limit_back_extra_low.armAngle(),
+                                    ManipulatorSetPoint.limit_back_extra_low.wristAngle());
+                        }
+                        else if (targetPosition.armAngle() < ManipulatorSetPoint.limit_back_high.armAngle()
+                                && targetPosition.armAngle() > ManipulatorSetPoint.limit_back_low.armAngle()
+                                || !((willCollideWithFrame(elevator.getPosition(), arm.getPosition(),
+                                        wrist.getPosition())
+                                        || (willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
+                                                wrist.getPosition())))))
                         {
                             setTargetSafeElevator(targetPosition);
-                            HotLogger.Log("AA debug Arm", 6);
-                            System.out.println("LogStuff: 6");
                         }
-                        // compare current locations, if the target is out of bounds, set to a high
-                        // value.
-                        // if the current is about to collide, then for the supports, adjust the arm, if
-                        // frame, the elev height
                         else
                         {
-                            if (willCollideWithFrame(elevator.getPosition(), arm.getPosition(), wrist.getPosition())
-                                    || (willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
-                                            wrist.getPosition())))
-                            {
-                                setTargetSafeElevator(prevElevHeight, targetPosition.armAngle(),
-                                        targetPosition.wristAngle());
-                                HotLogger.Log("AA debug Arm", 7);
-                                System.out.println("LogStuff: 7");
-                            }
-                            else
-                            {
-                                setTargetSafeElevator(targetPosition);
-                                HotLogger.Log("AA debug Arm", 8);
-                                System.out.println("LogStuff: 8");
-                            }
+                            setTargetSafeElevator(prevElevHeight, targetPosition.armAngle(),
+                                    targetPosition.wristAngle());
                         }
                     }
                 }
                 // Switching sides
                 else
                 {
-                    double safeHeight = (elevator.getPosition() - ELEVATOR_TOLERANCE > OVER_THE_TOP_HEIGHT) ? prevElevHeight
+                    double safeHeight = (elevator.getPosition() - ELEVATOR_TOLERANCE > OVER_THE_TOP_HEIGHT)
+                            ? prevElevHeight
                             : OVER_THE_TOP_HEIGHT;
-                    safeHeight = (targetPosition.elevatorHeight() > OVER_THE_TOP_HEIGHT) ? targetPosition.elevatorHeight() : safeHeight;
+                    safeHeight = (targetPosition.elevatorHeight() > OVER_THE_TOP_HEIGHT)
+                            ? targetPosition.elevatorHeight()
+                            : safeHeight;
                     // Swapping from front to back
                     if (getArmSide(targetPosition.armAngle()) == RobotSide.BACK)
                     {
