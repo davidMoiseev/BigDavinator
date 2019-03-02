@@ -144,6 +144,10 @@ public class DriveTrain implements IPigeonWrapper
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
 
+    public void loadPath(String leftPathFile, String rightPathFile){
+        pathFollower.LoadPath(leftPathFile, rightPathFile);
+    }
+
     /**
      * Control the path follower, should be called on the same period as the
      * profile's time step
@@ -169,7 +173,7 @@ public class DriveTrain implements IPigeonWrapper
         pigeon.getYawPitchRoll(xyz_dps);
         singleRotationYaw = -1.0 * Math.toRadians(xyz_dps[0]);
         rotations = singleRotationYaw % (2 * Math.PI);
-        singleRotationYaw = singleRotationYaw - (2 * Math.PI) * Math.floor(rotations);
+        singleRotationYaw = (2 * Math.PI) * rotations;
     }
     /**
      * Read the sensors into memory
@@ -198,6 +202,7 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
         SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
         SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("singlerotationYaw", singleRotationYaw);
  		vmotion.writeDashBoardVis();
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
@@ -251,17 +256,17 @@ public class DriveTrain implements IPigeonWrapper
         double referenceAngle;
         vmotion.sendAngle(singleRotationYaw);
         vmotion.selectTarget(1.0);
-        referenceAngle = Math.toDegrees(vmotion.getReferenceAngle());
-        if (currentYaw == referenceAngle || currentYaw < (referenceAngle + 1) && currentYaw > (referenceAngle - 1)){
+        referenceAngle = vmotion.getReferenceAngle();
+        if ((singleRotationYaw < (referenceAngle + 0.04)) && (singleRotationYaw > (referenceAngle - 0.04))){
             return true;
         }
-        else if (currentYaw > referenceAngle) {
-            leftMotor.set(-0.2);
-            rightMotor.set(0.2);
-			return false;
-		}  else {
+        else if (currentYaw > (referenceAngle + 0.04)) {
             leftMotor.set(0.2);
             rightMotor.set(-0.2);
+			return false;
+		}  else {
+            leftMotor.set(-0.2);
+            rightMotor.set(0.2);
 			return false;
         }
     }

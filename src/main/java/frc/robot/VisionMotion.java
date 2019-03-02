@@ -199,10 +199,12 @@ public class VisionMotion {
                 referenceAngle = 3 * Math.PI / 4;
                 target = 7; //right rocket far 
             }
+
             else if((currentYaw < (-5 * Math.PI / 8)) && (currentYaw > (-7 * Math.PI / 8))){ //if angle is -3pi/4
                 referenceAngle = -3 * Math.PI / 4;
                 target = 8; //left rocket far 
             }
+            
             else if((currentYaw > (Math.PI / -8)) && (currentYaw < (Math.PI / 8))){ //if angle is zero
                 referenceAngle = (Math.PI);
                 target = 0; //front cargo ship
@@ -266,13 +268,18 @@ public class VisionMotion {
     }
 
     public boolean setGyroLineUpVars(double pipeline){
-        distance = vision.findDistance(this.selectTarget(pipeline));
+        distance = vision.findDistance(target);
         distanceHorizontal = distance * Math.tan(targetAngle);
         angle2 = Math.atan((distance - targetVisDistance) / distanceHorizontal);
         angle1 = ((Math.PI / 2) - targetAngle) - angle2;
         SmartDashboard.putNumber("distance", distance);
         return true;
     }
+
+    public boolean whichCamera(){
+        return true;
+    }
+
     public void gyroTargetLineUp(double yaw, double vt){ //vt is the motor output of the resultant
                // vy = Math.tan(yaw * vision.getHeading()) * ;//Math.sin(yaw) * vt;
                 //vx = //Math.cos(yaw)* vt; 
@@ -283,9 +290,17 @@ public class VisionMotion {
                 //gyroLoutput = vy;//(vylr + vxlr);
                // gyroRoutput = vy;//(vylr + vxlr);
                 //gyroHoutput = vx;//(vyh + vxh);
+            if(whichCamera() == true){ //front camera, no limelight
                 gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
                 gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
                 gyroHoutput = (distanceHorizontal * vt) / (distanceHorizontal + distance);
+            }else{ //back camera, limelight
+                gyroLoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
+                gyroRoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
+                gyroHoutput = -(distanceHorizontal * vt) / (distanceHorizontal + distance);
+            }
+
+               
                 SmartDashboard.putNumber("vt", vt);
              }
 
@@ -343,6 +358,7 @@ public class VisionMotion {
         SmartDashboard.putNumber("vy", vy);
         SmartDashboard.putNumber("vx", vx);
         SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
+        SmartDashboard.putNumber("currentYawVMotion", currentYaw);
     }
 
 };

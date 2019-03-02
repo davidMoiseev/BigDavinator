@@ -112,7 +112,8 @@ public class Robot extends TimedRobot
                 state = state + 3;
                 // state++;
              }
-          break;
+         break;
+
           case 1:
           if(driveTrain.turnToReferenceAngle() == true){
             state++;
@@ -124,7 +125,7 @@ public class Robot extends TimedRobot
               state++;
             }
           break;
-         
+        
           case 3:
           driveTrain.zeroMotors();
           break;
