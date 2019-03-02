@@ -22,6 +22,7 @@ import frc.robot.constants.WiringIDs;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.ManualManipulatorSetPoint;
+import frc.robot.constants.IRobotCommandProvider;
 
 /**
  * Add your docs here.
@@ -44,7 +45,8 @@ public class Manipulator
         FRONT, BACK
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("AA debug Arm"));
+    public static final List<String> LoggerTags = new ArrayList<>(
+            Arrays.asList("AA debug Arm", "armTarget", "wristTarget", "elevatorTarget"));
 
     private Elevator elevator;
     private Intake intake;
@@ -69,9 +71,11 @@ public class Manipulator
     private double prevArmAngle;
     private double prevWristAngle;
 
-    private final double ELEVATOR_CLEAR_HEIGHT = 18;
-    private final double ARM_TOLERANCE = 3; // need
-    private final double WRIST_TOLERANCE = 3; // need
+    private final double ELEVATOR_CLEAR_HEIGHT = 20;
+    private final double OVER_THE_TOP_HEIGHT = 7;
+    private final double ELEVATOR_TOLERANCE = 2;
+    private final double ARM_TOLERANCE = 2; // need
+    private final double WRIST_TOLERANCE = 2; // need
     private final double ARM_LENGTH = 21;
     private final double WRIST_LENGTH = 14;
     private final double ELEVATOR_LENGTH = 19;
@@ -155,6 +159,31 @@ public class Manipulator
         backFlipper.displaySensorsValue();
     }
 
+    private void setTargetSafeElevator(IManipulatorSetPoint setPoint)
+    {
+        setTargetSafeElevator(setPoint.elevatorHeight(), setPoint.armAngle(), setPoint.wristAngle());
+    }
+
+    private void setTargetSafeElevator(double elevHeight, double armAngle, double wristAngle)
+    {
+        // Moving down, so wait for the arm first
+        if (elevHeight < elevator.getPosition() - ELEVATOR_TOLERANCE && (Math.abs(arm.getPosition()) > 90))
+        {
+            System.out.println("SAFE ELEVATOR");
+            setTargets(prevElevHeight, armAngle, wristAngle);
+            if (arm.reachedTarget() && wrist.reachedTarget())
+            {
+                setTargets(elevHeight, armAngle, wristAngle);
+            }
+        }
+        // Might be moving the arm to a bad spot, so move the elevator first
+        else
+        {
+            System.out.println("UNSAFE ELEVATOR");
+            setTargets(elevHeight, armAngle, wristAngle);
+        }
+    }
+
     private void Control(IManipulatorSetPoint targetPosition)
     {
 
@@ -168,7 +197,7 @@ public class Manipulator
         }
         else if (manipulatorState == ManipulatorState.packagePosition)
         {
-            elevator.disable();
+            // elevator.disable();
             arm.disable();
             wrist.disable();
             frontFlipper.disable();
@@ -181,6 +210,7 @@ public class Manipulator
         else if (manipulatorState == ManipulatorState.outOfPackagePosition)
         {
             double tmpArm = arm.getPosition();
+
             elevator.setTarget(ManipulatorSetPoint.firstPosition);
             /*
              * frontFlipper.setTarget(ManipulatorSetPoint.firstPosition);
@@ -196,7 +226,6 @@ public class Manipulator
                     if (arm.reachedTarget())
                     {
                         manipulatorState = ManipulatorState.atTarget;
-                        // manipulatorState = ManipulatorState.transition;
                     }
                 }
             }
@@ -215,18 +244,11 @@ public class Manipulator
                             targetPosition.wristAngle()))
             {
 
-                setTargets(ManipulatorSetPoint.limit_front_high, ManipulatorSetPoint.limit_front_high,
-                        ManipulatorSetPoint.limit_front_high);
+                elevator.disable();
+                arm.disable();
+                wrist.disable();
                 HotLogger.Log("AA debug Arm", 0);
                 System.out.println("LogStuff: 0");
-            }
-            // If the elevator is currently over the clear height, set any position (as long
-            // as it doesn't collide with itself)
-            else if (elevator.getPosition() > ELEVATOR_CLEAR_HEIGHT)
-            {
-                setTargets(targetPosition, targetPosition, targetPosition);
-                HotLogger.Log("AA debug Arm", 1);
-                System.out.println("LogStuff: 1");
             }
             // If it isn't
             else
@@ -257,7 +279,8 @@ public class Manipulator
                                             wrist.getPosition())))
                             {
                                 // setTargets(targetPosition, targetPosition, targetPosition);
-                                setTargets(prevElevHeight, targetPosition.armAngle(), targetPosition.wristAngle());
+                                setTargetSafeElevator(prevElevHeight, targetPosition.armAngle(),
+                                        targetPosition.wristAngle());
                                 HotLogger.Log("AA debug Arm", 4);
                                 System.out.println("LogStuff: 4");
                             }
@@ -291,7 +314,8 @@ public class Manipulator
                                     || (willCollideWithSupports(elevator.getPosition(), arm.getPosition(),
                                             wrist.getPosition())))
                             {
-                                setTargets(prevElevHeight, targetPosition.armAngle(), targetPosition.wristAngle());
+                                setTargetSafeElevator(prevElevHeight, targetPosition.armAngle(),
+                                        targetPosition.wristAngle());
                                 HotLogger.Log("AA debug Arm", 7);
                                 System.out.println("LogStuff: 7");
                             }
@@ -307,139 +331,103 @@ public class Manipulator
                 // Switching sides
                 else
                 {
-                    // Swapping from back to front
-                    if (getArmSide(targetPosition.armAngle()) == RobotSide.FRONT)
-                    {
-                        // If the target will clear the top
-                        if (targetPosition.elevatorHeight() > ELEVATOR_CLEAR_HEIGHT)
-                        {
-                            // command everything to their positions, except for the arm, until the elevator
-                            // clears the top
-                            if ((arm.getPosition() + ARM_TOLERANCE) > ManipulatorSetPoint.limit_front_high.armAngle())
-                            {
-                                setTargets(targetPosition, ManipulatorSetPoint.limit_front_high, targetPosition);
-                                HotLogger.Log("AA debug Arm", 9);
-                                System.out.println("LogStuff: 9");
-                            }
-                            else
-                            {
-                                // Making sure that the arm is safe before we move the wrist
-                                setTargets(prevElevHeight, ManipulatorSetPoint.limit_front_high.armAngle(),
-                                        prevWristAngle);
-                                HotLogger.Log("AA debug Arm", 10);
-                                System.out.println("LogStuff: 10");
-                            }
-                        }
-                        // If the target won't clear the top
-                        else
-                        {
-                            // arm and wrist are in the middle between limits
-                            if (isArmSafe() && isWristSafe())
-                            {
-                                setTargets(targetPosition, ManipulatorSetPoint.limit_front_high,
-                                        ManipulatorSetPoint.limit_front_high);
-                                HotLogger.Log("AA debug Arm", 11);
-                                System.out.println("LogStuff: 11");
-                            }
-                            // If the arm is outside the "safe zone"
-                            else if ((arm.getPosition() + ARM_TOLERANCE) > ManipulatorSetPoint.limit_front_high
-                                    .armAngle())
-                            {
-                                // if the elevator is going up, move it in addition to straightening the wrist
-                                // and arm
-                                if (targetPosition.elevatorHeight() > ManipulatorSetPoint.limit_front_high
-                                        .elevatorHeight())
-                                {
-                                    setTargets(targetPosition, ManipulatorSetPoint.limit_front_high,
-                                            ManipulatorSetPoint.limit_back_high);
-                                    HotLogger.Log("AA debug Arm", 12);
-                                    System.out.println("LogStuff: 12");
-                                }
-                                // if the elevator is going down, make sure that the arm and wrist don't ram the
-                                // robot
-                                else
-                                {
-                                    setTargets(prevElevHeight, ManipulatorSetPoint.limit_front_high.armAngle(),
-                                            ManipulatorSetPoint.limit_back_high.wristAngle());
-                                    HotLogger.Log("AA debug Arm", 13);
-                                    System.out.println("LogStuff: 13");
-                                }
-                            }
-                            else
-                            {
-                                // Making sure the arm is safe before we move the wrist
-                                setTargets(prevElevHeight, ManipulatorSetPoint.limit_front_high.armAngle(),
-                                        prevWristAngle);
-                                HotLogger.Log("AA debug Arm", 14);
-                                System.out.println("LogStuff: 14");
-                            }
-                        }
-                    }
+                    double safeHeight = (elevator.getPosition() - ELEVATOR_TOLERANCE > OVER_THE_TOP_HEIGHT) ? prevElevHeight
+                            : OVER_THE_TOP_HEIGHT;
                     // Swapping from front to back
-                    else
+                    if (getArmSide(targetPosition.armAngle()) == RobotSide.BACK)
                     {
-                        // If the target will clear the top
-                        if (targetPosition.elevatorHeight() > ELEVATOR_CLEAR_HEIGHT)
+                        // We are in arm position for the other side
+                        if (arm.getPosition() - ARM_TOLERANCE < ManipulatorSetPoint.limit_front_high.armAngle())
                         {
-                            // command everything to their positions, except for the arm, until the elevator
-                            // clears the top
-                            if ((arm.getPosition() - ARM_TOLERANCE) > ManipulatorSetPoint.limit_back_high.armAngle())
+                            // Fix wrist
+                            if (wrist.getPosition() - WRIST_TOLERANCE > ManipulatorSetPoint.limit_front_high
+                                    .wristAngle())
                             {
-                                setTargets(targetPosition, ManipulatorSetPoint.limit_back_high, targetPosition);
-                                HotLogger.Log("AA debug Arm", 15);
-                                System.out.println("LogStuff: 15");
+                                setTargetSafeElevator(safeHeight, prevArmAngle,
+                                        ManipulatorSetPoint.limit_front_high.wristAngle());
                             }
+                            // Go to far limit
+                            else if (targetPosition.armAngle() < ManipulatorSetPoint.limit_back_high.armAngle())
+                            {
+                                setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_back_high.armAngle(),
+                                        ManipulatorSetPoint.limit_back_high.wristAngle());
+                            }
+
+                            // Go to position
                             else
                             {
-                                // Making sure that the arm is safe before we move the wrist
-                                setTargets(prevElevHeight, ManipulatorSetPoint.limit_back_high.armAngle(),
-                                        prevWristAngle);
-                                HotLogger.Log("AA debug Arm", 16);
-                                System.out.println("LogStuff: 16");
+                                setTargetSafeElevator(safeHeight, targetPosition.armAngle(),
+                                        targetPosition.wristAngle());
                             }
+                        }
+                        // Goto limit
+                        else if (ManipulatorSetPoint.limit_front_low.wristAngle() < wrist.getPosition()
+                                - WRIST_TOLERANCE
+                                || arm.getPosition() - ARM_TOLERANCE > ManipulatorSetPoint.limit_front_low.armAngle())
+                        {
+                            // Move the wrist first, should always be safe as we are on the same side
+                            setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_front_low.armAngle(),
+                                    ManipulatorSetPoint.limit_front_low.wristAngle());
+                        }
+                        // Goto limit
+                        else if (ManipulatorSetPoint.limit_front_high.wristAngle() < wrist.getPosition()
+                                - WRIST_TOLERANCE
+                                || arm.getPosition() - ARM_TOLERANCE > ManipulatorSetPoint.limit_front_high.armAngle()
+                                || elevator.getPosition() + ELEVATOR_TOLERANCE < safeHeight)
+                        {
+                            // Move the wrist first, should always be safe as we are on the same side
+                            setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_front_high.armAngle(),
+                                    ManipulatorSetPoint.limit_front_high.wristAngle());
                         }
                         else
                         {
-                            // arm and wrist are in the middle area between limits
-                            if (isArmSafe() && isWristSafe())
-                            {
-                                setTargets(targetPosition, ManipulatorSetPoint.limit_back_high,
-                                        ManipulatorSetPoint.limit_back_high);
-                                HotLogger.Log("AA debug Arm", 17);
-                                System.out.println("LogStuff: 17");
-                            }
-                            // If the arm is outside the "safe zone"
-                            else if ((arm.getPosition() - ARM_TOLERANCE) > ManipulatorSetPoint.limit_back_high
-                                    .armAngle())
-                            {
-                                // if the elevator is going up, move it in addition to straightening the wrist
-                                // and arm
-                                if (targetPosition.elevatorHeight() > ManipulatorSetPoint.limit_back_high
-                                        .elevatorHeight())
-                                {
-                                    setTargets(targetPosition, ManipulatorSetPoint.limit_back_high,
-                                            ManipulatorSetPoint.limit_front_high);
-                                    HotLogger.Log("AA debug Arm", 18);
-                                    System.out.println("LogStuff: 18");
-                                }
-                                else
-                                {
-                                    // if the elevator is going down, make sure that the arm and wrist don't ram the
-                                    // robot
-                                    setTargets(prevElevHeight, ManipulatorSetPoint.limit_back_high.armAngle(),
-                                            ManipulatorSetPoint.limit_front_high.wristAngle());
-                                    HotLogger.Log("AA debug Arm", 19);
-                                    System.out.println("LogStuff: 19");
-                                }
-                            }
+                            setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_back_high.armAngle(),
+                                    ManipulatorSetPoint.limit_back_high.wristAngle());
+                        }
+
+                    }
+                    // Swapping from back to front
+                    else if (getArmSide(targetPosition.armAngle()) == RobotSide.FRONT)
+                    {
+                        // We are in arm position for the other side
+                        if (arm.getPosition() + ARM_TOLERANCE > ManipulatorSetPoint.limit_back_high.armAngle())
+                        {
+                            // Fix wrist
+                            if (wrist.getPosition() + WRIST_TOLERANCE < ManipulatorSetPoint.limit_back_high
+                                    .wristAngle())
+                                setTargetSafeElevator(safeHeight, prevArmAngle,
+                                        ManipulatorSetPoint.limit_back_high.wristAngle());
+                            // Go to far limit
+                            else if (targetPosition.armAngle() > ManipulatorSetPoint.limit_front_high.armAngle())
+                                setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_front_high.armAngle(),
+                                        ManipulatorSetPoint.limit_front_high.wristAngle());
+                            // Go to position
                             else
-                            {
-                                // Making sure that the arm is safe before we move the wrist
-                                setTargets(prevElevHeight, ManipulatorSetPoint.limit_back_high.armAngle(),
-                                        prevWristAngle);
-                                HotLogger.Log("AA debug Arm", 20);
-                                System.out.println("LogStuff: 20");
-                            }
+                                setTargetSafeElevator(safeHeight, targetPosition.armAngle(),
+                                        targetPosition.wristAngle());
+                        }
+                        // Goto limit
+                        else if (ManipulatorSetPoint.limit_back_low.wristAngle() > wrist.getPosition() + WRIST_TOLERANCE
+                                || arm.getPosition() + ARM_TOLERANCE < ManipulatorSetPoint.limit_back_low.armAngle())
+                        {
+                            // Move the wrist first, should always be safe as we are on the same side
+                            setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_back_low.armAngle(),
+                                    ManipulatorSetPoint.limit_back_low.wristAngle());
+                        }
+                        // Goto limit
+                        else if (ManipulatorSetPoint.limit_back_high.wristAngle() > wrist.getPosition()
+                                + WRIST_TOLERANCE
+                                || arm.getPosition() + ARM_TOLERANCE < ManipulatorSetPoint.limit_back_high.armAngle()
+                                || elevator.getPosition() + ELEVATOR_TOLERANCE < safeHeight)
+                        {
+                            // Move the wrist first, should always be safe as we are on the same side
+                            setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_back_high.armAngle(),
+                                    ManipulatorSetPoint.limit_back_high.wristAngle());
+                        }
+                        else
+                        {
+                            setTargetSafeElevator(safeHeight, ManipulatorSetPoint.limit_front_high.armAngle(),
+                                    ManipulatorSetPoint.limit_front_high.wristAngle());
                         }
                     }
                 }
@@ -451,16 +439,31 @@ public class Manipulator
 
     private void setTargets(double elevTarget, double armTarget, double wristTarget)
     {
+
         setTargets(elevTarget, armTarget, wristTarget, ManipulatorSetPoint.firstPosition.frontFlipper(),
                 ManipulatorSetPoint.firstPosition.backFlipper());
     }
 
+    boolean holdingElevator = false;
+    boolean holdingArm = false;
+    boolean holdingWrist = false;
+
     private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
             double backFlipperTarget)
     {
+        holdingElevator = (elevTarget == prevElevHeight);
+        holdingArm = (armTarget == prevArmAngle);
+        holdingWrist = (wristTarget == prevWristAngle);
+
         elevator.setTarget(elevTarget);
         arm.setTarget(armTarget);
         wrist.setTarget(wristTarget);
+        SmartDashboard.putNumber("elevatorTarget", elevTarget);
+        HotLogger.Log("elevatorTarget", elevTarget);
+        SmartDashboard.putNumber("armTarget", armTarget);
+        HotLogger.Log("armTarget", armTarget);
+        SmartDashboard.putNumber("wristTarget", wristTarget);
+        HotLogger.Log("wristTarget", wristTarget);
         // frontFlipper.setTarget(frontFlipperTarget);
         // backFlipper.setTarget(backFlipperTarget);
     }
@@ -468,15 +471,18 @@ public class Manipulator
     private void setTargets(IManipulatorSetPoint elevTarget, IManipulatorSetPoint armTarget,
             IManipulatorSetPoint wristTarget)
     {
-        elevator.setTarget(elevTarget);
-        arm.setTarget(armTarget);
-        wrist.setTarget(wristTarget);
+        SmartDashboard.putNumber("elevatorTarget", elevTarget.elevatorHeight());
+        SmartDashboard.putNumber("armTarget", armTarget.armAngle());
+        SmartDashboard.putNumber("wristTarget", wristTarget.wristAngle());
+
+        setTargets(elevTarget.elevatorHeight(), armTarget.armAngle(), wristTarget.wristAngle());
+
     }
 
     // This is the side the arm is on
     private RobotSide getArmSide(double armAngle)
     {
-        if (armAngle > -5.0)
+        if (armAngle > 0)
             return RobotSide.FRONT;
         return RobotSide.BACK;
     }
@@ -555,129 +561,25 @@ public class Manipulator
         return ARM_LENGTH * Math.sin(Math.toRadians(armAngle)) + lengthWristX(wristAngle);
     }
 
-    public void Update()
+    public void Update(IRobotCommandProvider robotCommand)
     {
         arm.checkEncoder();
         wrist.checkEncoder();
         elevator.checkEncoder(0);
-        intake.Update();
-        pneumaticIntake.Update();
-        ManipulatorSetPoint frontTargetPosition = null;
-        ManipulatorSetPoint backTargetPosition = null;
+        intake.Update(robotCommand);
+        pneumaticIntake.Update(robotCommand);
 
-        boolean isLeftTriggerPressed = (operator.getLeftTrigger() >= .25);
-        boolean isRightTriggerPressed = (operator.getRightTrigger() >= .25);
-
-        if (operator.getButtonX())
-        {
-            frontTargetPosition = ManipulatorSetPoint.carry_front;
-            backTargetPosition = ManipulatorSetPoint.carry_back;
-        }
-        else if (operator.getButtonA())
-        {
-            frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_low_back;
-            /*
-            frontTargetPosition = ManipulatorSetPoint.mikes_set_front;
-            backTargetPosition = ManipulatorSetPoint.mikes_set_back;
-            */
-        }
-        else if (operator.getButtonB())
-        {
-            frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
-        }
-        else if (operator.getButtonY())
-        {
-            frontTargetPosition = ManipulatorSetPoint.hatch_high_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_high_back;
-        }
-        if (operator.getButtonLeftBumper())
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
-            */
-        }
-        else if (operator.getButtonRightBumper())
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
-            */
-        }
-        else if (isLeftTriggerPressed == true)
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-            */
-        }
-
-        else if (isRightTriggerPressed == true)
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
-            */
-        }
-        else if (operator.getButtonLeftStick())
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
-            */
-        }
-        else if (operator.getButtonRightStick())
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
-            */
-        }
-
-        /*
-         * else if (operator.getButtonY()) { frontTargetPosition =
-         * ManipulatorSetPoint.climb; backTargetPosition = ManipulatorSetPoint.climb; }
-         */
-
-         /*
-        else if (driver.getButtonA())
-        {
-            if (elevator.getPosition() > 22)
-            {
-                drivetrain.SetAllowClimberMotors(true);
-                climber.set(true);
-            }
-        }
-        else if (driver.getButtonB())
-        {
-            drivetrain.SetAllowClimberMotors(false);
-            climber.set(false);
-        }
-        */
-
-        boolean score = false;
-        score = driver.getButtonA();
-
-        if (operator.getButtonStart() && !startButtonPrevious)
-        {
-            commandToBack = !commandToBack;
-        }
+        IManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
+        boolean score = robotCommand.ManipulatorScore();
 
         // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());
-        if (frontTargetPosition != null || backTargetPosition != null)
+        if (setPoint != null)
         {
-            IManipulatorSetPoint setPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
             if (score)
             {
                 setPoint = CreateScoreSetPoint(setPoint);
             }
             Control(setPoint);
-            /*
-            wrist.setTarget(setPoint);
-            arm.setTarget(setPoint);
-            */
             SmartDashboard.putBoolean("Disabled thing", false);
         }
         else
@@ -685,13 +587,6 @@ public class Manipulator
             elevator.disable();
             arm.disable();
             wrist.disable();
-
-            // elevator.manual(operator.getStickLY());
-            arm.manual(operator.getStickRY());
-            /*
-             * if (commandToBack) backFlipper.manual(operator.getStickRY()); else
-             * frontFlipper.manual(operator.getStickRY());
-             */
 
             SmartDashboard.putBoolean("Disabled thing", true);
         }
@@ -716,12 +611,12 @@ public class Manipulator
                 heightManipulator(elevator.getPosition(), arm.getPosition(), wrist.getPosition())
                         - 13.5 / 2 * Math.sin(Math.toRadians(wrist.getPosition())));
 
-        startButtonPrevious = operator.getButtonStart();
-        backButtonPrevious = operator.getButtonBack();
-
-        prevElevHeight = elevator.getPosition();
-        prevArmAngle = arm.getPosition();
-        prevWristAngle = wrist.getPosition();
+        if (!holdingElevator)
+            prevElevHeight = elevator.getPosition();
+        if (!holdingArm)
+            prevArmAngle = arm.getPosition();
+        if (!holdingWrist)
+            prevWristAngle = wrist.getPosition();
     }
 
     private IManipulatorSetPoint CreateScoreSetPoint(IManipulatorSetPoint setPoint)
@@ -762,6 +657,7 @@ public class Manipulator
 
         double newElevatorHeight = setPoint.elevatorHeight()
                 + (ARM_LENGTH * (Math.cos(armAngle) - Math.cos(newArmAngle)));
+        newElevatorHeight = (newElevatorHeight > 33) ? 33 : newElevatorHeight;
 
         SmartDashboard.putNumber("New Arm Angle", Math.toDegrees(newArmAngle));
         SmartDashboard.putNumber("New Elevator Height", newElevatorHeight);

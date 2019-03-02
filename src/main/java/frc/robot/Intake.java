@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import org.hotteam67.HotController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.IRobotCommandProvider;
 import frc.robot.constants.WiringIDs;
 
 public class Intake
@@ -31,18 +32,18 @@ public class Intake
         this.joystick = joystick;
     }
 
-    public void Update()
+    public void Update(IRobotCommandProvider command)
     {
-        if (joystick.getButtonRightBumper())
+        if (command.IntakeOut())
         {
             runIntake(Outspeed);
 
         }
-        if (joystick.getButtonLeftBumper())
+        else if (command.IntakeIn())
         {
             runIntake(Inputspeed);
         }
-        if (!joystick.getButtonLeftBumper() && !joystick.getButtonRightBumper())
+        else
         {
             allOff();
         }
