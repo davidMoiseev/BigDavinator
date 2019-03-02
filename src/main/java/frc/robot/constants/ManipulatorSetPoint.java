@@ -14,16 +14,16 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
 
     // 0 16 115
     firstPosition(7, 0, 0, 0, 0), 
-    carry_front(7, 0, 10, 0, 0), // X
-    carry_back(7, 0, -10, 0, 0), // X
+    carry_front(7, -1, 10, 0, 0), // X
+    carry_back(7, 1, -10, 0, 0), // X
     hatch_low_front(17, 155, 90, 110, 0), // A
     hatch_low_back(17, -155, -90, 0, 110), // A
     hatch_mid_front(5, 14, 90, 0, 0), // B
     hatch_mid_back(5, -14, -90, 0, 0), // B
     hatch_high_front(32, 8.5, 90, 0, 0), // Y
     hatch_high_back(32, -8.5, -90, 0, 0), // Y
-    cargo_pickup_front(.5, 105, 134, 0, 0), // M3-M6
-    cargo_pickup_back(.5, -105, -134, 0, 0), // M3-M6
+    cargo_pickup_front(1, 105, 134, 0, 0), // M3-M6
+    cargo_pickup_back(1, -105, -134, 0, 0), // M3-M6
     cargo_shuttle_front(3, 29, 107, 110, 0), // RB
     cargo_shuttle_back(3, -29, -107, 0, 110), // RB
     cargo_rocketLow_front(21, 155, 72, 0, 0), // LB

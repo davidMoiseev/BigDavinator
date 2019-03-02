@@ -61,7 +61,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     }
 
     boolean commandToBack = true;
-    boolean startButtonPrevious = false;
+    boolean flipButtonPrevious = false;
+
     @Override
     public void Update()
     {
@@ -78,43 +79,69 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         }
         else if (operator.getButtonA())
         {
-            frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_low_back;
+            if (!operator.getButtonBack())
+            {
+                frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
+                backTargetPosition = ManipulatorSetPoint.hatch_low_back;
+            }
+            else
+            {
+                frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
+                backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
+            }
         }
         else if (operator.getButtonB())
         {
-            frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
+            if (!operator.getButtonBack())
+            {
+                frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
+                backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
+            }
+            else
+            {
+                frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
+                backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
+            }
         }
         else if (operator.getButtonY())
         {
-            frontTargetPosition = ManipulatorSetPoint.hatch_high_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_high_back;
+            if (!operator.getButtonBack())
+            {
+                frontTargetPosition = ManipulatorSetPoint.hatch_high_front;
+                backTargetPosition = ManipulatorSetPoint.hatch_high_back;
+            }
+            else
+            {
+                frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
+                backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
+            }
         }
         else if (operator.getButtonLeftBumper())
         {
+            /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
+            */
         }
         else if (operator.getButtonRightBumper())
         {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
-             */
+            frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
         }
         else if (isLeftTriggerPressed == true)
         {
+            /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-
+            */
         }
 
         else if (isRightTriggerPressed == true)
         {
-
+            /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
+            */
         }
         else if (operator.getButtonLeftStick())
         {
@@ -147,20 +174,21 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         }
 
         if (driver.getButtonX())
-		{
-			intakeSolenoid = true;
-		}
-		else if (driver.getButtonY())
-		{
-			intakeSolenoid = false;
-		}
+        {
+            intakeSolenoid = true;
+        }
+        else if (driver.getButtonY())
+        {
+            intakeSolenoid = false;
+        }
 
         score = driver.getButtonA();
 
-        if (operator.getButtonStart() && !startButtonPrevious)
+        if (operator.getButtonLeftStick() && !flipButtonPrevious)
         {
             commandToBack = !commandToBack;
         }
+        flipButtonPrevious = operator.getButtonLeftStick();
 
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
@@ -168,8 +196,6 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         LeftDrive = -driver.getStickLY() + driver.getStickRX();
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
-
-        startButtonPrevious = operator.getButtonStart();
     }
 
     @Override
