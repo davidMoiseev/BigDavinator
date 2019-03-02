@@ -233,6 +233,7 @@ public class Manipulator
 
         if (manipulatorState == ManipulatorState.atTarget)
         {
+            /*
             if (willCollideWithFrame(targetPosition.elevatorHeight(), targetPosition.armAngle(),
                     targetPosition.wristAngle())
                     || willCollideWithSupports(targetPosition.elevatorHeight(), targetPosition.armAngle(),
@@ -245,8 +246,9 @@ public class Manipulator
                 HotLogger.Log("AA debug Arm", 0);
                 System.out.println("LogStuff: 0");
             }
+            */
             // If it isn't
-            else
+            // else
             {
                 // Same side
                 if (getArmSide(targetPosition.armAngle()) == getArmSide(arm.getPosition()))
@@ -328,6 +330,7 @@ public class Manipulator
                 {
                     double safeHeight = (elevator.getPosition() - ELEVATOR_TOLERANCE > OVER_THE_TOP_HEIGHT) ? prevElevHeight
                             : OVER_THE_TOP_HEIGHT;
+                    safeHeight = (targetPosition.elevatorHeight() > OVER_THE_TOP_HEIGHT) ? targetPosition.elevatorHeight() : safeHeight;
                     // Swapping from front to back
                     if (getArmSide(targetPosition.armAngle()) == RobotSide.BACK)
                     {
