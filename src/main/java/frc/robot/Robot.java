@@ -83,6 +83,13 @@ public class Robot extends TimedRobot
             
             Mat source = new Mat();
             Mat output = new Mat();
+            //serverOne = CameraServer.getInstance();
+            //serverOne.startAutomaticCapture();
+            //serverOne.startAutomaticCapture(0);
+            //camera = serverOne.startAutomaticCapture(0);
+            //camera.setResolution(RobotMap.IMG_WIDTH, RobotMap.IMG_HEIGHT);
+            camera.setBrightness(95);
+            camera.setExposureManual(35);
            // NIVision.Image frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB,0);
             //Mat.setBrightness(2);
             //Mat.setExposureManual(exposure);
