@@ -22,6 +22,9 @@ import frc.robot.constants.WiringIDs;
 import org.hotteam67.Interpolation;
 import org.hotteam67.HotController;
 import edu.wpi.first.wpilibj.Relay;
+//import com.ni.vision.NIVision;
+//import com.ni.vision.NIVision.Image;
+//import com.ni.vision.NIVision.ImageType;
 
 public class Robot extends TimedRobot
 {
@@ -44,6 +47,8 @@ public class Robot extends TimedRobot
     // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
     Relay relay;
     DriveTrain driveTrain;
+
+    
 
     /*
      * TalonSRX eleLeft; TalonSRX eleRight;
@@ -70,6 +75,7 @@ public class Robot extends TimedRobot
         driver.setDeadBandRX(.1);
         driver.setDeadBandRY(.08);
     
+        driveTrain.initUsbCam();
         /*
          * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new
          * TalonSRX(WiringIDs.RIGHT_ELEVATOR);
@@ -153,6 +159,7 @@ public class Robot extends TimedRobot
         // rumble(driver);
         // rumble(operator);
 
+        driveTrain.updateUsb(1);
         HotLogger.Log("StickLY", -driver.getStickLY());
         driveTrain.Update(driver);
 

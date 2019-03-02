@@ -78,6 +78,14 @@ public class VisionMotion {
         return integral;
     }
 
+    public void usbUpdatePipeline (int pipeline){
+        vision.usbCamUpdate(pipeline);
+    }
+
+    public void usbCamInit(){
+        vision.usbCamInit();
+    }
+
     public double turnVision() {
         p = findProportional(0); 
         i = findIntegral(0); 

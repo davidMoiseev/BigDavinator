@@ -3,6 +3,14 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.vision.*;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
 
 public class Vision extends Subsystem {
 
@@ -18,8 +26,12 @@ private double limelightHeight = 10.75;
 private double limelightAngle = 0.447;//-2.148;
 private double a2 = 0.0;
 private double distance = 0.0;
+private int brightness;
+private int exposure;
 
- @Override
+UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+
+
   public void initDefaultCommand() {
      /* setDefaultCommand(new MySpecialCommand());
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("<tv>"). getDouble(0);
@@ -30,6 +42,49 @@ private double distance = 0.0;
     } else{
     }
     */
+  }
+
+  public void setUsbPipeline(int pipeline){
+    if(pipeline == 0){
+      brightness = 100000;
+      exposure = 10000;
+    }else if(pipeline == 1){
+      brightness = 2;
+      exposure = 2;
+    }else{
+      brightness = 95;
+      exposure = 35;
+    }
+  }
+
+  public void usbCamInit(){
+    new Thread(() -> {
+      camera.setResolution(640, 480);
+      
+      CvSink cvSink = CameraServer.getInstance().getVideo();
+      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+      
+      Mat source = new Mat();
+      Mat output = new Mat();
+      
+     setUsbPipeline(2);
+    camera.setBrightness(brightness);
+    camera.setExposureManual(exposure);
+    
+      while(!Thread.interrupted()) {
+          cvSink.grabFrame(source);
+          Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+          outputStream.putFrame(output);
+      }
+    }).start();
+    
+    CameraServer.getInstance().startAutomaticCapture();
+  }
+
+  public void usbCamUpdate(int pipeline){
+    setUsbPipeline(pipeline);
+    camera.setBrightness(brightness);
+    camera.setExposureManual(exposure);
   }
 
   public void getNetworkTables() {
@@ -90,6 +145,7 @@ public void setPipeline(double pipeline){
 
 
 }
+
 
 /*
 ------A Shrine to the Limelight------

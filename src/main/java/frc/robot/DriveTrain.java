@@ -282,6 +282,14 @@ public class DriveTrain implements IPigeonWrapper
         }
     }
 
+    public void updateUsb(int pipeline){
+        vmotion.usbUpdatePipeline(pipeline);
+    }
+
+    public void initUsbCam(){
+        vmotion.usbCamInit();
+    }
+
     public boolean gyroLineUp(double maxOutput, double targetDistanceStop){
             switch (state){
                 case 0:
