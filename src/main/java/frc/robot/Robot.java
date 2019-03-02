@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
 public class Robot extends TimedRobot
@@ -45,6 +46,8 @@ public class Robot extends TimedRobot
     Manipulator manipulator;
     Compressor compressor;
     Solenoid climber;
+
+    TeleopCommandProvider teleopCommandProvider;
     /*
      * TalonSRX eleLeft; TalonSRX eleRight;
      */
@@ -65,6 +68,9 @@ public class Robot extends TimedRobot
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
         this.driver = new HotController(0);
         HotController operator = new HotController(1);
+
+        teleopCommandProvider = new TeleopCommandProvider(driver, operator);
+
         driveTrain = new DriveTrain(rightElevator, intake);
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
         manipulator.InitializeTalons();
@@ -135,8 +141,9 @@ public class Robot extends TimedRobot
         // rumble(driver);
         // rumble(operator);
 
-        driveTrain.Update(driver);
-        manipulator.Update();
+        teleopCommandProvider.Update();
+        driveTrain.Update(teleopCommandProvider);
+        manipulator.Update(teleopCommandProvider);
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 

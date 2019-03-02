@@ -20,6 +20,7 @@ import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
 public class DriveTrain implements IPigeonWrapper
@@ -235,26 +236,26 @@ public class DriveTrain implements IPigeonWrapper
      *                    the hdrive output value
      */
 
-    public void Update(HotController joystick)
+    public void Update(TeleopCommandProvider command)
     {
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
 
-        rightMotor.set(-joystick.getStickLY() - joystick.getStickRX());
-        leftMotor.set(-joystick.getStickLY() + joystick.getStickRX() + 0.15 * (HDriveOutput(joystick)));
+        rightMotor.set(command.RightDrive());
+        leftMotor.set(command.LeftDrive() + 0.15 * (HDriveOutput(command.HDrive())));
 
         if (allowClimberMotors)
         {
-            leftClimber.set(ControlMode.PercentOutput, -joystick.getStickLY());
-            rightClimber.set(ControlMode.PercentOutput, -joystick.getStickLY());
+            leftClimber.set(ControlMode.PercentOutput, command.LeftDrive());
+            rightClimber.set(ControlMode.PercentOutput, command.RightDrive());
         }
         
-        hDriveMotor.set(HDriveOutput(joystick));
+        hDriveMotor.set(HDriveOutput(command.HDrive()));
     }
 
-    public double HDriveOutput(HotController joystick)
+    public double HDriveOutput(double input)
     {
-        double HDriveOutput = ((joystick.getRawAxis(3) - joystick.getRawAxis(2)) / 2.0);
+        double HDriveOutput = input;
         HDriveOutputOld = HDriveOutput;
         Hstate = 0;
         k = 0.02;

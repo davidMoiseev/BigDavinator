@@ -22,6 +22,7 @@ import frc.robot.constants.WiringIDs;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.ManualManipulatorSetPoint;
+import frc.robot.constants.IRobotCommandProvider;
 
 /**
  * Add your docs here.
@@ -552,91 +553,20 @@ public class Manipulator
         return ARM_LENGTH * Math.sin(Math.toRadians(armAngle)) + lengthWristX(wristAngle);
     }
 
-    public void Update()
+    public void Update(IRobotCommandProvider robotCommand)
     {
         arm.checkEncoder();
         wrist.checkEncoder();
         elevator.checkEncoder(0);
-        intake.Update();
-        pneumaticIntake.Update();
-        ManipulatorSetPoint frontTargetPosition = null;
-        ManipulatorSetPoint backTargetPosition = null;
+        intake.Update(robotCommand);
+        pneumaticIntake.Update(robotCommand);
 
-        boolean isLeftTriggerPressed = (operator.getLeftTrigger() >= .25);
-        boolean isRightTriggerPressed = (operator.getRightTrigger() >= .25);
-
-        if (operator.getButtonX())
-        {
-            frontTargetPosition = ManipulatorSetPoint.carry_front;
-            backTargetPosition = ManipulatorSetPoint.carry_back;
-        }
-        else if (operator.getButtonA())
-        {
-            frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_low_back;
-        }
-        else if (operator.getButtonB())
-        {
-            frontTargetPosition = ManipulatorSetPoint.hatch_mid_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_mid_back;
-        }
-        else if (operator.getButtonY())
-        {
-            frontTargetPosition = ManipulatorSetPoint.hatch_high_front;
-            backTargetPosition = ManipulatorSetPoint.hatch_high_back;
-        }
-        else if (operator.getButtonLeftBumper())
-        {
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
-        }
-        else if (operator.getButtonRightBumper())
-        {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
-             */
-        }
-        else if (isLeftTriggerPressed == true)
-        {
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-
-        }
-
-        else if (isRightTriggerPressed == true)
-        {
-
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
-        }
-        else if (operator.getButtonLeftStick())
-        {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
-             */
-        }
-        else if (operator.getButtonRightStick())
-        {
-            frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
-        }
-
-        boolean score = false;
-        score = operator.getButtonBack();
-        score = driver.getButtonA();
-        score = operator.getButtonBack();
-
-        if (operator.getButtonStart() && !startButtonPrevious)
-        {
-            commandToBack = !commandToBack;
-        }
+        IManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
+        boolean score = robotCommand.ManipulatorScore();
 
         // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());
-        if (frontTargetPosition != null || backTargetPosition != null)
+        if (setPoint != null)
         {
-            IManipulatorSetPoint setPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
             if (score)
             {
                 setPoint = CreateScoreSetPoint(setPoint);
@@ -650,16 +580,8 @@ public class Manipulator
             arm.disable();
             wrist.disable();
 
-            // elevator.manual(operator.getStickLY());
-            arm.manual(operator.getStickRY());
-            /*
-             * if (commandToBack) backFlipper.manual(operator.getStickRY()); else
-             * frontFlipper.manual(operator.getStickRY());
-             */
-
             SmartDashboard.putBoolean("Disabled thing", true);
         }
-        // elevator.setTarget(10);
 
         SmartDashboard.putBoolean("COLLIDE FRAME",
                 willCollideWithFrame(elevator.getPosition(), arm.getPosition(), wrist.getPosition()));
@@ -680,9 +602,6 @@ public class Manipulator
         SmartDashboard.putNumber("WristBottonPostitionY",
                 heightManipulator(elevator.getPosition(), arm.getPosition(), wrist.getPosition())
                         - 13.5 / 2 * Math.sin(Math.toRadians(wrist.getPosition())));
-
-        startButtonPrevious = operator.getButtonStart();
-        backButtonPrevious = operator.getButtonBack();
 
         if (!holdingElevator)
             prevElevHeight = elevator.getPosition();
