@@ -83,22 +83,10 @@ public class Robot extends TimedRobot
             
             Mat source = new Mat();
             Mat output = new Mat();
-            //serverOne = CameraServer.getInstance();
-            //serverOne.startAutomaticCapture();
-            //serverOne.startAutomaticCapture(0);
-            //camera = serverOne.startAutomaticCapture(0);
-            //camera.setResolution(RobotMap.IMG_WIDTH, RobotMap.IMG_HEIGHT);
+            
             camera.setBrightness(95);
             camera.setExposureManual(35);
-           // NIVision.Image frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB,0);
-            //Mat.setBrightness(2);
-            //Mat.setExposureManual(exposure);
-            //Mat.UpdateSettings();
-            
-            // int exposure = Preferences.getInstance.getInt("camExposure", 50);
-            // int brightness = Preferences.getInstance.getInt("camBrightness", 50);
-            //CameraServer.getInstance().setImage(frame);
-           // Mat.getImage(frame);
+         
             while(!Thread.interrupted()) {
                 cvSink.grabFrame(source);
                 Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
