@@ -4,7 +4,6 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -57,6 +56,8 @@ public class Robot extends TimedRobot
      */
 
     private boolean forceInitialization;
+    public int state = 0;
+    boolean profileFinished = false;
 
     @Override
     public void robotInit()
@@ -85,6 +86,7 @@ public class Robot extends TimedRobot
         driver.setDeadBandRX(.1);
         driver.setDeadBandRY(.1);
 
+        driveTrain.initUsbCam();
         /*
          * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new
          * TalonSRX(WiringIDs.RIGHT_ELEVATOR);
@@ -102,23 +104,52 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-        driveTrain.zeroSensors();
+     driveTrain.zeroSensors();
         driveTrain.zeroMotors();
         profileFinished = false;
-    }
+        }
 
-    boolean profileFinished = false;
+   
 
     @Override
     public void autonomousPeriodic()
     {
-
+        // May have to invert driveturn/drivespeed
+		SmartDashboard.putNumber("state", state);
         driveTrain.readSensors();
         driveTrain.writeLogs();
-        if (!profileFinished)
-            profileFinished = driveTrain.FollowPath();
-        else
-            driveTrain.zeroMotors();
+		switch(state){
+          case 0:
+            if (!profileFinished)
+             profileFinished = driveTrain.FollowPath();
+             else if((profileFinished == true) && (driveTrain.canseeTarget() == true)) {
+                state++;
+             }
+             else {
+                state = state + 3;
+                // state++;
+             }
+         break;
+
+          case 1:
+          if(driveTrain.turnToReferenceAngle() == true){
+            state++;
+           // state = state + 2;
+          }
+          break;
+          case 2:
+            if(driveTrain.gyroLineUp(0.3, 50.0) == true){
+              state++;
+            }
+          break;
+        
+          case 3:
+          driveTrain.zeroMotors();
+          break;
+        }
+       
+    SmartDashboard.putNumber("state", state);
+		
     }
 
     @Override
@@ -130,14 +161,13 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
-        driveTrain.zeroSensors();
+    //driveTrain.zeroSensors();
     }
 
     boolean rumble = false;
 
     @Override
-    public void teleopPeriodic()
-    {
+    public void teleopPeriodic(){
         // rumble(driver);
         // rumble(operator);
 
@@ -145,6 +175,9 @@ public class Robot extends TimedRobot
         driveTrain.Update(teleopCommandProvider);
         manipulator.Update(teleopCommandProvider);
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
+        driveTrain.updateUsb(1);
+        HotLogger.Log("StickLY", -driver.getStickLY());
+
         // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
 
         driveTrain.readSensors();
@@ -236,8 +269,7 @@ public class Robot extends TimedRobot
 
         driver.setRumble(RumbleType.kLeftRumble, 0);
         driver.setRumble(RumbleType.kRightRumble, 0);
-        driveTrain.zeroSensors();
-        driveTrain.zeroMotors();
+    	driveTrain.zeroSensors();
         pigeonInitializing = false;
     }
 

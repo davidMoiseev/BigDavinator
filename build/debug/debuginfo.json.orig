@@ -1,9 +1,20 @@
 [
   {
+<<<<<<< HEAD
+    "artifact": "frcJava (in project 2017DriverTryOut)",
+=======
     "artifact": "frcJava (in project bigdavinator-1)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",
     "project": "bigdavinator-1",
+    "language": "java"
+  },
+  {
+    "artifact": "frcJava (in project BigDavinator)",
+>>>>>>> origin/master
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "2017DriverTryOut",
     "language": "java"
   },
   {

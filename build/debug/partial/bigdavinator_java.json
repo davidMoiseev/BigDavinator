@@ -1,16 +1,9 @@
 [
   {
-<<<<<<< HEAD
-    "name": "BigDavinator (in project BigDavinator)",
-    "file": "C:\\Users\\Jakob\\Documents\\GitHub\\BigDavinator\\build\\libs\\BigDavinator.jar",
-    "extensions": [],
-    "librarydir": "C:\\Users\\Jakob\\Documents\\GitHub\\BigDavinator\\build\\tmp\\jniExtractDir",
-=======
     "name": "bigdavinator (in project bigdavinator)",
     "file": "C:\\Users\\Robotics\\BigDaveHasHisVeryOwnHouse\\bigdavinator\\build\\libs\\bigdavinator.jar",
     "extensions": [],
     "librarydir": "C:\\Users\\Robotics\\BigDaveHasHisVeryOwnHouse\\bigdavinator\\build\\tmp\\jniExtractDir",
->>>>>>> origin/newNewVision
     "mainclass": "frc.robot.Main"
   }
 ]

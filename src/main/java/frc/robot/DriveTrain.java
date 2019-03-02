@@ -60,7 +60,7 @@ public class DriveTrain implements IPigeonWrapper
     private boolean allowClimberMotors = false;
 
     private final PigeonIMU pigeon;
-
+	 VisionMotion vmotion = new VisionMotion();
     private final TalonSRX rightEncoder;
     private final TalonSRX leftEncoder;
     private double[] xyz_dps = new double[3];
@@ -75,7 +75,19 @@ public class DriveTrain implements IPigeonWrapper
     private double rightEncoderValue = 0;
 
     private final HotPathFollower pathFollower;
-
+    public boolean isHDown;
+    public double previousCanSeeTarget;
+    public double prevprevCanSeeTarget;
+    public static final double pGain = 0.04;
+    public static final double iGain = 0.000008;
+    public static final double dGain = 0.0;
+    public double integral = 0;
+    public double speed = 0;
+    public double Lspeed;
+    public double Rspeed;
+    public double currentYaw;
+    public double singleRotationYaw;
+    public int state;
     /**
      * Motion Profiling Constants
      */
@@ -142,6 +154,10 @@ public class DriveTrain implements IPigeonWrapper
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
     }
 
+    public void loadPath(String leftPathFile, String rightPathFile){
+        pathFollower.LoadPath(leftPathFile, rightPathFile);
+    }
+
     /**
      * Control the path follower, should be called on the same period as the
      * profile's time step
@@ -151,14 +167,24 @@ public class DriveTrain implements IPigeonWrapper
     public boolean FollowPath()
     {
         double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, -heading);
+        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, heading);
 
         rightMotor.set(pathOutput.Left);
         leftMotor.set(pathOutput.Right);
 
         return (pathFollower.GetState() == State.Complete);
     }
-
+    public void getYaw(){
+        pigeon.getYawPitchRoll(xyz_dps);
+        currentYaw = -1.0 * Math.toRadians(xyz_dps[0]); 
+    }
+    public void getSingleRotationYaw(){  
+        double rotations;
+        pigeon.getYawPitchRoll(xyz_dps);
+        singleRotationYaw = -1.0 * Math.toRadians(xyz_dps[0]);
+        rotations = singleRotationYaw % (2 * Math.PI);
+        singleRotationYaw = (2 * Math.PI) * rotations;
+    }
     /**
      * Read the sensors into memory
      */
@@ -176,6 +202,14 @@ public class DriveTrain implements IPigeonWrapper
 
     public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch", "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
+    public boolean canseeTarget() {
+        if (vmotion.canSeeTarget() == 1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     /**
      * Write to logs and dashboards
      */
@@ -188,6 +222,13 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
 
+        SmartDashboard.putNumber("rightEncoder", rightEncoderValue);
+        SmartDashboard.putNumber("leftEncoder", leftEncoderValue);
+        SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
+        SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("singlerotationYaw", singleRotationYaw);
+ 		vmotion.writeDashBoardVis();
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
          * SmartDashboard.putNumber("motorEncoderConfiguration",
@@ -225,7 +266,83 @@ public class DriveTrain implements IPigeonWrapper
         hDriveMotor.set(0);
     }
 
-    /**
+    public boolean turnComplete(double heading) {
+        leftMotor.set(0.2);
+        rightMotor.set( 0.2);
+		if (currentYaw > Math.toDegrees(heading)) {
+			return true;
+		} else {
+			return false;
+		}
+    }
+
+    public boolean turnToReferenceAngle() {
+        getSingleRotationYaw();
+        double referenceAngle;
+        vmotion.sendAngle(singleRotationYaw);
+        vmotion.selectTarget(1.0);
+        referenceAngle = vmotion.getReferenceAngle();
+        if ((singleRotationYaw < (referenceAngle + 0.04)) && (singleRotationYaw > (referenceAngle - 0.04))){
+            return true;
+        }
+        else if (currentYaw > (referenceAngle + 0.04)) {
+            leftMotor.set(0.2);
+            rightMotor.set(-0.2);
+			return false;
+		}  else {
+            leftMotor.set(-0.2);
+            rightMotor.set(0.2);
+			return false;
+        }
+    }
+	public boolean lineUp(double pipeline){
+        vmotion.setPipeline(pipeline);
+        hDriveMotor.set(vmotion.shuffleVisionPID());
+        leftMotor.set(vmotion.outputL());
+        rightMotor.set(-vmotion.outputR());
+        if(vmotion.targetReached(20.0, 1) == true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void updateUsb(int pipeline){
+        vmotion.usbUpdatePipeline(pipeline);
+    }
+
+    public void initUsbCam(){
+        vmotion.usbCamInit();
+    }
+
+    public boolean gyroLineUp(double maxOutput, double targetDistanceStop){
+            switch (state){
+                case 0:
+                    vmotion.setPipeline(1);
+                    this.getSingleRotationYaw();
+                    vmotion.sendAngle(singleRotationYaw);
+                    vmotion.getTargetAngle();
+                    vmotion.setGyroLineUpVars(1.0);
+                    state++;
+                    break;
+                case 1:
+                    this.getSingleRotationYaw();
+                    vmotion.gyroTargetLineUp(singleRotationYaw, maxOutput);
+                    double hOutput = vmotion.outputGyroH(singleRotationYaw, maxOutput);
+                    hDriveMotor.set(hOutput);
+                    leftMotor.set(vmotion.outputGyroL(singleRotationYaw, maxOutput) + (0.15 * hOutput));
+                    rightMotor.set(-vmotion.outputGyroR(singleRotationYaw, maxOutput));
+                    break;
+            }
+            if(vmotion.targetReached(targetDistanceStop, 1) == true){
+                return true;
+            }else{
+                return false;
+            }
+    }
+    
+
+	/**
      * Manual control, includes deadband
      * 
      * @param turn

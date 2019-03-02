@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory.Segment;
 import jaci.pathfinder.followers.DistanceFollower;
@@ -47,6 +48,10 @@ public class HotPathFollower
 
     // Whether we are running in reverse
     private boolean isInverted = false;
+
+    private Segment segLeftPrev;
+
+    private Segment segRightPrev;
 
     /**
      * State of the follower. Disabled - not yet run, or has been reset Enabled -
@@ -269,6 +274,7 @@ public class HotPathFollower
         // We are done
         else
             pathState = State.Complete;
+            SmartDashboard.putNumber("complete", 1);
 
         // We are there, no output
         if (pathState == State.Complete)
