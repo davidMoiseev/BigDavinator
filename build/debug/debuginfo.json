@@ -3,6 +3,7 @@
     "artifact": "frcJava (in project bigdavinator-1)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",
+<<<<<<< HEAD
     "project": "bigdavinator-1",
     "language": "java"
   },
@@ -10,6 +11,8 @@
     "artifact": "frcJava (in project bigdavinator)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",
+=======
+>>>>>>> origin/Sweet-Turn
     "project": "bigdavinator",
     "language": "java"
   }

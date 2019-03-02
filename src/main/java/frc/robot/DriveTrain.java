@@ -222,13 +222,6 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
 
-        SmartDashboard.putNumber("rightEncoder", rightEncoderValue);
-        SmartDashboard.putNumber("leftEncoder", leftEncoderValue);
-        SmartDashboard.putNumber("currentYaw", xyz_dps[0]);
-        SmartDashboard.putNumber("currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("singlerotationYaw", singleRotationYaw);
- 		vmotion.writeDashBoardVis();
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
          * SmartDashboard.putNumber("motorEncoderConfiguration",
