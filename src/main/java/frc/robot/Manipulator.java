@@ -94,8 +94,8 @@ public class Manipulator
         this.armPigeon = new ArmPigeon(WiringIDs.PIGEON_ARM);
         this.intake = new Intake(driver);
         this.pneumaticIntake = new IntakePneumatics(driver);
-        this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT, false, -20, false);
-        this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK, false, -20, true);
+        this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT, false, false);
+        this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK, false, true);
 
         this.operator = operator;
         this.driver = driver;
@@ -155,7 +155,7 @@ public class Manipulator
         elevator.displaySensorsValue();
         arm.displaySensorsValue();
         wrist.displaySensorsValue();
-        frontFlipper.displaySensorsValue();
+        // frontFlipper.displaySensorsValue();
         backFlipper.displaySensorsValue();
     }
 
@@ -210,10 +210,6 @@ public class Manipulator
             double tmpArm = arm.getPosition();
 
             elevator.setTarget(ManipulatorSetPoint.firstPosition);
-            /*
-             * frontFlipper.setTarget(ManipulatorSetPoint.firstPosition);
-             * backFlipper.setTarget(ManipulatorSetPoint.firstPosition);
-             */
             if (elevator.reachedTarget())
             {
                 arm.setTarget(tmpArm);
@@ -571,9 +567,13 @@ public class Manipulator
             elevator.disable();
             arm.disable();
             wrist.disable();
-
+            frontFlipper.disable();
+            backFlipper.disable();
             SmartDashboard.putBoolean("Disabled thing", true);
         }
+
+        SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
+        SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());
 
         SmartDashboard.putBoolean("COLLIDE FRAME",
                 willCollideWithFrame(elevator.getPosition(), arm.getPosition(), wrist.getPosition()));
