@@ -324,12 +324,12 @@ public class Manipulator
                         farWristAngle = ManipulatorSetPoint.limit_front_elevator.wristAngle();
 
                     // Wrist too high, wait for arm
-                    if (-110 > wristAngleRelative)
+                    if (110 < wristAngleRelative + WRIST_TOLERANCE)
                     {
                         setTargetSafeElevator(safeHeight, targetPosition.armAngle(), prevWristAngle);
                     }
-                    // Arm too low, wait for wrist
-                    else if (110 < wristAngleRelative)
+                    // Arm too high, wait for wrist. Likely will be jerky
+                    else if (-110 > wristAngleRelative - WRIST_TOLERANCE)
                     {
                         setTargetSafeElevator(safeHeight, prevArmAngle, farWristAngle);
                     }
@@ -376,12 +376,12 @@ public class Manipulator
                         farWristAngle = ManipulatorSetPoint.limit_back_elevator.wristAngle();
 
                     // Wrist too high, wait for arm
-                    if (110 < wristAngleRelative)
+                    if (110 < wristAngleRelative + WRIST_TOLERANCE)
                     {
                         setTargetSafeElevator(safeHeight, targetPosition.armAngle(), prevWristAngle);
                     }
                     // Arm too high, wait for wrist. Likely will be jerky
-                    else if (-110 > wristAngleRelative)
+                    else if (-110 > wristAngleRelative - WRIST_TOLERANCE)
                     {
                         setTargetSafeElevator(safeHeight, prevArmAngle, farWristAngle);
                     }
