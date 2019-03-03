@@ -61,8 +61,7 @@ public class Arm extends MotionMagicActuator {
         super.setTarget(-target / ArmConstants.TICKS_TO_DEGREES);
     }
 
-    public void setTarget(ManipulatorSetPoint targetPoint)
-    {
+    public void setTarget(ManipulatorSetPoint targetPoint) {
         setTarget(targetPoint.armAngle());
     }
 
@@ -79,11 +78,13 @@ public class Arm extends MotionMagicActuator {
         return -getSensorValue() * ArmConstants.TICKS_TO_DEGREES;
     }
 
-	public void isInCarry (boolean inCarry, ManipulatorSetPoint targetPoint) {
+    public void isInCarry(boolean inCarry, ManipulatorSetPoint targetPoint) {
         if (inCarry == true) {
             setTarget(targetPoint.armAngle() + drivetrain.getPitch());
+            SmartDashboard.putBoolean("Getting Pitch...", inCarry);
         } else {
-          setTarget(targetPoint.armAngle());
+            setTarget(targetPoint.armAngle());
+            SmartDashboard.putBoolean("No Pitch Necessary...", inCarry);
         }
-	}
+    }
 }
