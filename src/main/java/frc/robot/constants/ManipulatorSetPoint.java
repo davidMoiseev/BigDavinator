@@ -42,7 +42,7 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     limit_back_extra_low(4, -130, -90, 0, 0), 
     limit_back_high(7, -50, -32, 0, 0),
     mikes_set_front(0, 90, 0, 0, 0),
-    mikes_set_back(0, -90, 0, 0, 0), limit_front_elevator(7, 10, 15, 0, 0), limit_back_elevator(7, -10, -15, 0, 0),;
+    mikes_set_back(0, -90, 0, 0, 0),;
 
     // Flip on M1 || M2
 
