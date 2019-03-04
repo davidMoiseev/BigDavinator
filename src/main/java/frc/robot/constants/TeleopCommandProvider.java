@@ -2,8 +2,6 @@ package frc.robot.constants;
 
 import org.hotteam67.HotController;
 
-import edu.wpi.first.wpilibj.Joystick;
-
 public class TeleopCommandProvider implements IRobotCommandProvider
 {
     private final HotController driver;
