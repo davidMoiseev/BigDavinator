@@ -1,9 +1,0 @@
-[
-  {
-    "artifact": "frcJava (in project BigDavinator)",
-    "target": "roborio",
-    "debugfile": "frcJava_roborio.debugconfig",
-    "project": "BigDavinator",
-    "language": "java"
-  }
-]
