@@ -25,66 +25,52 @@ import frc.robot.constants.ManipulatorSetPoint;
  * Add your docs here.
  */
 
-public class Flipper
-{
+public class Flipper {
     double ANGLE_TO_TICKS = 2100.0 / 90.0;
     double target = 0;
     TalonSRX flipper;
     boolean inverted = false;
     boolean isBack = false;
-    double allowableError = 1;
-    double FLIPPER_P = .025;
+    double allowableError = 2;
+    double FLIPPER_P = .02;
 
-    public static final double CARRY_BACK = 65;
-    public static final double HATCH_BACK = 115 + CARRY_BACK;
-
-    public static final double CARRY_FRONT = 30;
-    public static final double HATCH_FRONT = CARRY_FRONT + 110;
-
-    public Flipper(int ID, boolean inverted, boolean isBack)
-    {
+    public Flipper(int ID, boolean inverted, boolean isBack) {
         flipper = new TalonSRX(ID);
         this.inverted = inverted;
         this.isBack = isBack;
     }
 
-    public void initialize()
-    {
+    public void initialize() {
         setPosition(0);
     }
 
-    public void control(double targetDegrees)
-    {
+    public void control(double targetDegrees) {
         this.target = targetDegrees;
-        if (!reachedTarget())
-        {
+        if (!reachedTarget()) {
             flipper.set(ControlMode.PercentOutput, FLIPPER_P * getError());
         }
+        else
+            flipper.set(ControlMode.PercentOutput, 0);
     }
 
-    public void disable()
-    {
+    public void disable() {
         flipper.set(ControlMode.PercentOutput, 0);
     }
 
-
     /**
      * Set angle in degrees
+     * 
      * @param angle
      */
-    public void setPosition(double angle)
-    {
-        flipper.setSelectedSensorPosition((int)(angle * ANGLE_TO_TICKS));
+    public void setPosition(double angle) {
+        flipper.setSelectedSensorPosition((int) (angle * ANGLE_TO_TICKS));
     }
 
-    public double getError()
-    {
+    public double getError() {
         return target - getPosition();
     }
-    
 
-    public void displaySensorsValue()
-    {
+    public void displaySensorsValue() {
         SmartDashboard.putNumber("FrontFlipper Position", getPosition());
         HotLogger.Log("FrontFlipper Position", getPosition());
         SmartDashboard.putNumber("FrontFlipper Power", flipper.getMotorOutputPercent());
@@ -95,15 +81,14 @@ public class Flipper
         SmartDashboard.putNumber("A flipper output", flipper.getMotorOutputPercent());
     }
 
-    public boolean reachedTarget()
-    {
+    public boolean reachedTarget() {
         return Math.abs(getError()) < allowableError;
     }
 
-    public double getPosition()
-    {
+    public double getPosition() {
         return flipper.getSelectedSensorPosition() / ANGLE_TO_TICKS;
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("FrontFlipper Position Ticks", "FrontFlipper Power", "FrontFlipper Reached"));
+    public static final List<String> LoggerTags = new ArrayList<>(
+            Arrays.asList("FrontFlipper Position Ticks", "FrontFlipper Power", "FrontFlipper Reached"));
 }
