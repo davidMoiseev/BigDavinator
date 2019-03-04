@@ -121,11 +121,10 @@ public class DriveTrain implements IPigeonWrapper
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
 
-        /*
+        
         leftClimber = new VictorSPX(WiringIDs.CLIMBER_1);
         rightClimber = new VictorSPX(WiringIDs.CLIMBER_2);
         rightClimber.setInverted(true);
-        */
 
         this.rightEncoder = rightEncoder;
         this.leftEncoder = leftEncoder;
