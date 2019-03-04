@@ -159,16 +159,10 @@ public class Manipulator {
         // Moving down, so wait for the arm first
         if (elevHeight < elevator.getPosition() - ELEVATOR_TOLERANCE && Math.abs(arm.getPosition()) > 90 && Math.abs(armAngle - arm.getPosition()) > 10) {
             setTargets(prevElevHeight, armAngle, wristAngle, frontFlipper, backFlipper);
-            /*if (arm.reachedTarget())
-            {
-                setTargets(elevHeight, armAngle, wristAngle, frontFlipper, backFlipper);
-            }*/
-            System.out.println("SAFE ELEVATOR");
         }
         // Might be moving the arm to a bad spot, so move the elevator first
         else {
             setTargets(elevHeight, armAngle, wristAngle, frontFlipper, backFlipper);
-            System.out.println("UNSAFE ELEVATOR");
         }
     }
 
