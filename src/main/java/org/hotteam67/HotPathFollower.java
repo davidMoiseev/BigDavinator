@@ -45,7 +45,7 @@ public class HotPathFollower
     private double POS_P = 0, POS_I = 0, POS_D = 0, POS_V = 0, POS_A = 0;
     // PID constants for the angle error. Stored for holding last point only
     private double ANGLE_P = 0;
-
+    
     // Whether we are running in reverse
     private boolean isInverted = false;
 
@@ -145,9 +145,7 @@ public class HotPathFollower
     }
 
     /**
-     * Whether to invert the encoder values, gyro, and output to run the robot
-     * backwards
-     * 
+     * Whether to invert the encoder values, gyro, and output to run the robot backwards
      * @param inverted
      */
     public void SetInverted(boolean inverted)
@@ -233,48 +231,51 @@ public class HotPathFollower
         if (leftFollower == null || rightFollower == null)
             return new Output(0, 0);
         double l = 0, r = 0;
+        Segment segLeft = null;
+        Segment segRight = null;
 
         // Path is not currently being followed, so start it
         if (pathState == State.Disabled)
             pathState = State.Enabled;
 
         // Path is enabled and the points are not yet complete
-        if (pathState == State.Enabled && !(leftFollower.isFinished() && rightFollower.isFinished()))
+        if (pathState == State.Enabled && (!leftFollower.isFinished() || !rightFollower.isFinished()))
         {
-            double targetHeadingRadians = -1;
-            if (!leftFollower.isFinished())
-            {
-                l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
-                Segment segLeft = leftFollower.getSegment();
-                Log("Left", segLeft, l);
-                targetHeadingRadians = segLeft.heading;
-            }
-            if (!rightFollower.isFinished())
-            {
-                r = rightFollower.calculate(currentPositionRight) * GetPolarity();
-                Segment segRight = rightFollower.getSegment();
-                Log("Right", segRight, r);
-                targetHeadingRadians = segRight.heading;
-
+            l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
+            r = rightFollower.calculate(currentPositionRight) * GetPolarity();
+               
+            if(leftFollower.isFinished()){
+                segLeft = segLeftPrev;
+            }else {
+                segLeft = leftFollower.getSegment();
             }
 
-            // Add angle error feedback
-            if (targetHeadingRadians != -1)
-            {
-                double targetHeading = -Pathfinder.boundHalfDegrees(Pathfinder.r2d(targetHeadingRadians));
-                double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
-                double turn = ANGLE_P * headingError;
-                HotLogger.Log("Heading Error", headingError);
-                HotLogger.Log("Turn Output", turn);
-                l -= turn * GetPolarity();
-                r += turn * GetPolarity();
+            if(rightFollower.isFinished()){
+                segRight = segRightPrev;
+            }else {
+                segRight = rightFollower.getSegment();
             }
+
+            Log("Left", segLeft, l);
+            Log("Right", segRight, r);
+
+            // Add angle error, in degrees
+            double targetHeading = -Pathfinder.boundHalfDegrees(Pathfinder.r2d(segLeft.heading));
+            double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
+            double turn = ANGLE_P * headingError;
+            HotLogger.Log("Heading Error", headingError);
+            HotLogger.Log("Turn Output", turn);
+            l -= turn * GetPolarity();
+            r += turn * GetPolarity();
+
+            segLeftPrev = segLeft;
+            segRightPrev = segRight;
         }
 
         // We are done
         else
             pathState = State.Complete;
-        SmartDashboard.putNumber("complete", 1);
+            SmartDashboard.putNumber("complete", 1);
 
         // We are there, no output
         if (pathState == State.Complete)

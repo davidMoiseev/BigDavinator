@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.AutonCommandProvider;
 import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
@@ -47,6 +48,7 @@ public class Robot extends TimedRobot
     Solenoid climber;
 
     TeleopCommandProvider teleopCommandProvider;
+    AutonCommandProvider autonCommandProvider;
     /*
      * TalonSRX eleLeft; TalonSRX eleRight;
      */
@@ -71,6 +73,7 @@ public class Robot extends TimedRobot
         HotController operator = new HotController(1);
 
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
+        autonCommandProvider = new AutonCommandProvider();
 
         driveTrain = new DriveTrain(rightElevator, intake);
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
@@ -114,11 +117,13 @@ public class Robot extends TimedRobot
     {
         // May have to invert driveturn/drivespeed
         SmartDashboard.putNumber("state", state);
+        manipulator.Update(autonCommandProvider);
         driveTrain.readSensors();
         driveTrain.writeLogs();
         switch (state)
         {
         case 0:
+        
             if (!profileFinished)
                 profileFinished = driveTrain.FollowPath();
             else if ((profileFinished == true) && (driveTrain.canseeTarget() == true))

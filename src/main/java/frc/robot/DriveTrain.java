@@ -94,7 +94,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class POS_PIDVA
     {
-        public static final double P = .75;
+        public static final double P = 0;//.75;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
@@ -155,7 +155,7 @@ public class DriveTrain implements IPigeonWrapper
 
     public void loadPath(String leftPathFile, String rightPathFile)
     {
-        pathFollower.LoadPath(leftPathFile, rightPathFile);
+            pathFollower.LoadPath(leftPathFile, rightPathFile);
     }
 
     /**
@@ -167,10 +167,10 @@ public class DriveTrain implements IPigeonWrapper
     public boolean FollowPath()
     {
         double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, heading);
+        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(leftEncoderValue, rightEncoderValue, -heading);
 
-        rightMotor.set(pathOutput.Left);
-        leftMotor.set(pathOutput.Right);
+        rightMotor.set(pathOutput.Right);
+        leftMotor.set(pathOutput.Left);
 
         return (pathFollower.GetState() == State.Complete);
     }
