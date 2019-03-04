@@ -73,8 +73,9 @@ public class Wrist extends MotionMagicActuator
         Log("Wrist Current", primaryTalon.getOutputCurrent());
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Wirst Position ticks",
-            "A Wirst Position degree", "Wirst Power", "Wirst Error", "Wirst target", "Wrist Bus Voltage", "Wrist Output Voltage", "Wrist Current"));
+    public static final List<String> LoggerTags = new ArrayList<>(
+            Arrays.asList("Wirst Position ticks", "A Wirst Position degree", "Wirst Power", "Wirst Error",
+                    "Wirst target", "Wrist Bus Voltage", "Wrist Output Voltage", "Wrist Current"));
 
     public void setPosition(double angle)
     {

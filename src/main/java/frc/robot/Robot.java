@@ -104,52 +104,55 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-     driveTrain.zeroSensors();
+        driveTrain.zeroSensors();
         driveTrain.zeroMotors();
         profileFinished = false;
-        }
-
-   
+    }
 
     @Override
     public void autonomousPeriodic()
     {
         // May have to invert driveturn/drivespeed
-		SmartDashboard.putNumber("state", state);
+        SmartDashboard.putNumber("state", state);
         driveTrain.readSensors();
         driveTrain.writeLogs();
-		switch(state){
-          case 0:
+        switch (state)
+        {
+        case 0:
             if (!profileFinished)
-             profileFinished = driveTrain.FollowPath();
-             else if((profileFinished == true) && (driveTrain.canseeTarget() == true)) {
+                profileFinished = driveTrain.FollowPath();
+            else if ((profileFinished == true) && (driveTrain.canseeTarget() == true))
+            {
                 state++;
-             }
-             else {
+            }
+            else
+            {
                 state = state + 3;
                 // state++;
-             }
-         break;
-
-          case 1:
-          if(driveTrain.turnToReferenceAngle() == true){
-            state++;
-           // state = state + 2;
-          }
-          break;
-          case 2:
-            if(driveTrain.gyroLineUp(0.3, 50.0) == true){
-              state++;
             }
-          break;
-        
-          case 3:
-          driveTrain.zeroMotors();
-          break;
+            break;
+
+        case 1:
+            if (driveTrain.turnToReferenceAngle() == true)
+            {
+                state++;
+                // state = state + 2;
+            }
+            break;
+        case 2:
+            if (driveTrain.gyroLineUp(0.3, 50.0) == true)
+            {
+                state++;
+            }
+            break;
+
+        case 3:
+            driveTrain.zeroMotors();
+            break;
         }
-       
-    SmartDashboard.putNumber("state", state);
-		
+
+        SmartDashboard.putNumber("state", state);
+
     }
 
     @Override
@@ -161,13 +164,14 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
-    //driveTrain.zeroSensors();
+        // driveTrain.zeroSensors();
     }
 
     boolean rumble = false;
 
     @Override
-    public void teleopPeriodic(){
+    public void teleopPeriodic()
+    {
         // rumble(driver);
         // rumble(operator);
 
@@ -269,7 +273,7 @@ public class Robot extends TimedRobot
 
         driver.setRumble(RumbleType.kLeftRumble, 0);
         driver.setRumble(RumbleType.kRightRumble, 0);
-    	driveTrain.zeroSensors();
+        driveTrain.zeroSensors();
         pigeonInitializing = false;
     }
 

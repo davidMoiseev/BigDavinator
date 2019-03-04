@@ -16,7 +16,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class VisionMotion {
+public class VisionMotion
+{
     Vision vision = new Vision();
 
     public double h;
@@ -28,7 +29,7 @@ public class VisionMotion {
     public static final double iGainH = 0.000008;
     public static final double dGainH = 0.0;
     public static final double pGainTurn = 0.04;
-    public static final double iGainTurn = 0.0;//0.0000000008;
+    public static final double iGainTurn = 0.0;// 0.0000000008;
     public static final double dGainTurn = 0.0;
     public double integral = 0;
     public double speed = 0;
@@ -51,7 +52,7 @@ public class VisionMotion {
     public double prevHeadingVis = 0.0;
     public int gyroState = 0;
     public double targetAngle;
-    public double targetVisDistance = 17.0; //inches, 30.125 + distance btwn robot perimeter and camera, aka constant C
+    public double targetVisDistance = 17.0; // inches, 30.125 + distance btwn robot perimeter and camera, aka constant C
     public double distanceDiagonal;
     public double distanceHorizontal;
     public double angle2;
@@ -67,54 +68,69 @@ public class VisionMotion {
     public double referenceAngle;
     private int target;
 
-
-    public double findProportional(double targetHeading) {
+    public double findProportional(double targetHeading)
+    {
         double error = vision.getHeading() - targetHeading;
         return error;
     }
 
-    public double findIntegral(double targetHeading) {
+    public double findIntegral(double targetHeading)
+    {
         integral = integral + this.findProportional(targetHeading);
         return integral;
     }
 
-    public void usbUpdatePipeline (int pipeline){
+    public void usbUpdatePipeline(int pipeline)
+    {
         vision.usbCamUpdate(pipeline);
     }
 
-    public void usbCamInit(){
+    public void usbCamInit()
+    {
         vision.usbCamInit();
     }
 
-    public double turnVision() {
-        p = findProportional(0); 
-        i = findIntegral(0); 
-        if (vision.canSeeTarget() == 0 || vision.getHeading() < 5.0 && vision.getHeading() > -5.0) {
+    public double turnVision()
+    {
+        p = findProportional(0);
+        i = findIntegral(0);
+        if (vision.canSeeTarget() == 0 || vision.getHeading() < 5.0 && vision.getHeading() > -5.0)
+        {
             motorOutput = 0.0;
             return motorOutput;
         }
-         else if (Math.abs(vision.getHeading()) > 5.0) {
-             motorOutput = (p * pGainTurn) + (i * iGainTurn);
-            if (motorOutput > 0.4){
+        else if (Math.abs(vision.getHeading()) > 5.0)
+        {
+            motorOutput = (p * pGainTurn) + (i * iGainTurn);
+            if (motorOutput > 0.4)
+            {
                 motorOutput = 0.4;
-            }else if(motorOutput < -0.4){
+            }
+            else if (motorOutput < -0.4)
+            {
                 motorOutput = -0.4;
             }
             return motorOutput;
-        }else{
+        }
+        else
+        {
             motorOutput = 0.0;
             return motorOutput;
         }
 
     }
-    
-    public boolean definitelySeesTarget(){
+
+    public boolean definitelySeesTarget()
+    {
         double maxHeadingChange = 1000;
-        if ( (earlierCanSeeTarget == vision.getTV()) && (Math.abs(prevHeadingVis - vision.getTV()) < maxHeadingChange)){
+        if ((earlierCanSeeTarget == vision.getTV()) && (Math.abs(prevHeadingVis - vision.getTV()) < maxHeadingChange))
+        {
             earlierCanSeeTarget = vision.getTV();
             prevHeadingVis = vision.getHeading();
             return true;
-        }else{
+        }
+        else
+        {
             earlierCanSeeTarget = vision.getTV();
             prevHeadingVis = vision.getHeading();
             return false;
@@ -122,160 +138,208 @@ public class VisionMotion {
 
     }
 
-    public double shuffleVisionPID() {
+    public double shuffleVisionPID()
+    {
         pAngle = findProportional(0); // 27;
         iAngle = findIntegral(0); // 27;
         double Hspeed = (pAngle * pGainH) + (iAngle * iGainH);
         if (Hspeed > 0.5)
             Hspeed = 0.5;
-        else if (Hspeed < -0.5) {
+        else if (Hspeed < -0.5)
+        {
             Hspeed = -0.5;
         }
-        //driveTrain.basicSideOutput(Hspeed);
-        if(this.definitelySeesTarget() == true){
+        // driveTrain.basicSideOutput(Hspeed);
+        if (this.definitelySeesTarget() == true)
+        {
             return Hspeed;
-        }else{
+        }
+        else
+        {
             return 0;
         }
     }
 
-    public void setPipeline(double pipeline){
+    public void setPipeline(double pipeline)
+    {
         vision.setPipeline(pipeline);
     }
 
-    public void sendAngle(double yaw){
-            currentYaw = yaw;
-       
+    public void sendAngle(double yaw)
+    {
+        currentYaw = yaw;
+
     }
 
-    public boolean getHigh(){ //true = high, false = low
-        if (vision.getTY() > 6) {
+    public boolean getHigh()
+    { // true = high, false = low
+        if (vision.getTY() > 6)
+        {
             return true;
         }
-        else if (vision.getTY() < 3) {
+        else if (vision.getTY() < 3)
+        {
             return false;
         }
-        else if (vision.getTY() > 3 && vision.getTY() < 6) {
-            if(vision.getTA() < 5) {
+        else if (vision.getTY() > 3 && vision.getTY() < 6)
+        {
+            if (vision.getTA() < 5)
+            {
                 return true;
             }
-            else {
+            else
+            {
                 return false;
             }
-        }else{
+        }
+        else
+        {
             return false;
         }
     }
-    
 
-    public int selectTarget(double pipeline){
-        if(pipeline == 0){
-                target = 67;
-        }else{
-            if((currentYaw < (Math.PI / 8)) && (currentYaw > (Math.PI / -8))){ //if angle is zero
+    public int selectTarget(double pipeline)
+    {
+        if (pipeline == 0)
+        {
+            target = 67;
+        }
+        else
+        {
+            if ((currentYaw < (Math.PI / 8)) && (currentYaw > (Math.PI / -8)))
+            { // if angle is zero
                 referenceAngle = 0;
-                target = 0; //front cargo ship
-                
+                target = 0; // front cargo ship
+
             }
-            else if((currentYaw > (3 * Math.PI / 8)) && (currentYaw < (5 * Math.PI / -8))){ //if angle is pi/2
+            else if ((currentYaw > (3 * Math.PI / 8)) && (currentYaw < (5 * Math.PI / -8)))
+            { // if angle is pi/2
                 referenceAngle = Math.PI / 2;
-                if(getHigh() == true){ //if it is high
-                    target = 1; //right rocket center
-                }else if(getHigh() == false){ //if it is low
-                    target = 2; //left side cargo
-                }   
+                if (getHigh() == true)
+                { // if it is high
+                    target = 1; // right rocket center
+                }
+                else if (getHigh() == false)
+                { // if it is low
+                    target = 2; // left side cargo
+                }
             }
-            else if((currentYaw < (-3 * Math.PI / 8)) && (currentYaw > (-5 * Math.PI / -8))){ //if angle is -pi/2
+            else if ((currentYaw < (-3 * Math.PI / 8)) && (currentYaw > (-5 * Math.PI / -8)))
+            { // if angle is -pi/2
                 referenceAngle = Math.PI / -2;
-                if(getHigh() == true){ //if it is high
-                    target = 3; //left rocket center
-                }else if( getHigh() == false){ //if it is low
-                    target = 4; //right side cargo
-                } 
+                if (getHigh() == true)
+                { // if it is high
+                    target = 3; // left rocket center
+                }
+                else if (getHigh() == false)
+                { // if it is low
+                    target = 4; // right side cargo
+                }
             }
-            else if((currentYaw > (Math.PI / 8)) && (currentYaw < (3 * Math.PI / 8))){ //if angle is pi/4
+            else if ((currentYaw > (Math.PI / 8)) && (currentYaw < (3 * Math.PI / 8)))
+            { // if angle is pi/4
                 referenceAngle = Math.PI / 4;
-                target = 5; //right rocket near
-                
+                target = 5; // right rocket near
+
             }
-            else if((currentYaw < (-Math.PI / 8)) && (currentYaw > (-3 * Math.PI / 8))){ //if angle is -pi/4
+            else if ((currentYaw < (-Math.PI / 8)) && (currentYaw > (-3 * Math.PI / 8)))
+            { // if angle is -pi/4
                 referenceAngle = Math.PI / -4;
-                target = 6; //left rocket near
-                
+                target = 6; // left rocket near
+
             }
-            else if((currentYaw > (5 * Math.PI / 8)) && (currentYaw < (7 * Math.PI / 8))){ //if angle is 3pi/4
+            else if ((currentYaw > (5 * Math.PI / 8)) && (currentYaw < (7 * Math.PI / 8)))
+            { // if angle is 3pi/4
                 referenceAngle = 3 * Math.PI / 4;
-                target = 7; //right rocket far 
+                target = 7; // right rocket far
             }
 
-            else if((currentYaw < (-5 * Math.PI / 8)) && (currentYaw > (-7 * Math.PI / 8))){ //if angle is -3pi/4
+            else if ((currentYaw < (-5 * Math.PI / 8)) && (currentYaw > (-7 * Math.PI / 8)))
+            { // if angle is -3pi/4
                 referenceAngle = -3 * Math.PI / 4;
-                target = 8; //left rocket far 
+                target = 8; // left rocket far
             }
-            
-            else if((currentYaw > (Math.PI / -8)) && (currentYaw < (Math.PI / 8))){ //if angle is zero
+
+            else if ((currentYaw > (Math.PI / -8)) && (currentYaw < (Math.PI / 8)))
+            { // if angle is zero
                 referenceAngle = (Math.PI);
-                target = 0; //front cargo ship
+                target = 0; // front cargo ship
             }
         }
         SmartDashboard.putNumber("referenceAngle", referenceAngle);
         return target;
     }
 
-
-    public double driveToVisionDistance(double pipeline) {
-        if(vision.findDistance(this.selectTarget(pipeline)) < 20.0) {
+    public double driveToVisionDistance(double pipeline)
+    {
+        if (vision.findDistance(this.selectTarget(pipeline)) < 20.0)
+        {
             motorOutput = 0.0;
             return motorOutput;
-        }else{
+        }
+        else
+        {
             motorOutput = 0.4;
             return motorOutput;
         }
     }
 
-    public double getReferenceAngle(){
+    public double getReferenceAngle()
+    {
         return referenceAngle;
     }
 
-    public void targetLineUp(){ //faster but sloppier than gyroTargetLineUp
+    public void targetLineUp()
+    { // faster but sloppier than gyroTargetLineUp
         this.shuffleVisionPID();
         // this.turnVision();
         // this.driveToVisionDistance();
         // double Lspeed = this.driveToVisionDistance() + (this.turnVision());
         // double Rspeed = this.driveToVisionDistance() - (this.turnVision());
-        if(Lspeed > 1.0){
+        if (Lspeed > 1.0)
+        {
             Lspeed = 1.0;
-        }else if(Lspeed < -1.0){
+        }
+        else if (Lspeed < -1.0)
+        {
             Lspeed = -1.0;
         }
-        if(Rspeed > 1.0){
-            Rspeed = 1.0;     
-        }else if(Rspeed < -1.0){
+        if (Rspeed > 1.0)
+        {
+            Rspeed = 1.0;
+        }
+        else if (Rspeed < -1.0)
+        {
             Rspeed = -1.0;
         }
-        if(this.definitelySeesTarget() == true){
+        if (this.definitelySeesTarget() == true)
+        {
             Loutput = Lspeed;
             Routput = Rspeed;
         }
     }
 
-    public double outputL(){ //for targetLineUp
+    public double outputL()
+    { // for targetLineUp
         this.targetLineUp();
         double outputL = Loutput;
         return outputL;
     }
 
-    public double outputR(){ //for targetLineUp
-         this.targetLineUp();
+    public double outputR()
+    { // for targetLineUp
+        this.targetLineUp();
         double outputR = Routput;
         return outputR;
     }
 
-    public void getTargetAngle(){
+    public void getTargetAngle()
+    {
         targetAngle = referenceAngle + Math.toRadians(vision.getHeading());
     }
 
-    public boolean setGyroLineUpVars(double pipeline){
+    public boolean setGyroLineUpVars(double pipeline)
+    {
         distance = vision.findDistance(target);
         distanceHorizontal = distance * Math.tan(targetAngle);
         angle2 = Math.atan((distance - targetVisDistance) / distanceHorizontal);
@@ -284,77 +348,96 @@ public class VisionMotion {
         return true;
     }
 
-    public boolean whichCamera(){
+    public boolean whichCamera()
+    {
         return true;
     }
 
-    public void gyroTargetLineUp(double yaw, double vt){ //vt is the motor output of the resultant
-               // vy = Math.tan(yaw * vision.getHeading()) * ;//Math.sin(yaw) * vt;
-                //vx = //Math.cos(yaw)* vt; 
-                // vxh = vx * Math.cos(yaw);
-                // vxlr = vx * Math.sin(yaw);
-                // vyh = vy * Math.sin(yaw); 
-                // vylr = vy * Math.cos(yaw);
-                //gyroLoutput = vy;//(vylr + vxlr);
-               // gyroRoutput = vy;//(vylr + vxlr);
-                //gyroHoutput = vx;//(vyh + vxh);
-            if(whichCamera() == true){ //front camera, no limelight
-                gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
-                gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
-                gyroHoutput = (distanceHorizontal * vt) / (distanceHorizontal + distance);
-            }else{ //back camera, limelight
-                gyroLoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
-                gyroRoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
-                gyroHoutput = -(distanceHorizontal * vt) / (distanceHorizontal + distance);
-            }
+    public void gyroTargetLineUp(double yaw, double vt)
+    { // vt is the motor output of the resultant
+        // vy = Math.tan(yaw * vision.getHeading()) * ;//Math.sin(yaw) * vt;
+        // vx = //Math.cos(yaw)* vt;
+        // vxh = vx * Math.cos(yaw);
+        // vxlr = vx * Math.sin(yaw);
+        // vyh = vy * Math.sin(yaw);
+        // vylr = vy * Math.cos(yaw);
+        // gyroLoutput = vy;//(vylr + vxlr);
+        // gyroRoutput = vy;//(vylr + vxlr);
+        // gyroHoutput = vx;//(vyh + vxh);
+        if (whichCamera() == true)
+        { // front camera, no limelight
+            gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
+            gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
+            gyroHoutput = (distanceHorizontal * vt) / (distanceHorizontal + distance);
+        }
+        else
+        { // back camera, limelight
+            gyroLoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
+            gyroRoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
+            gyroHoutput = -(distanceHorizontal * vt) / (distanceHorizontal + distance);
+        }
 
-               
-                SmartDashboard.putNumber("vt", vt);
-             }
+        SmartDashboard.putNumber("vt", vt);
+    }
 
-    public void ballTargetLineUp(){
+    public void ballTargetLineUp()
+    {
 
     }
 
-    public boolean targetReached(double distanceTarget, double pipeline) {
-        //distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal * distanceHorizontal));
-        if(vision.findDistance(this.selectTarget(pipeline)) <= distanceTarget){
+    public boolean targetReached(double distanceTarget, double pipeline)
+    {
+        // distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal *
+        // distanceHorizontal));
+        if (vision.findDistance(this.selectTarget(pipeline)) <= distanceTarget)
+        {
             return true;
-        }else{
+        }
+        else
+        {
             return false;
         }
     }
 
-    
-    public double outputGyroL(double yaw, double maxMotorOutput){
+    public double outputGyroL(double yaw, double maxMotorOutput)
+    {
         double outputL = gyroLoutput;
         return outputL;
     }
 
-    public double outputGyroR(double yaw, double maxMotorOutput){
+    public double outputGyroR(double yaw, double maxMotorOutput)
+    {
         double outputR = gyroRoutput;
         return outputR;
     }
 
-    public double outputGyroH(double yaw, double maxMotorOutput){
+    public double outputGyroH(double yaw, double maxMotorOutput)
+    {
         double outputH = gyroHoutput;
         return outputH;
     }
 
-    public boolean detectBallBounce(){
-        if(Math.abs(vision.getTY() - bouncePrevY) > 5.0){
+    public boolean detectBallBounce()
+    {
+        if (Math.abs(vision.getTY() - bouncePrevY) > 5.0)
+        {
             bouncePrevY = vision.getTY();
             return true;
-        }else{
+        }
+        else
+        {
             bouncePrevY = vision.getTY();
             return false;
         }
     }
 
-    public double canSeeTarget(){
+    public double canSeeTarget()
+    {
         return vision.canSeeTarget();
     }
-    public void writeDashBoardVis() {
+
+    public void writeDashBoardVis()
+    {
         SmartDashboard.putNumber("heading", vision.getHeading());
         SmartDashboard.putNumber("Can Detect Target", vision.canSeeTarget());
         SmartDashboard.putBoolean("Is h down", isHDown);

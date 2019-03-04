@@ -274,7 +274,7 @@ public class HotPathFollower
         // We are done
         else
             pathState = State.Complete;
-            SmartDashboard.putNumber("complete", 1);
+        SmartDashboard.putNumber("complete", 1);
 
         // We are there, no output
         if (pathState == State.Complete)
