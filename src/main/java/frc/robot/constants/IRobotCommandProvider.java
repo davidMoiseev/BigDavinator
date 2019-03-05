@@ -4,7 +4,7 @@ public interface IRobotCommandProvider
 {
     public void Update();
 
-    public ManipulatorSetPoint ManipulatorSetPoint();
+    public IManipulatorSetPoint ManipulatorSetPoint();
 
     public boolean ManipulatorScore();
 

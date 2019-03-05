@@ -42,9 +42,9 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     mikes_set_front(0, 90, 0, 0, 0),
     mikes_set_back(0, -90, 0, 0, 0),
     // Deploy the climber only at climber_prep, and then operator goes to climber_down
-    climb_prep(26.5, -90, 0, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT),
-    climber_down(.25, -90, 0, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT),
-    climber_on(17, -90, 0, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT);
+    climb_prep(26.5, -90, -90, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT),
+    climber_down(.25, -90, -90, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT),
+    climber_on(26.5, -90, -140, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT);
 
     // Flip on M1 || M2
 

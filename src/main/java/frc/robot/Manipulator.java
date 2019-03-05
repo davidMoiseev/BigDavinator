@@ -394,7 +394,7 @@ public class Manipulator
 
     private boolean flipperOnTarget(Flipper f, double target)
     {
-        return ((f.getPosition() - 5 < target) && (f.getPosition() + 5 > target));
+        return ((f.getPosition() - 10 < target) && (f.getPosition() + 10 > target));
     }
 
     private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
@@ -653,6 +653,11 @@ public class Manipulator
             if (score)
             {
                 setPoint = CreateScoreSetPoint(setPoint);
+            }
+            if (robotCommand.IntakeSolenoid())
+            {
+                double elevHeight = (setPoint.elevatorHeight() + 2 > 30 ? 30 : setPoint.elevatorHeight());
+                setPoint = new ManualManipulatorSetPoint(setPoint.armAngle(), setPoint.wristAngle(), elevHeight, setPoint.frontFlipper(), setPoint.backFlipper());
             }
             Control(setPoint);
             SmartDashboard.putBoolean("Disabled thing", false);

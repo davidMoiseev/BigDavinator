@@ -7,7 +7,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private final HotController driver;
     private final HotController operator;
 
-    private ManipulatorSetPoint outputSetPoint = null;
+    private IManipulatorSetPoint outputSetPoint = null;
     private double LeftDrive = 0;
     private double RightDrive = 0;
     private double HDrive = 0;
@@ -17,6 +17,12 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private boolean intakeIn = false;
     private boolean climb = false;
 
+    private double frontFlipperSetPointAdjust = 0;
+    private double backFlipperSetPointAdjust = 0;
+
+    private boolean lastFlipperUp = false;
+    private boolean lastFlipperDown = false;
+
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
         this.driver = driver;
@@ -24,7 +30,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     }
 
     @Override
-    public ManipulatorSetPoint ManipulatorSetPoint()
+    public IManipulatorSetPoint ManipulatorSetPoint()
     {
         return outputSetPoint;
     }
@@ -119,9 +125,9 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         if (operator.getButtonLeftBumper())
         {
             /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
-            */
+             * frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
+             * backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
+             */
         }
         if (operator.getButtonRightBumper())
         {
@@ -192,11 +198,54 @@ public class TeleopCommandProvider implements IRobotCommandProvider
 
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
-        
         RightDrive = -driver.getStickLY() - (driver.getStickRX() * .5);
         LeftDrive = -driver.getStickLY() + (driver.getStickRX() * .5);
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
+        if (operator.getDpad() > 0 && !lastFlipperUp)
+        {
+            if (outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
+            {
+                frontFlipperSetPointAdjust += 2;
+            }
+            else if (outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
+            {
+                backFlipperSetPointAdjust += 2;
+            }
+        }
+        else if (operator.getDpad() < 0 && !lastFlipperDown)
+        {
+            if (outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
+            {
+                frontFlipperSetPointAdjust -= 2;
+            }
+            else if (outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
+            {
+                backFlipperSetPointAdjust -= 2;
+            }
+        }
+
+        fixFlipper();
+
+        lastFlipperDown = (operator.getDpad() < 0);
+        lastFlipperUp = (operator.getDpad() > 0);
+
+    }
+
+    private void fixFlipper()
+    {
+        if (outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
+        {
+            outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
+                outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper() - frontFlipperSetPointAdjust,
+                outputSetPoint.backFlipper());
+        }
+        else if (outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
+        {
+            outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
+                outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper(),
+                outputSetPoint.backFlipper() - backFlipperSetPointAdjust);
+        }
     }
 
     @Override
