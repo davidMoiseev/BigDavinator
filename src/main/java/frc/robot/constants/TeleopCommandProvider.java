@@ -15,6 +15,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private boolean score = false;
     private boolean intakeOut = false;
     private boolean intakeIn = false;
+    private boolean climb = false;
 
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
@@ -60,6 +61,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
 
     boolean commandToBack = true;
     boolean flipButtonPrevious = false;
+    private boolean allowClimbMotors = false;
 
     @Override
     public void Update()
@@ -126,21 +128,21 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
             backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
         }
-        if (isLeftTriggerPressed == true)
+        if (isLeftTriggerPressed && !isRightTriggerPressed)
         {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-            */
+            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climb_prep;
+        }
+        else if (isRightTriggerPressed && isLeftTriggerPressed)
+        {
+            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climber_down;
+        }
+        else if (isRightTriggerPressed && !isLeftTriggerPressed)
+        {
+            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climber_on;
         }
 
-        if (isRightTriggerPressed == true)
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
-            */
-        }
+        climb = driver.getButtonB();
+
         if (operator.getButtonLeftStick())
         {
             /*
@@ -207,5 +209,11 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public boolean IntakeIn()
     {
         return intakeIn;
+    }
+
+    @Override
+    public boolean ClimberDeploy()
+    {
+        return climb;
     }
 }

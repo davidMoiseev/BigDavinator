@@ -318,7 +318,8 @@ public class Manipulator
                         else if (wrist.getPosition() - WRIST_TOLERANCE > ManipulatorSetPoint.limit_front_high
                                 .wristAngle()
                                 || wrist.getPosition() + WRIST_TOLERANCE < ManipulatorSetPoint.limit_back_high
-                                        .wristAngle() && !(elevator.getPosition() + ELEVATOR_TOLERANCE > ELEVATOR_CLEAR_HEIGHT))
+                                        .wristAngle()
+                                        && !(elevator.getPosition() + ELEVATOR_TOLERANCE > ELEVATOR_CLEAR_HEIGHT))
                         {
                             setTargets(safeHeight, prevArmAngle, farWristAngle, targetPosition.frontFlipper(),
                                     targetPosition.backFlipper());
@@ -358,7 +359,8 @@ public class Manipulator
                         else if (wrist.getPosition() - WRIST_TOLERANCE > ManipulatorSetPoint.limit_front_high
                                 .wristAngle()
                                 || wrist.getPosition() + WRIST_TOLERANCE < ManipulatorSetPoint.limit_back_high
-                                        .wristAngle() && !(elevator.getPosition() + ELEVATOR_TOLERANCE > ELEVATOR_CLEAR_HEIGHT))
+                                        .wristAngle()
+                                        && !(elevator.getPosition() + ELEVATOR_TOLERANCE > ELEVATOR_CLEAR_HEIGHT))
                         {
                             setTargets(safeHeight, prevArmAngle, farWristAngle, targetPosition.frontFlipper(),
                                     targetPosition.backFlipper());
@@ -425,8 +427,6 @@ public class Manipulator
 
         // arm Clockwise wrist counterclockwse
 
-        
-
         // Elevator waits if the arm is coming down
         if (elevTarget < elevator.getPosition() - ELEVATOR_TOLERANCE && Math.abs(arm.getPosition()) > 90
                 && Math.abs(armTarget - arm.getPosition()) > ARM_TOLERANCE)
@@ -459,7 +459,6 @@ public class Manipulator
             wristTarget = prevWristAngle;
             frontFlipperTarget = prevFrontFlipperAngle;
         }
-
 
         if (elevator.getPosition() + ELEVATOR_TOLERANCE > 30 && !flipperOnTarget(backFlipper, backFlipperTarget))
         {
@@ -527,9 +526,9 @@ public class Manipulator
         SmartDashboard.putNumber("wristTarget", wristTarget);
         HotLogger.Log("wristTarget", wristTarget);
         /*
-        SmartDashboard.putNumber("wristHolding", holdingWrist);
-        SmartDashboard.putNumber("armHolding", holdingArm);
-        */
+         * SmartDashboard.putNumber("wristHolding", holdingWrist);
+         * SmartDashboard.putNumber("armHolding", holdingArm);
+         */
         SmartDashboard.putNumber("frontFlipperTarget", frontFlipperTarget);
         SmartDashboard.putNumber("backFlipperTarget", backFlipperTarget);
         SmartDashboard.putBoolean("frontFlipperOnTarget", flipperOnTarget(frontFlipper, frontFlipperTarget));
@@ -643,6 +642,10 @@ public class Manipulator
 
         IManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
         boolean score = robotCommand.ManipulatorScore();
+
+        // To climb, we must be above climb height and targeting prep position
+        drivetrain.setAllowClimberDeploy(setPoint == ManipulatorSetPoint.climb_prep
+                && elevator.getPosition() + ELEVATOR_TOLERANCE > ManipulatorSetPoint.climb_prep.elevatorHeight());
 
         // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());
         if (setPoint != null)
