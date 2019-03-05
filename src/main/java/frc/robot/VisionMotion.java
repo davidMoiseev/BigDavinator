@@ -140,7 +140,7 @@ public class VisionMotion
 
     public double shuffleVisionPID()
     {
-        pAngle = findProportional(0); // 27;
+        pAngle = findProportional(vx); // 27;
         iAngle = findIntegral(0); // 27;
         double Hspeed = (pAngle * pGainH) + (iAngle * iGainH);
         if (Hspeed > 0.5)
@@ -366,15 +366,15 @@ public class VisionMotion
         // gyroHoutput = vx;//(vyh + vxh);
         if (whichCamera() == true)
         { // front camera, no limelight
-            gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
+            gyroLoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
             gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
-            gyroHoutput = (distanceHorizontal * vt) / (distanceHorizontal + distance);
+            gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
         }
         else
         { // back camera, limelight
-            gyroLoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
+            gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
             gyroRoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
-            gyroHoutput = -(distanceHorizontal * vt) / (distanceHorizontal + distance);
+            gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
         }
 
         SmartDashboard.putNumber("vt", vt);

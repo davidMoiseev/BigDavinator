@@ -23,7 +23,7 @@ public class Vision extends Subsystem
   private double targetHeight;
   private double rocketHeight = 38.000;
   private double normalHeight = 28.875;
-  private double limelightHeight = 10.75;
+  private double limelightHeight = 2.54;
   private double limelightAngle = 0.447;// -2.148;
   private double a2 = 0.0;
   private double distance = 0.0;
@@ -101,34 +101,32 @@ public class Vision extends Subsystem
   public void getNetworkTables()
   {
     tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    tx = -27;// NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").
-             // getDouble(0);
-    ty = 1;// NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").
-           // getDouble(0);
+    tx =  NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    ty =  NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
   }
 
   public double getTV()
   {
     tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    return 1;// tv;
+    return tv;
   }
 
   public double getTX()
   {
     tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    return -27;// tx;
+    return tx;
   }
 
   public double getTY()
   {
     ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    return 1;// ty;
+    return ty;
   }
 
   public double getTA()
   {
     ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
-    return 5;// ta;
+    return ta;
   }
 
   public double getHeading()
@@ -153,12 +151,12 @@ public class Vision extends Subsystem
       targetHeight = normalHeight;
     }
     a2 = getTY();
-    distance = (targetHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + a2));
-    // limelightAngle = Math.atan((h2-limelightHeight)/38) - a2; /*calculates angle
-    // of limelight crosshair relative to ground*/
-    // return a1;
-    double distanceInches = distance / 5.85;
-    return distanceInches;
+    // distance = (targetHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + a2));
+    limelightAngle = Math.atan((limelightHeight-limelightHeight)/38) - a2; /*calculates angle
+    of limelight crosshair relative to ground*/
+    return limelightAngle;
+    //double distanceInches = distance / 5.85;
+    // return distanceInches;
 
   }
 
