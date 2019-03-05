@@ -2,8 +2,6 @@ package frc.robot.constants;
 
 import org.hotteam67.HotController;
 
-import edu.wpi.first.wpilibj.Joystick;
-
 public class TeleopCommandProvider implements IRobotCommandProvider
 {
     private final HotController driver;
@@ -17,6 +15,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private boolean score = false;
     private boolean intakeOut = false;
     private boolean intakeIn = false;
+    private boolean climb = false;
 
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
@@ -62,6 +61,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
 
     boolean commandToBack = true;
     boolean flipButtonPrevious = false;
+    private boolean allowClimbMotors = false;
 
     @Override
     public void Update()
@@ -77,7 +77,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             frontTargetPosition = ManipulatorSetPoint.carry_front;
             backTargetPosition = ManipulatorSetPoint.carry_back;
         }
-        else if (operator.getButtonA())
+        if (operator.getButtonA())
         {
             if (!operator.getButtonBack())
             {
@@ -90,7 +90,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                 backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
             }
         }
-        else if (operator.getButtonB())
+        if (operator.getButtonB())
         {
             if (!operator.getButtonBack())
             {
@@ -103,7 +103,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                 backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
             }
         }
-        else if (operator.getButtonY())
+        if (operator.getButtonY())
         {
             if (!operator.getButtonBack())
             {
@@ -116,41 +116,41 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                 backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
             }
         }
-        else if (operator.getButtonLeftBumper())
+        if (operator.getButtonLeftBumper())
         {
             /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
             */
         }
-        else if (operator.getButtonRightBumper())
+        if (operator.getButtonRightBumper())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
             backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
         }
-        else if (isLeftTriggerPressed == true)
+        if (isLeftTriggerPressed && !isRightTriggerPressed)
         {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
-            */
+            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climb_prep;
+        }
+        else if (isRightTriggerPressed && isLeftTriggerPressed)
+        {
+            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climber_down;
+        }
+        else if (isRightTriggerPressed && !isLeftTriggerPressed)
+        {
+            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climber_on;
         }
 
-        else if (isRightTriggerPressed == true)
-        {
-            /*
-            frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
-            */
-        }
-        else if (operator.getButtonLeftStick())
+        climb = driver.getButtonB();
+
+        if (operator.getButtonLeftStick())
         {
             /*
              * frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
              * backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
              */
         }
-        else if (operator.getButtonRightStick())
+        if (operator.getButtonRightStick())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
@@ -193,8 +193,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
         
-        RightDrive = -driver.getStickLY() - driver.getStickRX();
-        LeftDrive = -driver.getStickLY() + driver.getStickRX();
+        RightDrive = -driver.getStickLY() - (driver.getStickRX() * .5);
+        LeftDrive = -driver.getStickLY() + (driver.getStickRX() * .5);
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
     }
@@ -209,5 +209,11 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public boolean IntakeIn()
     {
         return intakeIn;
+    }
+
+    @Override
+    public boolean ClimberDeploy()
+    {
+        return climb;
     }
 }

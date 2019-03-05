@@ -14,11 +14,11 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
@@ -54,10 +54,12 @@ public class DriveTrain implements IPigeonWrapper
 
     private final CANSparkMax hDriveMotor;
 
-    private VictorSPX leftClimber;
-    private VictorSPX rightClimber;
+    private VictorSPX leftClimbMotor;
+    private VictorSPX rightClimbMotor;
+    private Solenoid climber;
 
-    private boolean allowClimberMotors = false;
+    private boolean allowClimb = false;
+    private boolean climbDeployed = false;
 
     private final PigeonIMU pigeon;
     VisionMotion vmotion = new VisionMotion();
@@ -122,9 +124,11 @@ public class DriveTrain implements IPigeonWrapper
 
         hDriveMotor = new CANSparkMax(WiringIDs.H_DRIVE, MotorType.kBrushless);
 
-        leftClimber = new VictorSPX(WiringIDs.CLIMBER_1);
-        rightClimber = new VictorSPX(WiringIDs.CLIMBER_2);
-        rightClimber.setInverted(true);
+        leftClimbMotor = new VictorSPX(WiringIDs.CLIMBER_1);
+        rightClimbMotor = new VictorSPX(WiringIDs.CLIMBER_2);
+        rightClimbMotor.setInverted(true);
+
+        climber = new Solenoid(WiringIDs.SOLENOID_CLIMBER);
 
         this.rightEncoder = rightEncoder;
         this.leftEncoder = leftEncoder;
@@ -133,7 +137,6 @@ public class DriveTrain implements IPigeonWrapper
         leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
         leftEncoder.setSensorPhase(true);
-        ;
 
         pigeon = new PigeonIMU(WiringIDs.PIGEON_BASE);
 
@@ -385,10 +388,15 @@ public class DriveTrain implements IPigeonWrapper
         rightMotor.set(command.RightDrive());
         leftMotor.set(command.LeftDrive() + 0.15 * (HDriveOutput(command.HDrive())));
 
-        if (allowClimberMotors)
+        if (climbDeployed)
         {
-            leftClimber.set(ControlMode.PercentOutput, command.LeftDrive());
-            rightClimber.set(ControlMode.PercentOutput, command.RightDrive());
+            leftClimbMotor.set(ControlMode.PercentOutput, command.LeftDrive());
+            rightClimbMotor.set(ControlMode.PercentOutput, command.RightDrive());
+        }
+        else if (allowClimb && command.ClimberDeploy() && !climbDeployed)
+        {
+            climbDeployed = true;
+            climber.set(true);
         }
 
         hDriveMotor.set(HDriveOutput(command.HDrive()));
@@ -500,8 +508,8 @@ public class DriveTrain implements IPigeonWrapper
         return (pigeon.getState() == PigeonState.Ready);
     }
 
-    public void SetAllowClimberMotors(boolean allowed)
-    {
-        allowClimberMotors = allowed;
-    }
+	public void setAllowClimberDeploy(boolean b)
+	{
+        allowClimb = true;
+	}
 }

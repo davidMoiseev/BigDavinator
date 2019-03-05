@@ -20,9 +20,15 @@ import edu.wpi.first.wpilibj.Joystick;
 public class HotController extends Joystick
 {
 
-    public HotController(int port)
+    boolean delay = false;
+    final double delayCountEnd = 10;
+    double delayCount = 0;
+    int lastButton = -1;
+
+    public HotController(int port, boolean delay)
     {
         super(port);
+        this.delay = delay;
     }
 
     private double deadbandLeft_X = 0.15;
@@ -180,54 +186,148 @@ public class HotController extends Joystick
     public boolean getButtonA()
     {
         boolean value = getRawButton(1);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 1;
+        }
+        if (!value && lastButton == 1 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
     }
 
     public boolean getButtonB()
     {
         boolean value = getRawButton(2);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 2;
+        }
+        if (!value && lastButton == 2 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
     }
 
     public boolean getButtonX()
     {
         boolean value = getRawButton(3);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 3;
+        }
+        if (!value && lastButton == 3 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
     }
 
     public boolean getButtonY()
     {
         boolean value = getRawButton(4);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 4;
+        }
+        if (!value && lastButton == 4 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
     }
 
     public boolean getButtonRightBumper()
     {
         boolean value = getRawButton(6);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 6;
+        }
+        if (!value && lastButton == 6 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
     }
 
     public boolean getButtonLeftBumper()
     {
         boolean value = getRawButton(5);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 5;
+        }
+        if (!value && lastButton == 5 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
     }
 
     public boolean getButtonBack()
     {
         boolean value = getRawButton(7);
+        /*
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 7;
+        }
+        if (!value && lastButton == 7 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
+        */
         return value;
     }
 
     public boolean getButtonStart()
     {
         boolean value = getRawButton(8);
+        /*
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 8;
+        }
+        if (!value && lastButton == 8 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
+        */
         return value;
     }
 
     public boolean getButtonLeftStick()
     {
         boolean value = getRawButton(9);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 9;
+        }
+        if (!value && lastButton == 9 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
 
     }
@@ -235,6 +335,16 @@ public class HotController extends Joystick
     public boolean getButtonRightStick()
     {
         boolean value = getRawButton(10);
+        if (value)
+        {
+            delayCount = 0;
+            lastButton = 10;
+        }
+        if (!value && lastButton == 10 && delayCount < delayCountEnd)
+        {
+            delayCount++;
+            return true;
+        }
         return value;
     }
 

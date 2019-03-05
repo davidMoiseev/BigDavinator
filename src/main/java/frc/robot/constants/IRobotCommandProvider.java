@@ -19,4 +19,6 @@ public interface IRobotCommandProvider
     public boolean IntakeOut();
 
     public boolean IntakeIn();
+
+    public boolean ClimberDeploy();
 }

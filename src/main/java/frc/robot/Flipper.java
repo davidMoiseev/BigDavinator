@@ -14,12 +14,9 @@ import java.util.List;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.constants.IManipulatorSetPoint;
-import frc.robot.constants.ManipulatorSetPoint;
 
 /**
  * Add your docs here.
