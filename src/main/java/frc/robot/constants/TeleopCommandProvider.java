@@ -77,7 +77,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             frontTargetPosition = ManipulatorSetPoint.carry_front;
             backTargetPosition = ManipulatorSetPoint.carry_back;
         }
-        else if (operator.getButtonA())
+        if (operator.getButtonA())
         {
             if (!operator.getButtonBack())
             {
@@ -90,7 +90,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                 backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
             }
         }
-        else if (operator.getButtonB())
+        if (operator.getButtonB())
         {
             if (!operator.getButtonBack())
             {
@@ -103,7 +103,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                 backTargetPosition = ManipulatorSetPoint.cargo_rocketMid_back;
             }
         }
-        else if (operator.getButtonY())
+        if (operator.getButtonY())
         {
             if (!operator.getButtonBack())
             {
@@ -116,19 +116,19 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                 backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
             }
         }
-        else if (operator.getButtonLeftBumper())
+        if (operator.getButtonLeftBumper())
         {
             /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
             */
         }
-        else if (operator.getButtonRightBumper())
+        if (operator.getButtonRightBumper())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_shuttle_front;
             backTargetPosition = ManipulatorSetPoint.cargo_shuttle_back;
         }
-        else if (isLeftTriggerPressed == true)
+        if (isLeftTriggerPressed == true)
         {
             /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketMid_front;
@@ -136,21 +136,21 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             */
         }
 
-        else if (isRightTriggerPressed == true)
+        if (isRightTriggerPressed == true)
         {
             /*
             frontTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_front;
             backTargetPosition = ManipulatorSetPoint.cargo_rocketHigh_back;
             */
         }
-        else if (operator.getButtonLeftStick())
+        if (operator.getButtonLeftStick())
         {
             /*
              * frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
              * backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
              */
         }
-        else if (operator.getButtonRightStick())
+        if (operator.getButtonRightStick())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;

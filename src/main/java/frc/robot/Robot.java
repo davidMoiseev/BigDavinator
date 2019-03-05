@@ -67,8 +67,8 @@ public class Robot extends TimedRobot
 
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
-        this.driver = new HotController(0);
-        HotController operator = new HotController(1);
+        this.driver = new HotController(0, false);
+        HotController operator = new HotController(1, true);
 
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
 
