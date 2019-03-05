@@ -301,24 +301,24 @@ public class Manipulator
                     if (getArmSide(targetPosition.armAngle()) == RobotSide.BACK)
                     {
                         // If angle is farther than near target, make it the target
-                        double farWristAngle = (targetPosition.wristAngle() < ManipulatorSetPoint.limit_front_elevator
+                        double farWristAngle = (targetPosition.wristAngle() < ManipulatorSetPoint.limit_front_high
                                 .wristAngle()) ? targetPosition.wristAngle()
-                                        : ManipulatorSetPoint.limit_front_elevator.wristAngle();
-                        if (farWristAngle < ManipulatorSetPoint.limit_back_elevator.wristAngle())
-                            farWristAngle = ManipulatorSetPoint.limit_back_elevator.wristAngle();
+                                        : ManipulatorSetPoint.limit_front_high.wristAngle();
+                        if (farWristAngle < ManipulatorSetPoint.limit_back_high.wristAngle())
+                            farWristAngle = ManipulatorSetPoint.limit_back_high.wristAngle();
 
                         // Arm still coming up
-                        if (arm.getPosition() > ManipulatorSetPoint.limit_front_elevator.armAngle())
+                        if (arm.getPosition() > ManipulatorSetPoint.limit_front_high.armAngle())
                         {
                             setTargets(safeHeight, targetPosition.armAngle(), farWristAngle,
                                     targetPosition.frontFlipper(), targetPosition.backFlipper());
                         }
                         // Arm is up but wrist is not ready
                         // wrist is not within limits to go over, stop arm
-                        else if (wrist.getPosition() - WRIST_TOLERANCE > ManipulatorSetPoint.limit_front_elevator
+                        else if (wrist.getPosition() - WRIST_TOLERANCE > ManipulatorSetPoint.limit_front_high
                                 .wristAngle()
-                                || wrist.getPosition() + WRIST_TOLERANCE < ManipulatorSetPoint.limit_back_elevator
-                                        .wristAngle())
+                                || wrist.getPosition() + WRIST_TOLERANCE < ManipulatorSetPoint.limit_back_high
+                                        .wristAngle() && !(elevator.getPosition() + ELEVATOR_TOLERANCE > ELEVATOR_CLEAR_HEIGHT))
                         {
                             setTargets(safeHeight, prevArmAngle, farWristAngle, targetPosition.frontFlipper(),
                                     targetPosition.backFlipper());
@@ -340,25 +340,25 @@ public class Manipulator
                     else if (getArmSide(targetPosition.armAngle()) == RobotSide.FRONT)
                     {
                         // If angle is closer than far elevator side, make it the target
-                        double farWristAngle = (targetPosition.wristAngle() > ManipulatorSetPoint.limit_back_elevator
+                        double farWristAngle = (targetPosition.wristAngle() > ManipulatorSetPoint.limit_back_high
                                 .wristAngle()) ? targetPosition.wristAngle()
-                                        : ManipulatorSetPoint.limit_back_elevator.wristAngle();
+                                        : ManipulatorSetPoint.limit_back_high.wristAngle();
                         // If angle is too far, goto far side
-                        if (farWristAngle > ManipulatorSetPoint.limit_front_elevator.wristAngle())
-                            farWristAngle = ManipulatorSetPoint.limit_front_elevator.wristAngle();
+                        if (farWristAngle > ManipulatorSetPoint.limit_front_high.wristAngle())
+                            farWristAngle = ManipulatorSetPoint.limit_front_high.wristAngle();
 
                         // Arm still coming up
-                        if (arm.getPosition() < ManipulatorSetPoint.limit_back_elevator.armAngle())
+                        if (arm.getPosition() < ManipulatorSetPoint.limit_back_high.armAngle())
                         {
                             setTargets(safeHeight, targetPosition.armAngle(), farWristAngle,
                                     targetPosition.frontFlipper(), targetPosition.backFlipper());
                         }
                         // Arm is up but wrist is not ready
                         // wrist is not within limits to go over, stop arm
-                        else if (wrist.getPosition() - WRIST_TOLERANCE > ManipulatorSetPoint.limit_front_elevator
+                        else if (wrist.getPosition() - WRIST_TOLERANCE > ManipulatorSetPoint.limit_front_high
                                 .wristAngle()
-                                || wrist.getPosition() + WRIST_TOLERANCE < ManipulatorSetPoint.limit_back_elevator
-                                        .wristAngle())
+                                || wrist.getPosition() + WRIST_TOLERANCE < ManipulatorSetPoint.limit_back_high
+                                        .wristAngle() && !(elevator.getPosition() + ELEVATOR_TOLERANCE > ELEVATOR_CLEAR_HEIGHT))
                         {
                             setTargets(safeHeight, prevArmAngle, farWristAngle, targetPosition.frontFlipper(),
                                     targetPosition.backFlipper());
@@ -400,6 +400,7 @@ public class Manipulator
     {
         // The angle from arm angle, negative is counter-clockwise
         double wristAngleRelative = wrist.getPosition() - arm.getPosition();
+        SmartDashboard.putNumber("wristAngleRelative", wristAngleRelative);
 
         // Wrist into elevator check
         // if (getArmSide(arm.getPosition()) == RobotSide.FRONT // Front side
@@ -423,26 +424,7 @@ public class Manipulator
         // armTarget = prevArmAngle;
 
         // arm Clockwise wrist counterclockwse
-        
-        if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative < -110)
-        {
-            armTarget = prevArmAngle;
-        }
-        // arm Clockwise wrist clockwise
-        else if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative > 110)
-        {
-            wristTarget = prevWristAngle;
-        }
-        // arm counterclockwise wrist counterclockwise
-        else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative < -110)
-        {
-            wristTarget = prevWristAngle;
-        }
-        // arm clockwise wrist clockwise
-        else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative > 110)
-        {
-            armTarget = prevArmAngle;
-        }
+
         
 
         // Elevator waits if the arm is coming down
@@ -503,6 +485,26 @@ public class Manipulator
             backFlipperTarget = prevBackFlipperAngle;
         }
 
+        if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative < -110)
+        {
+            armTarget = prevArmAngle;
+        }
+        // arm Clockwise wrist clockwise
+        else if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative > 110)
+        {
+            wristTarget = prevWristAngle;
+        }
+        // arm counterclockwise wrist counterclockwise
+        else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative < -110)
+        {
+            wristTarget = prevWristAngle;
+        }
+        // arm clockwise wrist clockwise
+        else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative > 110)
+        {
+            armTarget = prevArmAngle;
+        }
+
         frontFlipper.control(frontFlipperTarget);
         backFlipper.control(backFlipperTarget);
 
@@ -524,6 +526,10 @@ public class Manipulator
         HotLogger.Log("armTarget", armTarget);
         SmartDashboard.putNumber("wristTarget", wristTarget);
         HotLogger.Log("wristTarget", wristTarget);
+        /*
+        SmartDashboard.putNumber("wristHolding", holdingWrist);
+        SmartDashboard.putNumber("armHolding", holdingArm);
+        */
         SmartDashboard.putNumber("frontFlipperTarget", frontFlipperTarget);
         SmartDashboard.putNumber("backFlipperTarget", backFlipperTarget);
         SmartDashboard.putBoolean("frontFlipperOnTarget", flipperOnTarget(frontFlipper, frontFlipperTarget));
