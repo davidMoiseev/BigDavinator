@@ -14,7 +14,6 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.HotPathFollower.State;

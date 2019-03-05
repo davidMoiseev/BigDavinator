@@ -18,7 +18,6 @@ import org.hotteam67.HotLogger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ArmConstants;
 import frc.robot.constants.IManipulatorSetPoint;
-import frc.robot.constants.ManipulatorSetPoint;
 
 /**
  * Add your docs here.
