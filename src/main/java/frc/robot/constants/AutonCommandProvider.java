@@ -9,7 +9,7 @@ public class AutonCommandProvider implements IRobotCommandProvider
     }
 
     @Override
-    public frc.robot.constants.ManipulatorSetPoint ManipulatorSetPoint() {
+    public IManipulatorSetPoint ManipulatorSetPoint() {
         return ManipulatorSetPoint.carry_front;
     }
 
@@ -45,6 +45,12 @@ public class AutonCommandProvider implements IRobotCommandProvider
 
     @Override
     public boolean IntakeIn() {
+        return false;
+    }
+
+    @Override
+    public boolean ClimberDeploy()
+    {
         return false;
     }
 
