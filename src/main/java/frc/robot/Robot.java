@@ -80,6 +80,7 @@ public class Robot extends TimedRobot
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
         forceInitialization = true;
+        
 
         HotLogger.Setup("Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
                 Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags);
@@ -88,7 +89,6 @@ public class Robot extends TimedRobot
         driver.setDeadBandLX(.1);
         driver.setDeadBandRX(.1);
         driver.setDeadBandRY(.1);
-
         driveTrain.initUsbCam();
         /*
          * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new
@@ -122,36 +122,36 @@ public class Robot extends TimedRobot
         driveTrain.writeLogs();
         switch (state)
         {
-        case 0:
+        // case 0:
         
-            if (!profileFinished)
-                profileFinished = driveTrain.FollowPath();
-            else if ((profileFinished == true) && (driveTrain.canseeTarget() == true))
-            {
-                state++;
-            }
-            else
-            {
-                state = state + 3;
-                // state++;
-            }
-            break;
+        //     if (!profileFinished)
+        //         profileFinished = driveTrain.FollowPath();
+        //     else if ((profileFinished == true) && (driveTrain.canseeTarget() == true))
+        //     {
+        //         state++;
+        //     }
+        //     else
+        //     {
+        //         state = state + 3;
+        //         // state++;
+        //     }
+        //     break;
 
-        case 1:
-            if (driveTrain.turnToReferenceAngle() == true)
-            {
-                state++;
-                // state = state + 2;
-            }
-            break;
-        case 2:
+        // case 0:
+        //     if (driveTrain.turnComplete(0) == true)
+        //     {
+        //         state++;
+        //         // state = state + 2;
+        //     }
+        //     break;
+        case 0:
             if (driveTrain.gyroLineUp(0.3, 50.0) == true)
             {
                 state++;
             }
             break;
 
-        case 3:
+        case 1:
             driveTrain.zeroMotors();
             break;
         }

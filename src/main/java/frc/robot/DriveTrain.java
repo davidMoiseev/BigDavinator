@@ -273,7 +273,7 @@ public class DriveTrain implements IPigeonWrapper
     public boolean turnComplete(double heading)
     {
         leftMotor.set(0.2);
-        rightMotor.set(0.2);
+        rightMotor.set(-0.2);
         if (currentYaw > Math.toDegrees(heading))
         {
             return true;

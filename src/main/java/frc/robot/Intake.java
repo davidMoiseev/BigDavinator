@@ -21,8 +21,8 @@ import frc.robot.constants.WiringIDs;
 
 public class Intake
 {
-    double Outspeed = 0.75;
-    double Inputspeed = -0.75;
+    double Outspeed = 1;
+    double Inputspeed = -1;
     HotController joystick;
 
     WPI_TalonSRX BeltTalon = new WPI_TalonSRX(WiringIDs.INTAKE);
