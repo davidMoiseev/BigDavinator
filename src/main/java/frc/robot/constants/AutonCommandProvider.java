@@ -54,10 +54,4 @@ public class AutonCommandProvider implements IRobotCommandProvider
         return false;
     }
 
-    @Override
-    public boolean HatchPickup()
-    {
-        return false;
-    }
-
 }

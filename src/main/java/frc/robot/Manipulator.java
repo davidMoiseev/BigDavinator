@@ -641,31 +641,22 @@ public class Manipulator
         pneumaticIntake.Update(robotCommand);
 
         IManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
+        boolean score = robotCommand.ManipulatorScore();
 
         // To climb, we must be above climb height and targeting prep position
         drivetrain.setAllowClimberDeploy(setPoint == ManipulatorSetPoint.climb_prep
                 && elevator.getPosition() + ELEVATOR_TOLERANCE > ManipulatorSetPoint.climb_prep.elevatorHeight());
 
-        if (robotCommand.HatchPickup())
-        {
-            SmartDashboard.putBoolean("ELEVATOR", true);
-        }
-        else
-        {
-            SmartDashboard.putBoolean("ELEVATOR", false);
-        }
-
         // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());
         if (setPoint != null)
         {
-            if (robotCommand.ManipulatorScore())
+            if (score)
             {
                 setPoint = CreateScoreSetPoint(setPoint);
             }
-            SmartDashboard.putBoolean("intakeSolenoid", robotCommand.IntakeSolenoid());
-            if (robotCommand.HatchPickup()) 
+            if (robotCommand.IntakeSolenoid())
             {
-                double elevHeight = (setPoint.elevatorHeight() + 2 > 30 ? 30 : setPoint.elevatorHeight() + 2);
+                double elevHeight = (setPoint.elevatorHeight() + 2 > 30 ? 30 : setPoint.elevatorHeight());
                 setPoint = new ManualManipulatorSetPoint(setPoint.armAngle(), setPoint.wristAngle(), elevHeight, setPoint.frontFlipper(), setPoint.backFlipper());
             }
             Control(setPoint);

@@ -21,6 +21,4 @@ public interface IRobotCommandProvider
     public boolean IntakeIn();
 
     public boolean ClimberDeploy();
-
-    public boolean HatchPickup();
 }
