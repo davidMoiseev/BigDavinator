@@ -1,16 +1,9 @@
 [
   {
-<<<<<<< HEAD
-    "artifact": "frcJava (in project bigdavinator)",
-    "target": "roborio",
-    "debugfile": "frcJava_roborio.debugconfig",
-    "project": "bigdavinator",
-=======
     "artifact": "frcJava (in project BigDavinator)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",
     "project": "BigDavinator",
->>>>>>> refs/remotes/origin/master
     "language": "java"
   }
 ]
