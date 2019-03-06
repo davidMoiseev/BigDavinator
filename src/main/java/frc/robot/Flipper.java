@@ -17,6 +17,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.FlipperConstants;
 
 /**
  * Add your docs here.
@@ -24,19 +25,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Flipper
 {
-    double ANGLE_TO_TICKS = 2100.0 / 90.0;
+    double ANGLE_TO_TICKS = FlipperConstants.ANGLE_TO_TICKS;
     double target = 0;
     TalonSRX flipper;
-    boolean inverted = false;
-    boolean isBack = false;
     double allowableError = 4;
-    double FLIPPER_P = .015;
+    double FLIPPER_P = FlipperConstants.proportional;
 
-    public Flipper(int ID, boolean inverted, boolean isBack)
+    public Flipper(int ID)
     {
         flipper = new TalonSRX(ID);
-        this.inverted = inverted;
-        this.isBack = isBack;
     }
 
     public void initialize()

@@ -97,8 +97,8 @@ public class Manipulator
         this.armPigeon = new ArmPigeon(WiringIDs.PIGEON_ARM);
         this.intake = new Intake(driver);
         this.pneumaticIntake = new IntakePneumatics(driver);
-        this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT, false, false);
-        this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK, false, true);
+        this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT);
+        this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK);
 
         this.operator = operator;
         this.driver = driver;
@@ -397,7 +397,7 @@ public class Manipulator
 
     private boolean flipperOnTarget(Flipper f, double target)
     {
-        return ((f.getPosition() - 12 < target) && (f.getPosition() + 12 > target));
+        return ((f.getPosition() - 15 < target) && (f.getPosition() + 15 > target));
     }
 
     private double getWristY(double arm, double wrist, double elevator)
