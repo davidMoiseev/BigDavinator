@@ -644,7 +644,7 @@ public class Manipulator
         boolean score = robotCommand.ManipulatorScore();
 
         // To climb, we must be above climb height and targeting prep position
-        drivetrain.setAllowClimberDeploy(setPoint == ManipulatorSetPoint.climb_prep
+        drivetrain.setAllowClimberDeploy((setPoint == ManipulatorSetPoint.climb_prep)
                 && elevator.getPosition() + ELEVATOR_TOLERANCE > ManipulatorSetPoint.climb_prep.elevatorHeight());
 
         // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());

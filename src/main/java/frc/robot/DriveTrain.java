@@ -390,8 +390,8 @@ public class DriveTrain implements IPigeonWrapper
 
         if (climbDeployed)
         {
-            leftClimbMotor.set(ControlMode.PercentOutput, command.LeftDrive());
-            rightClimbMotor.set(ControlMode.PercentOutput, command.RightDrive());
+            leftClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.LeftDrive());
+            rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
         else if (allowClimb && command.ClimberDeploy() && !climbDeployed)
         {
@@ -510,6 +510,6 @@ public class DriveTrain implements IPigeonWrapper
 
 	public void setAllowClimberDeploy(boolean b)
 	{
-        allowClimb = true;
+        allowClimb = b;
 	}
 }
