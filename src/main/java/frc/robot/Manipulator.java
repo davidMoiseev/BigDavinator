@@ -543,6 +543,7 @@ public class Manipulator
         intake.Update(robotCommand);
         pneumaticIntake.Update(robotCommand);
 
+
         double armY = getArmY(arm.getPosition(), elevator.getPosition());
         double frontFlipperY = getFlipperY(frontFlipper.getPosition());
         double backFlipperY = getFlipperY(backFlipper.getPosition());
