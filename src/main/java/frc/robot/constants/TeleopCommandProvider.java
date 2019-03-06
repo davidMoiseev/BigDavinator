@@ -132,10 +132,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         }
         if (operator.getButtonLeftBumper())
         {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_rocketLow_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_rocketLow_back;
-             */
+            frontTargetPosition = ManipulatorSetPoint.cargo_station_front;
+            backTargetPosition = ManipulatorSetPoint.cargo_station_back;
         }
         if (operator.getButtonRightBumper())
         {

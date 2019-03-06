@@ -33,14 +33,16 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     cargo_rocketMid_back(11, -10, -83, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // LT
     cargo_rocketHigh_front(33, 1.5, 61, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // RT
     cargo_rocketHigh_back(33, -1.5, -61, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // RT
-    limit_front_low(4, 90, 90, 0, 0),
-    limit_front_extra_low(4, 130, 90, 0, 0),
-    limit_front_high(7, 50, 32, 0, 0),
-    limit_back_low(4, -90, -90, 0, 0),
-    limit_back_extra_low(4, -130, -90, 0, 0),
-    limit_back_high(7, -50, -32, 0, 0),
-    mikes_set_front(0, 90, 0, 0, 0),
-    mikes_set_back(0, -90, 0, 0, 0),
+    limit_front_low(4, 90, 90, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    limit_front_extra_low(4, 130, 90, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    limit_front_high(7, 50, 32, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    limit_back_low(4, -90, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    limit_back_extra_low(4, -130, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    limit_back_high(7, -50, -32, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    mikes_set_front(0, 90, 0, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    mikes_set_back(0, -90, 0, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    cargo_station_front(.5, 47, 63, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    cargo_station_back(.5, -47, -63, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
     // Deploy the climber only at climber_prep, and then operator goes to climber_down
     climb_prep(26.5, -90, -90, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT),
     climber_down(.25, -90, -90, FlipperConstants.CARRY_BACK, FlipperConstants.CARRY_FRONT),

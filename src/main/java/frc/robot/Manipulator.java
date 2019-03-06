@@ -412,6 +412,11 @@ public class Manipulator
     private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
             double backFlipperTarget)
     {
+        if (frontFlipperTarget < FlipperConstants.CARRY_FRONT)
+            frontFlipperTarget = FlipperConstants.CARRY_FRONT;
+        else if (backFlipperTarget < FlipperConstants.CARRY_BACK)
+            backFlipperTarget = FlipperConstants.CARRY_BACK;
+
         // The angle from arm angle, negative is counter-clockwise
         double wristAngleRelative = wrist.getPosition() - arm.getPosition();
         SmartDashboard.putNumber("wristAngleRelative", wristAngleRelative);
