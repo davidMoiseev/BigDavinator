@@ -54,8 +54,8 @@ public class Manipulator
     private IntakePneumatics pneumaticIntake;
     private Wrist wrist;
     private Arm arm;
-    private Flipper frontFlipper;
-    private Flipper backFlipper;
+    private FlipperActuator frontFlipper;
+    private FlipperActuator backFlipper;
     private Solenoid climber;
 
     private HotController driver;
@@ -97,8 +97,8 @@ public class Manipulator
         this.armPigeon = new ArmPigeon(WiringIDs.PIGEON_ARM);
         this.intake = new Intake(driver);
         this.pneumaticIntake = new IntakePneumatics(driver);
-        this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT);
-        this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK);
+        this.frontFlipper = new FlipperActuator(WiringIDs.FLIPPER_FRONT);
+        this.backFlipper = new FlipperActuator(WiringIDs.FLIPPER_BACK);
 
         this.operator = operator;
         this.driver = driver;
@@ -189,8 +189,8 @@ public class Manipulator
         {
             double tmpArm = arm.getPosition();
 
-            frontFlipper.control(FlipperConstants.CARRY_FRONT);
-            backFlipper.control(FlipperConstants.CARRY_BACK);
+            // frontFlipper.setTarget(FlipperConstants.CARRY_FRONT);
+            // backFlipper.setTarget(FlipperConstants.CARRY_BACK);
             if (frontFlipper.reachedTarget() && backFlipper.reachedTarget())
             {
                 elevator.setTarget(ManipulatorSetPoint.firstPosition);
@@ -395,7 +395,7 @@ public class Manipulator
     boolean holdingFrontFlipper = false;
     boolean holdingBackFlipper = false;
 
-    private boolean flipperOnTarget(Flipper f, double target)
+    private boolean flipperOnTarget(FlipperActuator f, double target)
     {
         return ((f.getPosition() - 15 < target) && (f.getPosition() + 15 > target));
     }
@@ -487,8 +487,8 @@ public class Manipulator
             armTarget = prevArmAngle;
         }
 
-        frontFlipper.control(frontFlipperTarget);
-        backFlipper.control(backFlipperTarget);
+        // frontFlipper.setTarget(frontFlipperTarget);
+        // backFlipper.setTarget(backFlipperTarget);
 
         holdingElevator = (elevTarget == prevElevHeight);
         holdingArm = (armTarget == prevArmAngle);
@@ -655,10 +655,15 @@ public class Manipulator
             elevator.disable();
             arm.disable();
             wrist.disable();
+            /*
             frontFlipper.disable();
             backFlipper.disable();
+            */
             SmartDashboard.putBoolean("Disabled thing", true);
         }
+
+
+        frontFlipper.setTarget(FlipperConstants.CARRY_FRONT);
 
         SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
         SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());
