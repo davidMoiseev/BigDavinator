@@ -83,7 +83,7 @@ public class Robot extends TimedRobot
         
 
         HotLogger.Setup("Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
-                Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags);
+                Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
         driver.setDeadBandLY(.1);
         driver.setDeadBandLX(.1);

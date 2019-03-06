@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -159,7 +160,7 @@ public class HotLogger
                 if (output.trim().isEmpty())
                     return;
                 String fileName = LOGS_DIRECTORY
-                        + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LogQueue.GetDate()) + ".txt";
+                        + LogQueue.LogFileName() + ".txt";
 
                 File f = new File(fileName);
                 if (!f.exists())
@@ -236,7 +237,7 @@ public class HotLogger
          */
         private static List<LogRow> logQueue = new ArrayList<>();
         private static String headerToOutput = "";
-        private static Date logDate = new Date();
+        private static String logFileName = null;
 
         private static synchronized String FlushQueue()
         {
@@ -262,9 +263,9 @@ public class HotLogger
             return output.toString();
         }
 
-        private static synchronized Date GetDate()
+        private static synchronized String LogFileName()
         {
-            return logDate;
+            return logFileName;
         }
 
         public static synchronized void PushToQueue(LogRow row)
@@ -275,7 +276,16 @@ public class HotLogger
         public static synchronized void RestartQueue(String header)
         {
             headerToOutput = header;
-            logDate = new Date();
+
+            DriverStation station = DriverStation.getInstance();
+
+            logFileName = "";
+            if (station != null)
+            {
+                logFileName += station.getMatchNumber() + " ";
+            }
+            logFileName += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
             logQueue.clear();
         }
     }

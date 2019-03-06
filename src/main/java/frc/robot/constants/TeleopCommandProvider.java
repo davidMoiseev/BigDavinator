@@ -1,6 +1,11 @@
 package frc.robot.constants;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.hotteam67.HotController;
+import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Flipper;
@@ -258,7 +263,15 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                         outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper(),
                         outputSetPoint.backFlipper() + (backFlipperCount * 3));
         }
+
+        HotLogger.Log("elevatorSetPoint", outputSetPoint.elevatorHeight());
+        HotLogger.Log("armSetPoint", outputSetPoint.armAngle());
+        HotLogger.Log("wristSetPoint", outputSetPoint.wristAngle());
+        HotLogger.Log("frontFlipperSetPoint", outputSetPoint.frontFlipper());
+        HotLogger.Log("backFlipperSetPoint", outputSetPoint.backFlipper());
     }
+
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("elevatorSetPoint", "armSetPoint", "wristSetPoint", "frontFlipperSetPoint", "backFlipperSetPoint"));
 
     boolean upPrev = false;
     boolean downPrev = false;
