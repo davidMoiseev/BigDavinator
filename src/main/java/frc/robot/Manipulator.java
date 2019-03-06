@@ -416,29 +416,6 @@ public class Manipulator
         double wristAngleRelative = wrist.getPosition() - arm.getPosition();
         SmartDashboard.putNumber("wristAngleRelative", wristAngleRelative);
 
-        // Wrist into elevator check
-        // if (getArmSide(arm.getPosition()) == RobotSide.FRONT // Front side
-        // && wrist.getPosition() + WRIST_TOLERANCE <
-        // ManipulatorSetPoint.limit_back_high.wristAngle() // Wrist turned towards
-        // elevator
-        // && arm.getPosition() + ARM_TOLERANCE <
-        // ManipulatorSetPoint.limit_front_high.armAngle() // Arm is close to elevator
-        // && armTarget < arm.getPosition() - ARM_TOLERANCE // Arm is moving towards the
-        // elevator
-        // && elevator.getPosition() + ELEVATOR_TOLERANCE < ELEVATOR_CLEAR_HEIGHT) //
-        // Elevator isn't high enough
-        // armTarget = prevArmAngle;
-        // else if (getArmSide(arm.getPosition()) == RobotSide.FRONT
-        // && wrist.getPosition() - WRIST_TOLERANCE >
-        // ManipulatorSetPoint.limit_front_high.wristAngle()
-        // && arm.getPosition() - ARM_TOLERANCE >
-        // ManipulatorSetPoint.limit_back_high.armAngle()
-        // && armTarget > arm.getPosition() + ARM_TOLERANCE
-        // && elevator.getPosition() + ELEVATOR_TOLERANCE < ELEVATOR_CLEAR_HEIGHT)
-        // armTarget = prevArmAngle;
-
-        // arm Clockwise wrist counterclockwse
-
         // Elevator waits if the arm is coming down
         if (elevTarget < elevator.getPosition() - ELEVATOR_TOLERANCE && Math.abs(arm.getPosition()) > 90
                 && Math.abs(armTarget - arm.getPosition()) > ARM_TOLERANCE)
