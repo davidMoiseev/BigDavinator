@@ -59,7 +59,7 @@ public class Vision extends Subsystem
     }
     else
     {
-      brightness = 95;
+      brightness = 75;
       exposure = 35;
     }
   }

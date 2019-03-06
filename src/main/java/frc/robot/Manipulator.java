@@ -85,6 +85,9 @@ public class Manipulator
     private final double intakeHeight = 13.5;
     private final double SCORE_DISTANCE = 5; // inches to move arm/intake forward for scoring
 
+    private final double FLIPPER_LENGTH = 13;
+    private final double FLIPPER_HEIGHT = 3;
+
     public Manipulator(HotController operator, HotController driver, TalonSRX rightElevator, TalonSRX intake,
             DriveTrain drivetrain)
     {
@@ -397,6 +400,15 @@ public class Manipulator
         return ((f.getPosition() - 10 < target) && (f.getPosition() + 10 > target));
     }
 
+    private double getWristY(double arm, double wrist, double elevator)
+    {
+        double wristY = Math.cos(Math.toRadians(wrist)) * WRIST_LENGTH;
+        double armY = Math.cos(Math.toRadians(arm)) * ARM_LENGTH;
+        SmartDashboard.putNumber("wrist component Y", wristY);
+        SmartDashboard.putNumber("arm component Y", armY);
+        return wristY + ELEVATOR_LENGTH + elevator + armY;
+    }
+
     private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
             double backFlipperTarget)
     {
@@ -434,54 +446,48 @@ public class Manipulator
             elevTarget = prevElevHeight;
         }
 
-        // Flipper waiting
-        if (elevator.getPosition() + ELEVATOR_TOLERANCE > 30 && !flipperOnTarget(frontFlipper, frontFlipperTarget))
-        {
-            // Just go, hold elevator
-            elevTarget = (elevTarget > 30) ? elevTarget : 30;
-        }
-        else if (arm.getPosition() - ARM_TOLERANCE < 90 && armTarget > 90
-                && !flipperOnTarget(frontFlipper, frontFlipperTarget))
-        {
-            armTarget = prevArmAngle;
-            wristTarget = prevWristAngle;
-        }
-        else if (arm.getPosition() + ARM_TOLERANCE > 90 && armTarget <= 90
-                && !flipperOnTarget(frontFlipper, frontFlipperTarget))
-        {
-            frontFlipperTarget = prevFrontFlipperAngle;
-        }
-        else if (arm.getPosition() - ARM_TOLERANCE > 90 && armTarget >= 90
-                && !flipperOnTarget(frontFlipper, frontFlipperTarget))
-        {
-            elevTarget = 30;
-            armTarget = prevArmAngle;
-            wristTarget = prevWristAngle;
-            frontFlipperTarget = prevFrontFlipperAngle;
-        }
+        double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
+        double targetWristY = getWristY(armTarget, wristTarget, elevTarget);
 
-        if (elevator.getPosition() + ELEVATOR_TOLERANCE > 30 && !flipperOnTarget(backFlipper, backFlipperTarget))
+        SmartDashboard.putNumber("wristY", wristY);
+        double flipperY = 25;
+
+        // Flipper waiting
+        if (getArmSide(arm.getPosition()) == RobotSide.FRONT && !flipperOnTarget(frontFlipper, frontFlipperTarget))
         {
-            // Just go, hold elevator
-            elevTarget = 30;
+            if (targetWristY > flipperY && wristY < flipperY)
+                frontFlipperTarget = prevFrontFlipperAngle;
+            else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() > 100)
+            {
+                armTarget = prevArmAngle;
+                wristTarget = prevWristAngle;
+                elevTarget = prevElevHeight;
+            }
+            else if (targetWristY < flipperY && wristY < flipperY)
+            {
+                armTarget = 90;
+                wristTarget = 90;
+                elevTarget = 30;
+                frontFlipperTarget = prevFrontFlipperAngle;
+            }
         }
-        else if (arm.getPosition() > -90 && armTarget < -90 && !flipperOnTarget(backFlipper, backFlipperTarget))
+        else if (getArmSide(arm.getPosition()) == RobotSide.BACK && !flipperOnTarget(backFlipper, backFlipperTarget))
         {
-            armTarget = prevArmAngle;
-            wristTarget = prevWristAngle;
-        }
-        else if (arm.getPosition() + ARM_TOLERANCE < -90 && armTarget >= -90
-                && !flipperOnTarget(backFlipper, backFlipperTarget))
-        {
-            backFlipperTarget = prevBackFlipperAngle;
-        }
-        else if (arm.getPosition() + ARM_TOLERANCE < -90 && armTarget <= -90
-                && !flipperOnTarget(backFlipper, backFlipperTarget))
-        {
-            elevTarget = 30;
-            armTarget = prevArmAngle;
-            wristTarget = prevWristAngle;
-            backFlipperTarget = prevBackFlipperAngle;
+            if (targetWristY > flipperY && wristY < flipperY)
+                backFlipperTarget = prevBackFlipperAngle;
+            else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() < -100)
+            {
+                armTarget = prevArmAngle;
+                wristTarget = prevWristAngle;
+                elevTarget = prevElevHeight;
+            }
+            else if (targetWristY < flipperY && wristY < flipperY)
+            {
+                armTarget = -90;
+                wristTarget = -90;
+                elevTarget = 30;
+                backFlipperTarget = prevBackFlipperAngle;
+            }
         }
 
         if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative < -110)
@@ -640,6 +646,10 @@ public class Manipulator
         intake.Update(robotCommand);
         pneumaticIntake.Update(robotCommand);
 
+        double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
+
+        SmartDashboard.putNumber("wristY", wristY);
+
         IManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
         boolean score = robotCommand.ManipulatorScore();
 
@@ -657,7 +667,8 @@ public class Manipulator
             if (robotCommand.HatchPickup())
             {
                 double elevHeight = (setPoint.elevatorHeight() + 2.5 > 30 ? 30 : setPoint.elevatorHeight() + 2.5);
-                setPoint = new ManualManipulatorSetPoint(setPoint.armAngle(), setPoint.wristAngle(), elevHeight, setPoint.frontFlipper(), setPoint.backFlipper());
+                setPoint = new ManualManipulatorSetPoint(setPoint.armAngle(), setPoint.wristAngle(), elevHeight,
+                        setPoint.frontFlipper(), setPoint.backFlipper());
             }
             Control(setPoint);
             SmartDashboard.putBoolean("Disabled thing", false);
