@@ -421,7 +421,7 @@ public class Manipulator
         double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
         double targetWristY = getWristY(armTarget, wristTarget, elevTarget);
         double wristX = getWristX(arm.getPosition(), wrist.getPosition());
-    
+
         double flipperMaxY = 25;
         double flipperMaxX = 16;
 
@@ -545,7 +545,6 @@ public class Manipulator
         intake.Update(robotCommand);
         pneumaticIntake.Update(robotCommand);
 
-
         double armY = getArmY(arm.getPosition(), elevator.getPosition());
         double frontFlipperY = getFlipperY(frontFlipper.getPosition());
         double backFlipperY = getFlipperY(backFlipper.getPosition());
@@ -558,11 +557,10 @@ public class Manipulator
 
         double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
         double wristX = getWristX(arm.getPosition(), wrist.getPosition());
-    
+
         double flipperMaxY = 25;
         double flipperMaxX = 16;
 
-            
         boolean flipperSafe = false;
 
         if (wristX > flipperMaxX && armY > flipperMaxY)
