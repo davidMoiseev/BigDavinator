@@ -402,11 +402,6 @@ public class Manipulator
         return FLIPPER_LENGTH * Math.abs(Math.cos(Math.toRadians(flipper)));
     }
 
-    private boolean flipperSafe(double wristX, double wristY, double armY, double flipperX, double flipperY)
-    {
-        return (wristX > flipperX && armY > flipperY) || wristY > flipperY;
-    }
-
     private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
             double backFlipperTarget)
     {
@@ -422,46 +417,11 @@ public class Manipulator
         }
 
         double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
-        double armY = getArmY(arm.getPosition(), elevator.getPosition());
         double targetWristY = getWristY(armTarget, wristTarget, elevTarget);
-
-        double frontFlipperY = getFlipperY(frontFlipper.getPosition());
-        double backFlipperY = getFlipperY(backFlipper.getPosition());
-        double frontFlipperX = getFlipperX(frontFlipper.getPosition());
-        double backFlipperX = getFlipperX(backFlipper.getPosition());
-        double targetFlipperY = getFlipperY(frontFlipperTarget);
-        double targetFlipperX = getFlipperX(frontFlipperTarget);
-        SmartDashboard.putNumber("frontFlipperY", frontFlipperY);
-        SmartDashboard.putNumber("backFlipperY", backFlipperY);
-        SmartDashboard.putNumber("frontFlipperX", frontFlipperX);
-        SmartDashboard.putNumber("backFlipperX", backFlipperX);
-        SmartDashboard.putNumber("targetFlipperY", targetFlipperY);
-        SmartDashboard.putNumber("targetFlipperX", targetFlipperX);
-
+        double wristX = getWristX(arm.getPosition(), wrist.getPosition());
+    
         double flipperMaxY = 25;
         double flipperMaxX = 16;
-
-        double wristX = getWristX(arm.getPosition(), wrist.getPosition());
-
-        boolean flipperSafe = false;
-
-        if (wristX > flipperMaxX && armY > flipperMaxY)
-            flipperSafe = true;
-        if (wristY > flipperMaxY)
-            flipperSafe = true;
-        // Flipper going out and up/down but not passing 90
-        if (frontFlipperTarget > frontFlipper.getPosition() && frontFlipperY < wristY && targetFlipperY < wristY
-                && !(frontFlipperTarget > 90 && frontFlipper.getPosition() < 90))
-            flipperSafe = true;
-        if (frontFlipperTarget < frontFlipper.getPosition() && frontFlipperY < wristY && targetFlipperY < wristY
-                && !(frontFlipperTarget < 90 && frontFlipper.getPosition() > 90))
-            flipperSafe = true;
-
-        SmartDashboard.putNumber("wristX", wristX);
-        SmartDashboard.putNumber("wristY", wristY);
-        SmartDashboard.putNumber("armY", armY);
-
-        SmartDashboard.putBoolean("flipperSafe", flipperSafe);
 
         // Flipper waiting
         if (getArmSide(arm.getPosition()) == RobotSide.FRONT && !flipperOnTarget(frontFlipper, frontFlipperTarget))
@@ -583,7 +543,35 @@ public class Manipulator
         intake.Update(robotCommand);
         pneumaticIntake.Update(robotCommand);
 
+        double armY = getArmY(arm.getPosition(), elevator.getPosition());
+        double frontFlipperY = getFlipperY(frontFlipper.getPosition());
+        double backFlipperY = getFlipperY(backFlipper.getPosition());
+        double frontFlipperX = getFlipperX(frontFlipper.getPosition());
+        double backFlipperX = getFlipperX(backFlipper.getPosition());
+        SmartDashboard.putNumber("frontFlipperY", frontFlipperY);
+        SmartDashboard.putNumber("backFlipperY", backFlipperY);
+        SmartDashboard.putNumber("frontFlipperX", frontFlipperX);
+        SmartDashboard.putNumber("backFlipperX", backFlipperX);
+
         double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
+        double wristX = getWristX(arm.getPosition(), wrist.getPosition());
+    
+        double flipperMaxY = 25;
+        double flipperMaxX = 16;
+
+            
+        boolean flipperSafe = false;
+
+        if (wristX > flipperMaxX && armY > flipperMaxY)
+            flipperSafe = true;
+        if (wristY > flipperMaxY)
+            flipperSafe = true;
+
+        SmartDashboard.putNumber("wristX", wristX);
+        SmartDashboard.putNumber("wristY", wristY);
+        SmartDashboard.putNumber("armY", armY);
+
+        SmartDashboard.putBoolean("flipperSafe", flipperSafe);
 
         SmartDashboard.putNumber("wristY", wristY);
 
