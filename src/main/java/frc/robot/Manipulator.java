@@ -397,7 +397,7 @@ public class Manipulator
 
     private boolean flipperOnTarget(Flipper f, double target)
     {
-        return ((f.getPosition() - 12 < target) && (f.getPosition() + 12 > target));
+        return Math.abs(f.getPosition() - target) < 15 || ((f.getPosition() > target && target > 90) || (f.getPosition() < target && target < 90));
     }
 
     private double getWristY(double arm, double wrist, double elevator)
