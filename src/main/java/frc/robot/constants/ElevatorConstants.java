@@ -27,6 +27,7 @@ public class ElevatorConstants
     public static final int slotIdx = 0;
     public static final int pidIdx = 0;
     public static final double feedForward = 0.2;
+    public static double rampRate = .08;
     // .45 was decent
     public static final double proportional = 0.45;// .71 initially
     public static final double derivative = 0.001 * 0;

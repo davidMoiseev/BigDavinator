@@ -39,6 +39,7 @@ public class Elevator extends MotionMagicActuator
         setMotionCruiseVelocity(ElevatorConstants.motionCruiseVelocity);
         setTimeoutms(ElevatorConstants.timeoutms);
         setSensorPhase(ElevatorConstants.sensorPhase);
+        setClosedLoopRampRate(ElevatorConstants.rampRate);
 
         setForwardSoftLimitThreshold(ElevatorConstants.forwardSoftLimitThreshold);
         setReverseSoftLimitThreshold(ElevatorConstants.reverseSoftLimitThreshold);

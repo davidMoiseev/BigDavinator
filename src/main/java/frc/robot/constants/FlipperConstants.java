@@ -31,4 +31,5 @@ public class FlipperConstants
     public static final double ANGLE_TO_TICKS = 2100.0 / 90.0;
     public static final int allowableError = (int) (4 * ANGLE_TO_TICKS);
     public static final double minimumTimeToReachTarget = 0.075;
+	public static double rampRate = .08;
 }

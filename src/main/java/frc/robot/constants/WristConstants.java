@@ -31,6 +31,7 @@ public class WristConstants
     public static final double derivative = 0.1 * 0;
     public static final double integral = 0.0024 * 0;
     public static final FeedbackDevice feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative;
+    public static double rampRate = .08;
 
     public static final double TICKS_TO_DEGREES = 0.12 * 360 / 4096;
     public static double lenght = 10;

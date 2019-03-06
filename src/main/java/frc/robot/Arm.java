@@ -37,6 +37,7 @@ public class Arm extends MotionMagicActuator
         setMotionCruiseVelocity(ArmConstants.motionCruiseVelocity);
         setTimeoutms(ArmConstants.timeoutms);
         setSensorPhase(ArmConstants.sensorPhase);
+        setClosedLoopRampRate(ArmConstants.rampRate);
 
         setForwardSoftLimitThreshold(ArmConstants.forwardSoftLimitThreshold);
         setReverseSoftLimitThreshold(ArmConstants.reverseSoftLimitThreshold);

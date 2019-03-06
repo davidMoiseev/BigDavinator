@@ -26,6 +26,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     private double reachedTargetTimer;
     private int previousEncoderValue;
     private int currentEncoderValue;
+    private double rampRate;
 
     public MotionMagicActuator(int primaryCAN_ID)
     {
@@ -68,6 +69,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         primaryTalon.configPeakOutputForward(peakOutputForward, timeoutms);
         primaryTalon.configPeakOutputReverse(peakOutputReverse, timeoutms);
         primaryTalon.configMotionAcceleration(motionAcceleration, timeoutms);
+        primaryTalon.configClosedloopRamp(rampRate, timeoutms);
         primaryTalon.configMotionCruiseVelocity(motionCruiseVelocity, timeoutms);
         primaryTalon.setSensorPhase(sensorPhase);
         SRX_PID_0.initialize(primaryTalon);
@@ -183,6 +185,16 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     public void setSensorPhase(boolean sensorPhase)
     {
         this.sensorPhase = sensorPhase;
+    }
+
+    public void setClosedLoopRampRate(double rampRate)
+    {
+        this.rampRate = rampRate;
+    }
+
+    public double getClosedLoopRampRate()
+    {
+        return rampRate;
     }
 
     /**

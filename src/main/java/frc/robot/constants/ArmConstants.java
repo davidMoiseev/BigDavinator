@@ -36,4 +36,5 @@ public class ArmConstants
 
     public static final int allowableError = (int) (5 / TICKS_TO_DEGREES);
     public static final double minimumTimeToReachTarget = 0.1;
+    public static double rampRate = .08;
 }

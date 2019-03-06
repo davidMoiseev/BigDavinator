@@ -37,6 +37,7 @@ public class Wrist extends MotionMagicActuator
         setMotionCruiseVelocity(WristConstants.motionCruiseVelocity);
         setTimeoutms(WristConstants.timeoutms);
         setSensorPhase(WristConstants.sensorPhase);
+        setClosedLoopRampRate(WristConstants.rampRate);
 
         setForwardSoftLimitThreshold(WristConstants.forwardSoftLimitThreshold);
         setReverseSoftLimitThreshold(WristConstants.reverseSoftLimitThreshold);

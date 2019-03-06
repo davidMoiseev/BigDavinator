@@ -17,6 +17,7 @@ public class FlipperActuator extends MotionMagicActuator
         setMotionCruiseVelocity(FlipperConstants.motionCruiseVelocity);
         setTimeoutms(FlipperConstants.timeoutms);
         setSensorPhase(FlipperConstants.sensorPhase);
+        setClosedLoopRampRate(FlipperConstants.rampRate);
 
         setForwardSoftLimitThreshold(FlipperConstants.forwardSoftLimitThreshold);
         setReverseSoftLimitThreshold(FlipperConstants.reverseSoftLimitThreshold);
