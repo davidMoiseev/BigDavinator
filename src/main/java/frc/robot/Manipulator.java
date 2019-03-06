@@ -654,9 +654,9 @@ public class Manipulator
             {
                 setPoint = CreateScoreSetPoint(setPoint);
             }
-            if (robotCommand.IntakeSolenoid())
+            if (robotCommand.HatchPickup())
             {
-                double elevHeight = (setPoint.elevatorHeight() + 2 > 30 ? 30 : setPoint.elevatorHeight());
+                double elevHeight = (setPoint.elevatorHeight() + 2.5 > 30 ? 30 : setPoint.elevatorHeight() + 2.5);
                 setPoint = new ManualManipulatorSetPoint(setPoint.armAngle(), setPoint.wristAngle(), elevHeight, setPoint.frontFlipper(), setPoint.backFlipper());
             }
             Control(setPoint);

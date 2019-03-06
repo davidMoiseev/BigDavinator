@@ -2,6 +2,9 @@ package frc.robot.constants;
 
 import org.hotteam67.HotController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Flipper;
+
 public class TeleopCommandProvider implements IRobotCommandProvider
 {
     private final HotController driver;
@@ -16,12 +19,17 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private boolean intakeOut = false;
     private boolean intakeIn = false;
     private boolean climb = false;
+    private boolean hatchPickup = false;
 
     private double frontFlipperSetPointAdjust = 0;
     private double backFlipperSetPointAdjust = 0;
 
     private boolean lastFlipperUp = false;
     private boolean lastFlipperDown = false;
+
+    private final double flipper_add = 4;
+    private double frontFlipperCount = 0;
+    private double backFlipperCount = 0;
 
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
@@ -179,6 +187,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             intakeIn = false;
         }
 
+        hatchPickup = driver.getButtonY();
         if (driver.getButtonX())
         {
             intakeSolenoid = true;
@@ -202,51 +211,57 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         LeftDrive = -driver.getStickLY() + (driver.getStickRX() * .5);
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
-        if (operator.getDpad() > 0 && !lastFlipperUp)
+        boolean up = operator.getPOV() == 180;
+        boolean down = operator.getPOV() == 0;
+
+        if (up && !upPrev)
+        {
+            if (outputSetPoint != null && outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
+                frontFlipperCount++;
+            else if (outputSetPoint != null && outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
+            {
+                backFlipperCount++;
+            }
+        }
+        else if (down && !downPrev)
+        {
+            if (outputSetPoint != null && outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
+                frontFlipperCount--;
+            else if (outputSetPoint != null && outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
+            {
+                backFlipperCount--;
+            }
+        }
+
+        SmartDashboard.putBoolean("frontCarry",
+                outputSetPoint != null && outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT);
+        SmartDashboard.putBoolean("backCarry",
+                outputSetPoint != null && outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK);
+
+        SmartDashboard.putNumber("frontFlipperCount", frontFlipperCount);
+        SmartDashboard.putNumber("backFlipperCount", backFlipperCount);
+
+        SmartDashboard.putNumber("operatorPOV", operator.getPOV());
+        upPrev = operator.getPOV() == 180;
+        downPrev = operator.getPOV() == 0;
+        SmartDashboard.putBoolean("upPrev", upPrev);
+        SmartDashboard.putBoolean("downPrev", downPrev);
+
+        if (outputSetPoint != null)
         {
             if (outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
-            {
-                frontFlipperSetPointAdjust += 2;
-            }
+                outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
+                        outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper() + (frontFlipperCount * 3),
+                        outputSetPoint.backFlipper());
             else if (outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
-            {
-                backFlipperSetPointAdjust += 2;
-            }
+                outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
+                        outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper(),
+                        outputSetPoint.backFlipper() + (backFlipperCount * 3));
         }
-        else if (operator.getDpad() < 0 && !lastFlipperDown)
-        {
-            if (outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
-            {
-                frontFlipperSetPointAdjust -= 2;
-            }
-            else if (outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
-            {
-                backFlipperSetPointAdjust -= 2;
-            }
-        }
-
-        fixFlipper();
-
-        lastFlipperDown = (operator.getDpad() < 0);
-        lastFlipperUp = (operator.getDpad() > 0);
-
     }
 
-    private void fixFlipper()
-    {
-        if (outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
-        {
-            outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
-                outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper() - frontFlipperSetPointAdjust,
-                outputSetPoint.backFlipper());
-        }
-        else if (outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
-        {
-            outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
-                outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper(),
-                outputSetPoint.backFlipper() - backFlipperSetPointAdjust);
-        }
-    }
+    boolean upPrev = false;
+    boolean downPrev = false;
 
     @Override
     public boolean IntakeOut()
@@ -264,5 +279,11 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public boolean ClimberDeploy()
     {
         return climb;
+    }
+
+    @Override
+    public boolean HatchPickup()
+    {
+        return hatchPickup;
     }
 }

@@ -21,7 +21,7 @@ public class HotController extends Joystick
 {
 
     boolean delay = false;
-    final double delayCountEnd = 10;
+    final double delayCountEnd = 5;
     double delayCount = 0;
     int lastButton = -1;
 
@@ -186,15 +186,18 @@ public class HotController extends Joystick
     public boolean getButtonA()
     {
         boolean value = getRawButton(1);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 1;
-        }
-        if (!value && lastButton == 1 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 1;
+            }
+            if (!value && lastButton == 1 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
     }
@@ -202,15 +205,18 @@ public class HotController extends Joystick
     public boolean getButtonB()
     {
         boolean value = getRawButton(2);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 2;
-        }
-        if (!value && lastButton == 2 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 2;
+            }
+            if (!value && lastButton == 2 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
     }
@@ -218,15 +224,18 @@ public class HotController extends Joystick
     public boolean getButtonX()
     {
         boolean value = getRawButton(3);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 3;
-        }
-        if (!value && lastButton == 3 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 3;
+            }
+            if (!value && lastButton == 3 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
     }
@@ -234,15 +243,18 @@ public class HotController extends Joystick
     public boolean getButtonY()
     {
         boolean value = getRawButton(4);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 4;
-        }
-        if (!value && lastButton == 4 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 4;
+            }
+            if (!value && lastButton == 4 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
     }
@@ -250,15 +262,18 @@ public class HotController extends Joystick
     public boolean getButtonRightBumper()
     {
         boolean value = getRawButton(6);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 6;
-        }
-        if (!value && lastButton == 6 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 6;
+            }
+            if (!value && lastButton == 6 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
     }
@@ -266,15 +281,18 @@ public class HotController extends Joystick
     public boolean getButtonLeftBumper()
     {
         boolean value = getRawButton(5);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 5;
-        }
-        if (!value && lastButton == 5 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 5;
+            }
+            if (!value && lastButton == 5 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
     }
@@ -283,17 +301,9 @@ public class HotController extends Joystick
     {
         boolean value = getRawButton(7);
         /*
-        if (value)
-        {
-            delayCount = 0;
-            lastButton = 7;
-        }
-        if (!value && lastButton == 7 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
-        }
-        */
+         * if (value) { delayCount = 0; lastButton = 7; } if (!value && lastButton == 7
+         * && delayCount < delayCountEnd) { delayCount++; return true; }
+         */
         return value;
     }
 
@@ -301,32 +311,27 @@ public class HotController extends Joystick
     {
         boolean value = getRawButton(8);
         /*
-        if (value)
-        {
-            delayCount = 0;
-            lastButton = 8;
-        }
-        if (!value && lastButton == 8 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
-        }
-        */
+         * if (value) { delayCount = 0; lastButton = 8; } if (!value && lastButton == 8
+         * && delayCount < delayCountEnd) { delayCount++; return true; }
+         */
         return value;
     }
 
     public boolean getButtonLeftStick()
     {
         boolean value = getRawButton(9);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 9;
-        }
-        if (!value && lastButton == 9 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 9;
+            }
+            if (!value && lastButton == 9 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
 
@@ -335,15 +340,18 @@ public class HotController extends Joystick
     public boolean getButtonRightStick()
     {
         boolean value = getRawButton(10);
-        if (value)
+        if (delay)
         {
-            delayCount = 0;
-            lastButton = 10;
-        }
-        if (!value && lastButton == 10 && delayCount < delayCountEnd)
-        {
-            delayCount++;
-            return true;
+            if (value)
+            {
+                delayCount = 0;
+                lastButton = 10;
+            }
+            if (!value && lastButton == 10 && delayCount < delayCountEnd)
+            {
+                delayCount++;
+                return true;
+            }
         }
         return value;
     }

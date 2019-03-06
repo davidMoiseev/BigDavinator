@@ -30,7 +30,7 @@ public class Flipper
     boolean inverted = false;
     boolean isBack = false;
     double allowableError = 2;
-    double FLIPPER_P = .02;
+    double FLIPPER_P = .015;
 
     public Flipper(int ID, boolean inverted, boolean isBack)
     {
