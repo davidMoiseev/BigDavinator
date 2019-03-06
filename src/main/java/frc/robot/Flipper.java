@@ -29,7 +29,7 @@ public class Flipper
     TalonSRX flipper;
     boolean inverted = false;
     boolean isBack = false;
-    double allowableError = 2;
+    double allowableError = 4;
     double FLIPPER_P = .015;
 
     public Flipper(int ID, boolean inverted, boolean isBack)

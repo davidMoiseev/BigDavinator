@@ -397,7 +397,7 @@ public class Manipulator
 
     private boolean flipperOnTarget(Flipper f, double target)
     {
-        return ((f.getPosition() - 10 < target) && (f.getPosition() + 10 > target));
+        return ((f.getPosition() - 12 < target) && (f.getPosition() + 12 > target));
     }
 
     private double getWristY(double arm, double wrist, double elevator)
@@ -467,7 +467,7 @@ public class Manipulator
             {
                 armTarget = 90;
                 wristTarget = 90;
-                elevTarget = 30;
+                elevTarget = 20;
                 frontFlipperTarget = prevFrontFlipperAngle;
             }
         }
@@ -485,7 +485,7 @@ public class Manipulator
             {
                 armTarget = -90;
                 wristTarget = -90;
-                elevTarget = 30;
+                elevTarget = 20;
                 backFlipperTarget = prevBackFlipperAngle;
             }
         }
