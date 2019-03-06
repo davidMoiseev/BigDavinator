@@ -396,10 +396,15 @@ public class Manipulator
     {
         return FLIPPER_LENGTH * Math.abs(Math.sin(Math.toRadians(flipper)));
     }
-    
+
     private double getFlipperY(double flipper)
     {
         return FLIPPER_LENGTH * Math.abs(Math.cos(Math.toRadians(flipper)));
+    }
+
+    private boolean flipperSafe(double wristX, double wristY, double armY, double flipperX, double flipperY)
+    {
+        return (wristX > flipperX && armY > flipperY) || wristY > flipperY;
     }
 
     private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
@@ -420,13 +425,37 @@ public class Manipulator
         double armY = getArmY(arm.getPosition(), elevator.getPosition());
         double targetWristY = getWristY(armTarget, wristTarget, elevTarget);
 
-        double flipperY = 25;
+        double frontFlipperY = getFlipperY(frontFlipper.getPosition());
+        double backFlipperY = getFlipperY(backFlipper.getPosition());
+        double frontFlipperX = getFlipperX(frontFlipper.getPosition());
+        double backFlipperX = getFlipperX(backFlipper.getPosition());
+        double targetFlipperY = getFlipperY(frontFlipperTarget);
+        double targetFlipperX = getFlipperX(frontFlipperTarget);
+        SmartDashboard.putNumber("frontFlipperY", frontFlipperY);
+        SmartDashboard.putNumber("backFlipperY", backFlipperY);
+        SmartDashboard.putNumber("frontFlipperX", frontFlipperX);
+        SmartDashboard.putNumber("backFlipperX", backFlipperX);
+        SmartDashboard.putNumber("targetFlipperY", targetFlipperY);
+        SmartDashboard.putNumber("targetFlipperX", targetFlipperX);
+
+        double flipperMaxY = 25;
+        double flipperMaxX = 16;
 
         double wristX = getWristX(arm.getPosition(), wrist.getPosition());
 
         boolean flipperSafe = false;
-        if (wristX > 16 && armY > 25) flipperSafe = true;
-        if (wristY > 25) flipperSafe = true;
+
+        if (wristX > flipperMaxX && armY > flipperMaxY)
+            flipperSafe = true;
+        if (wristY > flipperMaxY)
+            flipperSafe = true;
+        // Flipper going out and up/down but not passing 90
+        if (frontFlipperTarget > frontFlipper.getPosition() && frontFlipperY < wristY && targetFlipperY < wristY
+                && !(frontFlipperTarget > 90 && frontFlipper.getPosition() < 90))
+            flipperSafe = true;
+        if (frontFlipperTarget < frontFlipper.getPosition() && frontFlipperY < wristY && targetFlipperY < wristY
+                && !(frontFlipperTarget < 90 && frontFlipper.getPosition() > 90))
+            flipperSafe = true;
 
         SmartDashboard.putNumber("wristX", wristX);
         SmartDashboard.putNumber("wristY", wristY);
@@ -437,15 +466,15 @@ public class Manipulator
         // Flipper waiting
         if (getArmSide(arm.getPosition()) == RobotSide.FRONT && !flipperOnTarget(frontFlipper, frontFlipperTarget))
         {
-            if (targetWristY > flipperY && wristY < flipperY)
+            if (targetWristY > flipperMaxY && wristY < flipperMaxY)
                 frontFlipperTarget = prevFrontFlipperAngle;
-            else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() > 100)
+            else if (targetWristY < flipperMaxY && wristY > flipperMaxY && arm.getPosition() > 100)
             {
                 armTarget = prevArmAngle;
                 wristTarget = prevWristAngle;
                 elevTarget = prevElevHeight;
             }
-            else if (targetWristY < flipperY && wristY < flipperY)
+            else if (targetWristY < flipperMaxY && wristY < flipperMaxY)
             {
                 armTarget = 90;
                 wristTarget = 90;
@@ -455,15 +484,15 @@ public class Manipulator
         }
         else if (getArmSide(arm.getPosition()) == RobotSide.BACK && !flipperOnTarget(backFlipper, backFlipperTarget))
         {
-            if (targetWristY > flipperY && wristY < flipperY)
+            if (targetWristY > flipperMaxY && wristY < flipperMaxY)
                 backFlipperTarget = prevBackFlipperAngle;
-            else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() < -100)
+            else if (targetWristY < flipperMaxY && wristY > flipperMaxY && arm.getPosition() < -100)
             {
                 armTarget = prevArmAngle;
                 wristTarget = prevWristAngle;
                 elevTarget = prevElevHeight;
             }
-            else if (targetWristY < flipperY && wristY < flipperY)
+            else if (targetWristY < flipperMaxY && wristY < flipperMaxY)
             {
                 armTarget = -90;
                 wristTarget = -90;
@@ -587,12 +616,10 @@ public class Manipulator
             arm.disable();
             wrist.disable();
             /*
-            frontFlipper.disable();
-            backFlipper.disable();
-            */
+             * frontFlipper.disable(); backFlipper.disable();
+             */
             SmartDashboard.putBoolean("Disabled thing", true);
         }
-
 
         // frontFlipper.setTarget(FlipperConstants.CARRY_FRONT);
 
