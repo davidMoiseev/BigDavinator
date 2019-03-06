@@ -158,7 +158,7 @@ public class Manipulator
         elevator.displaySensorsValue();
         arm.displaySensorsValue();
         wrist.displaySensorsValue();
-        // frontFlipper.displaySensorsValue();
+        frontFlipper.displaySensorsValue();
         backFlipper.displaySensorsValue();
     }
 
@@ -619,7 +619,7 @@ public class Manipulator
     {
         arm.checkEncoder();
         wrist.checkEncoder();
-        elevator.checkEncoder(0);
+        elevator.checkEncoder();
         intake.Update(robotCommand);
         pneumaticIntake.Update(robotCommand);
 
@@ -663,7 +663,7 @@ public class Manipulator
         }
 
 
-        frontFlipper.setTarget(FlipperConstants.CARRY_FRONT);
+        // frontFlipper.setTarget(FlipperConstants.CARRY_FRONT);
 
         SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
         SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());

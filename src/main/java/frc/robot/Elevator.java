@@ -108,4 +108,9 @@ public class Elevator extends MotionMagicActuator
     {
         return getSensorValue() * ElevatorConstants.TICKS_TO_INCHES;
     }
+
+    public void checkEncoder()
+    {
+        checkEncoder(50);
+    }
 }
