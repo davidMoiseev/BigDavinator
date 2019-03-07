@@ -121,6 +121,8 @@ public class Robot extends TimedRobot
         manipulator.Update(autonCommandProvider);
         driveTrain.readSensors();
         driveTrain.writeLogs();
+        if (!profileFinished)
+            profileFinished = driveTrain.FollowPath();
         switch (state)
         {
         // case 0:
@@ -145,6 +147,7 @@ public class Robot extends TimedRobot
         //         // state = state + 2;
         //     }
         //     break;
+        /*
         case 0:
             if (driveTrain.gyroLineUp(0.3, 50.0) == true)
             {
@@ -155,6 +158,7 @@ public class Robot extends TimedRobot
         case 1:
             driveTrain.zeroMotors();
             break;
+            */
         }
 
         SmartDashboard.putNumber("state", state);
@@ -180,12 +184,14 @@ public class Robot extends TimedRobot
     {
         // rumble(driver);
         // rumble(operator);
+        /*
         if (DriverStation.getInstance() != null)
         {
             int num = DriverStation.getInstance().getMatchNumber();
             SmartDashboard.putNumber("matchNumber", num);
             HotLogger.Log("matchNumber", num);
         }
+        */
 
 
         teleopCommandProvider.Update();

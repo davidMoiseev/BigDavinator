@@ -10,7 +10,7 @@ public class AutonCommandProvider implements IRobotCommandProvider
 
     @Override
     public IManipulatorSetPoint ManipulatorSetPoint() {
-        return ManipulatorSetPoint.carry_front;
+        return null;
     }
 
     @Override
