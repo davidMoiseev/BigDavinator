@@ -33,16 +33,6 @@ public class Robot extends TimedRobot
     public static final int JOYSTICK_OPERATOR = 1;
 
     HotController driver;
-    Interpolation driverLstick;
-    Interpolation driverRstick;
-    Interpolation driverLTrigger;
-    Interpolation driverRTrigger;
-
-    Interpolation operatorLstick;
-    Interpolation operatorRstick;
-    Interpolation operatorLTrigger;
-    Interpolation operatorRTrigger;
-    // XboxController operator = new XboxController(JOYSTICK_OPERATOR);
     DriveTrain driveTrain;
     Manipulator manipulator;
     Compressor compressor;
@@ -93,18 +83,6 @@ public class Robot extends TimedRobot
         driver.setDeadBandRX(.1);
         driver.setDeadBandRY(.1);
         driveTrain.initUsbCam();
-        /*
-         * eleLeft = new TalonSRX(WiringIDs.LEFT_ELEVATOR); eleRight = new
-         * TalonSRX(WiringIDs.RIGHT_ELEVATOR);
-         * 
-         * 
-         * eleRight.follow(eleLeft); eleLeft.setInverted(true);
-         */
-
-        /*
-         * intake = new TalonSRX(WiringIDs.INTAKE); wrist = new
-         * TalonSRX(WiringIDs.WRIST); shoulder = new TalonSRX(WiringIDs.SHOULDER);
-         */
     }
 
     @Override
@@ -119,52 +97,22 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         // May have to invert driveturn/drivespeed
-        SmartDashboard.putNumber("state", state);
-        //manipulator.Update(autonCommandProvider);
+        teleopCommandProvider.Update();
+
+        driveTrain.Update(teleopCommandProvider);
+        manipulator.Update(teleopCommandProvider, operator);
+
+        driveTrain.updateUsb(1);
+
+        HotLogger.Log("StickLY", -driver.getStickLY());
+        HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
+
         driveTrain.readSensors();
         driveTrain.writeLogs();
-        if (!profileFinished)
-            profileFinished = driveTrain.FollowPath();
-        switch (state)
-        {
-        // case 0:
-        
-        //     if (!profileFinished)
-        //         profileFinished = driveTrain.FollowPath();
-        //     else if ((profileFinished == true) && (driveTrain.canseeTarget() == true))
-        //     {
-        //         state++;
-        //     }
-        //     else
-        //     {
-        //         state = state + 3;
-        //         // state++;
-        //     }
-        //     break;
 
-        // case 0:
-        //     if (driveTrain.turnComplete(0) == true)
-        //     {
-        //         state++;
-        //         // state = state + 2;
-        //     }
-        //     break;
-        /*
-        case 0:
-            if (driveTrain.gyroLineUp(0.3, 50.0) == true)
-            {
-                state++;
-            }
-            break;
 
-        case 1:
-            driveTrain.zeroMotors();
-            break;
-            */
-        }
-
-        SmartDashboard.putNumber("state", state);
-
+        driveTrain.readSensors();
+        driveTrain.writeLogs();
     }
 
     @Override
@@ -176,7 +124,6 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
-        // driveTrain.zeroSensors();
     }
 
     boolean rumble = false;
@@ -200,9 +147,6 @@ public class Robot extends TimedRobot
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
         driveTrain.updateUsb(1);
         HotLogger.Log("StickLY", -driver.getStickLY());
-
-        // eleLeft.set(ControlMode.PercentOutput, operator.getY(Hand.kLeft) / 2);
-
         driveTrain.readSensors();
         driveTrain.writeLogs();
 
@@ -224,71 +168,6 @@ public class Robot extends TimedRobot
     public void disabledInit()
     {
         // More precise than x^2, change the denominator of constant to calibrate
-
-        driverLstick = input ->
-        {
-            if (input > 0)
-            {
-                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-            }
-            else
-            {
-                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
-            }
-        };
-
-        driverRstick = input ->
-        {
-            if (input > 0)
-            {
-                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-            }
-            else
-            {
-                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
-            }
-        };
-
-        driverLTrigger = input ->
-        {
-            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-        };
-        driverRTrigger = input ->
-        {
-            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-        };
-
-        operatorLstick = input ->
-        {
-            if (input > 0)
-            {
-                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-            }
-            else
-            {
-                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
-            }
-        };
-        operatorRstick = input ->
-        {
-            if (input > 0)
-            {
-                return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-            }
-            else
-            {
-                return -1 * (Math.sqrt(Math.pow(10, ((input) * -5) - 5)));
-            }
-        };
-
-        operatorLTrigger = input ->
-        {
-            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-        };
-        operatorRTrigger = input ->
-        {
-            return (Math.sqrt(Math.pow(10, ((input) * 5) - 5)));
-        };
 
         driver.setRumble(RumbleType.kLeftRumble, 0);
         driver.setRumble(RumbleType.kRightRumble, 0);
