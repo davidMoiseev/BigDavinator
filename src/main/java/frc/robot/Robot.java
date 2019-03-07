@@ -43,7 +43,6 @@ public class Robot extends TimedRobot
     TeleopCommandProvider teleopCommandProvider;
     AutonCommandProvider autonCommandProvider;
 
-    private boolean forceInitialization;
     public int state = 0;
     boolean profileFinished = false;
 
@@ -81,6 +80,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
+        
         driveTrain.zeroSensors();
         driveTrain.zeroMotors();
         profileFinished = false;
@@ -89,6 +89,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
+        
         // May have to invert driveturn/drivespeed
         teleopCommandProvider.Update();
 
@@ -102,6 +103,7 @@ public class Robot extends TimedRobot
 
         driveTrain.readSensors();
         driveTrain.writeLogs();
+
     }
 
     @Override
@@ -162,28 +164,33 @@ public class Robot extends TimedRobot
     @Override
     public void disabledPeriodic()
     {
-
         /**
          * Clicked for the first time, the robot is stable so start boot calibrate
          */
-        if ((SmartDashboard.getBoolean("RobotReady", false) && !pigeonInitializing) || forceInitialization)
+        
+        if ((SmartDashboard.getBoolean("robotReady", false) && !pigeonInitializing))
         {
+            SmartDashboard.putBoolean("pigeonReady", false);
             forceInitialization = false;
             driveTrain.CalibratePigeon();
             manipulator.RestartInitialization();
             pigeonInitializing = true;
         }
+        
+        
 
         /**
          * Pigeon is done initializing but we have not informed the DashBoard
          */
+        
         else if (pigeonInitializing && driveTrain.PigeonReady() && manipulator.isReady())
         {
             pigeonInitializing = false;
             driveTrain.zeroSensors();
-            SmartDashboard.putBoolean("PigeonReady", true);
+            SmartDashboard.putBoolean("pigeonReady", true);
+            SmartDashboard.putBoolean("robotReady", false);
         }
-
+        
         manipulator.RunManipulatorInitialization();
     }
 }
