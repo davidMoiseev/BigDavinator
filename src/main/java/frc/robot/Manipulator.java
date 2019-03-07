@@ -620,8 +620,9 @@ public class Manipulator
         return ARM_LENGTH * Math.sin(Math.toRadians(armAngle)) + lengthWristX(wristAngle);
     }
 
-    public void Update(IRobotCommandProvider robotCommand)
+    public void Update(IRobotCommandProvider robotCommand, HotController operator)
     {
+
         arm.checkEncoder();
         wrist.checkEncoder();
         elevator.checkEncoder(0);
@@ -664,6 +665,7 @@ public class Manipulator
             backFlipper.disable();
             SmartDashboard.putBoolean("Disabled thing", true);
         }
+        //elevator.manual(operator.getStickLY());
 
         SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
         SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());

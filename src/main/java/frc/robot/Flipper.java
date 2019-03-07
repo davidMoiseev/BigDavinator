@@ -60,6 +60,11 @@ public class Flipper
         flipper.set(ControlMode.PercentOutput, 0);
     }
 
+    public void manual(double output)
+    {
+        flipper.set(ControlMode.PercentOutput, output);
+    }
+
     /**
      * Set angle in degrees
      * 

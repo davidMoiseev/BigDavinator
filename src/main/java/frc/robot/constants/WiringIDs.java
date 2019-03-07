@@ -20,8 +20,8 @@ public class WiringIDs
 
     public static final int H_DRIVE = 7;
 
-    public static final int RIGHT_ELEVATOR = 6;
-    public static final int LEFT_ELEVATOR = 5;
+    public static final int RIGHT_ELEVATOR = 5;
+    public static final int LEFT_ELEVATOR = 6;
 
     public static final int SHOULDER = 8;
     public static final int WRIST = 9;

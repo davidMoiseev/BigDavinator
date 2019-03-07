@@ -48,6 +48,8 @@ public class Robot extends TimedRobot
     Compressor compressor;
     Solenoid climber;
 
+    HotController operator;
+
     TeleopCommandProvider teleopCommandProvider;
     AutonCommandProvider autonCommandProvider;
     /*
@@ -71,7 +73,7 @@ public class Robot extends TimedRobot
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
         this.driver = new HotController(0, false);
-        HotController operator = new HotController(1, true);
+        operator = new HotController(1, true);
 
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
         autonCommandProvider = new AutonCommandProvider();
@@ -118,7 +120,7 @@ public class Robot extends TimedRobot
     {
         // May have to invert driveturn/drivespeed
         SmartDashboard.putNumber("state", state);
-        manipulator.Update(autonCommandProvider);
+        //manipulator.Update(autonCommandProvider);
         driveTrain.readSensors();
         driveTrain.writeLogs();
         if (!profileFinished)
@@ -192,11 +194,9 @@ public class Robot extends TimedRobot
             HotLogger.Log("matchNumber", num);
         }
         */
-
-
         teleopCommandProvider.Update();
         driveTrain.Update(teleopCommandProvider);
-        manipulator.Update(teleopCommandProvider);
+        manipulator.Update(teleopCommandProvider, operator);
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
         driveTrain.updateUsb(1);
         HotLogger.Log("StickLY", -driver.getStickLY());
