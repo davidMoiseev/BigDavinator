@@ -42,13 +42,6 @@ public class Robot extends TimedRobot
 
     TeleopCommandProvider teleopCommandProvider;
     AutonCommandProvider autonCommandProvider;
-    /*
-     * TalonSRX eleLeft; TalonSRX eleRight;
-     */
-
-    /*
-     * TalonSRX shoulder; TalonSRX wrist; TalonSRX intake;
-     */
 
     private boolean forceInitialization;
     public int state = 0;
@@ -109,10 +102,6 @@ public class Robot extends TimedRobot
 
         driveTrain.readSensors();
         driveTrain.writeLogs();
-
-
-        driveTrain.readSensors();
-        driveTrain.writeLogs();
     }
 
     @Override
@@ -131,16 +120,6 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        // rumble(driver);
-        // rumble(operator);
-        /*
-        if (DriverStation.getInstance() != null)
-        {
-            int num = DriverStation.getInstance().getMatchNumber();
-            SmartDashboard.putNumber("matchNumber", num);
-            HotLogger.Log("matchNumber", num);
-        }
-        */
         teleopCommandProvider.Update();
         driveTrain.Update(teleopCommandProvider);
         manipulator.Update(teleopCommandProvider, operator);
