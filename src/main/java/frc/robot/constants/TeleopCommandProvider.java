@@ -205,8 +205,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
 
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
-        RightDrive = -driver.getStickLY() - (driver.getStickRX() * .5);
-        LeftDrive = -driver.getStickLY() + (driver.getStickRX() * .5);
+        RightDrive = -driver.getStickLY() - ((driver.getStickRX() * .5));
+        LeftDrive = -driver.getStickLY() + ((driver.getStickRX() * .5));
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
         boolean up = operator.getPOV() == 180;

@@ -14,6 +14,7 @@ import org.hotteam67.HotPathFollower;
 import org.hotteam67.Interpolation;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -82,7 +83,7 @@ public class Robot extends TimedRobot
         forceInitialization = true;
         
 
-        HotLogger.Setup("Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
+        HotLogger.Setup("matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
                 Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags);
 
         driver.setDeadBandLY(.1);
@@ -179,6 +180,13 @@ public class Robot extends TimedRobot
     {
         // rumble(driver);
         // rumble(operator);
+        if (DriverStation.getInstance() != null)
+        {
+            int num = DriverStation.getInstance().getMatchNumber();
+            SmartDashboard.putNumber("matchNumber", num);
+            HotLogger.Log("matchNumber", num);
+        }
+
 
         teleopCommandProvider.Update();
         driveTrain.Update(teleopCommandProvider);
