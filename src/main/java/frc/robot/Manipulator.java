@@ -138,7 +138,6 @@ public class Manipulator
         }
         if (initializationState == InitializationState.CALIBRATING)
         {
-
             armPigeon.CalibratePigeon();
             if (armPigeon.PigeonReady())
             {
@@ -147,7 +146,8 @@ public class Manipulator
                 arm.setPosition(armPigeon.GetAngle());
                 wrist.setPosition(armPigeon.GetAngle() - 134);
                 elevator.zeroSensors();
-
+                frontFlipper.initialize();
+                backFlipper.initialize();
             }
         }
 

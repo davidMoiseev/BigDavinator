@@ -64,7 +64,6 @@ public class Robot extends TimedRobot
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
-        forceInitialization = true;
         
 
         HotLogger.Setup("matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
@@ -171,7 +170,6 @@ public class Robot extends TimedRobot
         if ((SmartDashboard.getBoolean("robotReady", false) && !pigeonInitializing))
         {
             SmartDashboard.putBoolean("pigeonReady", false);
-            forceInitialization = false;
             driveTrain.CalibratePigeon();
             manipulator.RestartInitialization();
             pigeonInitializing = true;
