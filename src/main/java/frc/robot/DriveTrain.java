@@ -393,11 +393,13 @@ public class DriveTrain implements IPigeonWrapper
             leftClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.LeftDrive());
             rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
-        else if (allowClimb && command.ClimberDeploy() && !climbDeployed)
+        if (allowClimb && command.ClimberDeploy())
         {
             climbDeployed = true;
             climber.set(true);
         }
+        else
+            climber.set(false);
 
         hDriveMotor.set(HDriveOutput(command.HDrive()));
     }
@@ -408,7 +410,7 @@ public class DriveTrain implements IPigeonWrapper
         HDriveOutputOld = HDriveOutput;
         Hstate = 0;
         k = 0.02;
-        spike = 0.3;
+        spike = 0.4;
         kAlt = 0.5;
         // start up if statements spike in the positive and negative/ or do nothing
         // Negative
