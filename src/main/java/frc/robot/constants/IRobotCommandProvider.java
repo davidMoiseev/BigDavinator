@@ -23,4 +23,6 @@ public interface IRobotCommandProvider
     public boolean ClimberDeploy();
 
     public boolean HatchPickup();
+
+    public boolean ARMREZERO();
 }

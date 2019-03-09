@@ -10,6 +10,9 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private final HotController driver;
     private final HotController operator;
 
+    private double armReZeroTimer = 0;
+    private double armReZeroCount = 50;
+
     private IManipulatorSetPoint outputSetPoint = null;
     private double LeftDrive = 0;
     private double RightDrive = 0;
@@ -167,6 +170,12 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
+        if (operator.getButtonStart())
+        {
+            armReZeroTimer++;
+        }
+        else
+            armReZeroTimer = 0;
 
         if (driver.getButtonRightBumper())
         {
@@ -283,5 +292,10 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public boolean HatchPickup()
     {
         return hatchPickup;
+    }
+
+    @Override
+    public boolean ARMREZERO() {
+        return armReZeroTimer >= armReZeroCount;
     }
 }

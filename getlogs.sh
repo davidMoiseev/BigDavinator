@@ -18,6 +18,5 @@ fi
 
 address="admin@10.$first.$last.2"
 
-scp "${address}":/home/lvuser/logs/* ./Logs/
-ssh "${address}" 'rm /home/lvuser/logs/*'
+scp admin@172.22.11.2:/home/lvuser/logs/* ./Logs/
 read -p "Press any key to continue..." -n1 -s

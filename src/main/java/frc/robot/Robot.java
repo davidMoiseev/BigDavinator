@@ -73,7 +73,7 @@ public class Robot extends TimedRobot
         driver.setDeadBandLX(.1);
         driver.setDeadBandRX(.1);
         driver.setDeadBandRY(.1);
-        driveTrain.initUsbCam();
+        //driveTrain.initUsbCam();
     }
 
     @Override
@@ -93,9 +93,9 @@ public class Robot extends TimedRobot
         teleopCommandProvider.Update();
 
         driveTrain.Update(teleopCommandProvider);
-        manipulator.Update(teleopCommandProvider, operator);
+        manipulator.Update(teleopCommandProvider);
 
-        driveTrain.updateUsb(1);
+        //driveTrain.updateUsb(1);
 
         HotLogger.Log("StickLY", -driver.getStickLY());
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
@@ -123,9 +123,9 @@ public class Robot extends TimedRobot
     {
         teleopCommandProvider.Update();
         driveTrain.Update(teleopCommandProvider);
-        manipulator.Update(teleopCommandProvider, operator);
+        manipulator.Update(teleopCommandProvider);
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
-        driveTrain.updateUsb(1);
+        // driveTrain.updateUsb(1);
         HotLogger.Log("StickLY", -driver.getStickLY());
         driveTrain.readSensors();
         driveTrain.writeLogs();

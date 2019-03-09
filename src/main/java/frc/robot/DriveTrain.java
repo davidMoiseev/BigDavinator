@@ -328,6 +328,7 @@ public class DriveTrain implements IPigeonWrapper
         }
     }
 
+    /*
     public void updateUsb(int pipeline)
     {
         vmotion.usbUpdatePipeline(pipeline);
@@ -337,6 +338,7 @@ public class DriveTrain implements IPigeonWrapper
     {
         vmotion.usbCamInit();
     }
+    */
 
     public boolean gyroLineUp(double maxOutput, double targetDistanceStop)
     {

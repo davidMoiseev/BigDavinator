@@ -164,7 +164,6 @@ public class Manipulator
 
     private void Control(IManipulatorSetPoint targetPosition)
     {
-
         if (manipulatorState == ManipulatorState.initializing)
         {
             elevator.disable();
@@ -620,8 +619,23 @@ public class Manipulator
         return ARM_LENGTH * Math.sin(Math.toRadians(armAngle)) + lengthWristX(wristAngle);
     }
 
-    public void Update(IRobotCommandProvider robotCommand, HotController operator)
+    boolean zeroingArm = false;
+    public void Update(IRobotCommandProvider robotCommand)
     {
+        armPigeon.CalibratePigeon();
+        if (robotCommand.ARMREZERO() && !zeroingArm)
+        {
+            zeroingArm = true;
+            armPigeon.GatherMeasurements();
+            SmartDashboard.putBoolean("pigeonReady", false);
+        }
+        if (zeroingArm && armPigeon.PigeonReady())
+        {
+            zeroingArm = false;
+            arm.setPosition(armPigeon.GetAngle());
+            SmartDashboard.putBoolean("pigeonReady", true);
+        }
+
 
         arm.checkEncoder();
         wrist.checkEncoder();

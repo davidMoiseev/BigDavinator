@@ -11,6 +11,8 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * Add your docs here.
  */
@@ -33,6 +35,11 @@ public class ArmPigeon implements IPigeonWrapper
     {
         pigeon = new PigeonIMU(id);
         state = ArmPigeonState.UNINITALIZED;
+    }
+
+    public void GatherMeasurements()
+    {
+        state = ArmPigeonState.GATHERING_MEASUREMENTS;
     }
 
     @Override
@@ -79,21 +86,24 @@ public class ArmPigeon implements IPigeonWrapper
             }
             else
             {
+                SmartDashboard.putNumber("x", x);
+                SmartDashboard.putNumber("y", y);
+                SmartDashboard.putNumber("z", z);
                 // This converts the G values to radians then to degress
                 currentAngle = Math.atan(z / ((Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)))));
                 currentAngle = Math.toDegrees(currentAngle) - 90;
                 // Allows The Rio Angle To Wrap Around
                 if (z < 0)
-                {
+                {/*
                     if (x > 0)
                     {
-                        currentAngle = currentAngle + 90;
+                        currentAngle = 180 - currentAngle;
                     }
                     else
                     {
-                        currentAngle = currentAngle - 90;
+                        currentAngle = -180 - currentAngle;
                     }
-                }
+                */}
                 if (x < 0)
                 {
                     AverageAngle[loops] = -currentAngle;

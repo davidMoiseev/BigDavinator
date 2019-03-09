@@ -60,4 +60,9 @@ public class AutonCommandProvider implements IRobotCommandProvider
         return false;
     }
 
+    @Override
+    public boolean ARMREZERO() {
+        return false;
+    }
+
 }
