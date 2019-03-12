@@ -47,7 +47,8 @@ public class Manipulator
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("AA debug Arm", "armTarget", "wristTarget", "elevatorTarget"));
+            Arrays.asList("armTarget", "wristTarget", "elevatorTarget", "frontFlipperTarget", "backFlipperTarget",
+                    "elevator_collision", "flipper_collision", "arm_collision"));
 
     private Elevator elevator;
     private Intake intake;
@@ -211,15 +212,6 @@ public class Manipulator
 
         if (manipulatorState == ManipulatorState.atTarget)
         {
-            /*
-             * if (willCollideWithFrame(targetPosition.elevatorHeight(),
-             * targetPosition.armAngle(), targetPosition.wristAngle()) ||
-             * willCollideWithSupports(targetPosition.elevatorHeight(),
-             * targetPosition.armAngle(), targetPosition.wristAngle())) {
-             * 
-             * elevator.disable(); arm.disable(); wrist.disable();
-             * HotLogger.Log("AA debug Arm", 0); System.out.println("LogStuff: 0"); }
-             */
             // If it isn't
             // else
             {
@@ -234,8 +226,6 @@ public class Manipulator
                         if (arm.getPosition() + ARM_TOLERANCE < ManipulatorSetPoint.limit_front_extra_low.armAngle()
                                 && targetPosition.armAngle() > ManipulatorSetPoint.limit_front_extra_low.armAngle())
                         {
-                            HotLogger.Log("AA debug Arm", 6);
-                            System.out.println("LogStuff: 6");
                             setTargets(targetPosition.elevatorHeight(),
                                     ManipulatorSetPoint.limit_front_extra_low.armAngle(),
                                     ManipulatorSetPoint.limit_front_extra_low.wristAngle(),
@@ -266,8 +256,6 @@ public class Manipulator
                         if (arm.getPosition() - ARM_TOLERANCE > ManipulatorSetPoint.limit_back_extra_low.armAngle()
                                 && targetPosition.armAngle() < ManipulatorSetPoint.limit_back_extra_low.armAngle())
                         {
-                            HotLogger.Log("AA debug Arm", 7);
-                            System.out.println("LogStuff: 7");
                             setTargets(targetPosition.elevatorHeight(),
                                     ManipulatorSetPoint.limit_back_extra_low.armAngle(),
                                     ManipulatorSetPoint.limit_back_extra_low.wristAngle(),
@@ -396,7 +384,8 @@ public class Manipulator
 
     private boolean flipperOnTarget(Flipper f, double target)
     {
-        return Math.abs(f.getPosition() - target) < 15 || ((f.getPosition() > target && target > 90) || (f.getPosition() < target && target < 90));
+        return Math.abs(f.getPosition() - target) < 15
+                || ((f.getPosition() > target && target > 90) || (f.getPosition() < target && target < 90));
     }
 
     private double getWristY(double arm, double wrist, double elevator)
@@ -424,7 +413,14 @@ public class Manipulator
         if (elevTarget < elevator.getPosition() - ELEVATOR_TOLERANCE && Math.abs(arm.getPosition()) > 90
                 && Math.abs(armTarget - arm.getPosition()) > ARM_TOLERANCE)
         {
+            SmartDashboard.putBoolean("elevator_collision", true);
+            HotLogger.Log("elevator_collision", 1);
             elevTarget = prevElevHeight;
+        }
+        else
+        {
+            SmartDashboard.putBoolean("elevator_collision", false);
+            HotLogger.Log("elevator_collision", 0);
         }
 
         double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
@@ -437,58 +433,93 @@ public class Manipulator
         if (getArmSide(arm.getPosition()) == RobotSide.FRONT && !flipperOnTarget(frontFlipper, frontFlipperTarget))
         {
             if (targetWristY > flipperY && wristY < flipperY)
+            {
+                SmartDashboard.putNumber("flipper_collision", 0);
+                HotLogger.Log("flipper_collision", 0);
                 frontFlipperTarget = prevFrontFlipperAngle;
+            }
             else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() > 100)
             {
+                SmartDashboard.putNumber("flipper_collision", 1);
+                HotLogger.Log("flipper_collision", 1);
                 armTarget = prevArmAngle;
                 wristTarget = prevWristAngle;
                 elevTarget = prevElevHeight;
             }
             else if (targetWristY < flipperY && wristY < flipperY)
             {
+                SmartDashboard.putNumber("flipper_collision", 2);
+                HotLogger.Log("flipper_collision", 2);
                 armTarget = 90;
                 wristTarget = 90;
                 elevTarget = 20;
                 frontFlipperTarget = prevFrontFlipperAngle;
             }
+            else
+            {
+                SmartDashboard.putNumber("flipper_collision", 6);
+                HotLogger.Log("flipper_collision", 6);
+            }
+
         }
         else if (getArmSide(arm.getPosition()) == RobotSide.BACK && !flipperOnTarget(backFlipper, backFlipperTarget))
         {
             if (targetWristY > flipperY && wristY < flipperY)
+            {
+                SmartDashboard.putNumber("flipper_collision", 3);
+                HotLogger.Log("flipper_collision", 3);
                 backFlipperTarget = prevBackFlipperAngle;
+            }
             else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() < -100)
             {
+                SmartDashboard.putNumber("flipper_collision", 4);
+                HotLogger.Log("flipper_collision", 4);
                 armTarget = prevArmAngle;
                 wristTarget = prevWristAngle;
                 elevTarget = prevElevHeight;
             }
             else if (targetWristY < flipperY && wristY < flipperY)
             {
+                SmartDashboard.putNumber("flipper_collision", 5);
+                HotLogger.Log("flipper_collision", 5);
                 armTarget = -90;
                 wristTarget = -90;
                 elevTarget = 20;
                 backFlipperTarget = prevBackFlipperAngle;
+            }
+            else
+            {
+                SmartDashboard.putNumber("flipper_collision", 7);
+                HotLogger.Log("flipper_collision", 7);
             }
         }
 
         if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative < -110)
         {
             armTarget = prevArmAngle;
+            SmartDashboard.putNumber("arm_collision", 0);
+            HotLogger.Log("arm_collision", 0);
         }
         // arm Clockwise wrist clockwise
         else if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative > 110)
         {
             wristTarget = prevWristAngle;
+            SmartDashboard.putNumber("arm_collision", 1);
+            HotLogger.Log("arm_collision", 1);
         }
         // arm counterclockwise wrist counterclockwise
         else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative < -110)
         {
             wristTarget = prevWristAngle;
+            SmartDashboard.putNumber("arm_collision", 2);
+            HotLogger.Log("arm_collision", 2);
         }
         // arm clockwise wrist clockwise
         else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative > 110)
         {
             armTarget = prevArmAngle;
+            SmartDashboard.putNumber("arm_collision", 3);
+            HotLogger.Log("arm_collision", 3);
         }
 
         frontFlipper.control(frontFlipperTarget);
@@ -517,7 +548,9 @@ public class Manipulator
          * SmartDashboard.putNumber("armHolding", holdingArm);
          */
         SmartDashboard.putNumber("frontFlipperTarget", frontFlipperTarget);
+        HotLogger.Log("frontFlipperTarget", frontFlipperTarget);
         SmartDashboard.putNumber("backFlipperTarget", backFlipperTarget);
+        HotLogger.Log("backFlipperTarget", backFlipperTarget);
         SmartDashboard.putBoolean("frontFlipperOnTarget", flipperOnTarget(frontFlipper, frontFlipperTarget));
         SmartDashboard.putBoolean("backFlipperOnTarget", flipperOnTarget(backFlipper, backFlipperTarget));
         // frontFlipper.setTarget(frontFlipperTarget);
@@ -620,6 +653,7 @@ public class Manipulator
     }
 
     boolean zeroingArm = false;
+
     public void Update(IRobotCommandProvider robotCommand)
     {
         armPigeon.CalibratePigeon();
@@ -635,7 +669,6 @@ public class Manipulator
             arm.setPosition(armPigeon.GetAngle());
             SmartDashboard.putBoolean("pigeonReady", true);
         }
-
 
         arm.checkEncoder();
         wrist.checkEncoder();
@@ -679,7 +712,7 @@ public class Manipulator
             backFlipper.disable();
             SmartDashboard.putBoolean("Disabled thing", true);
         }
-        //elevator.manual(operator.getStickLY());
+        // elevator.manual(operator.getStickLY());
 
         SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
         SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());

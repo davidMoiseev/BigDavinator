@@ -1,6 +1,11 @@
 package frc.robot.constants;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.hotteam67.HotController;
+import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Flipper;
@@ -218,6 +223,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         LeftDrive = -driver.getStickLY() + ((driver.getStickRX() * .5));
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
+
         boolean up = operator.getPOV() == 180;
         boolean down = operator.getPOV() == 0;
 
@@ -240,19 +246,10 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             }
         }
 
-        SmartDashboard.putBoolean("frontCarry",
-                outputSetPoint != null && outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT);
-        SmartDashboard.putBoolean("backCarry",
-                outputSetPoint != null && outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK);
+        LogValues();
 
-        SmartDashboard.putNumber("frontFlipperCount", frontFlipperCount);
-        SmartDashboard.putNumber("backFlipperCount", backFlipperCount);
-
-        SmartDashboard.putNumber("operatorPOV", operator.getPOV());
         upPrev = operator.getPOV() == 180;
         downPrev = operator.getPOV() == 0;
-        SmartDashboard.putBoolean("upPrev", upPrev);
-        SmartDashboard.putBoolean("downPrev", downPrev);
 
         if (outputSetPoint != null)
         {
@@ -265,6 +262,36 @@ public class TeleopCommandProvider implements IRobotCommandProvider
                         outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper(),
                         outputSetPoint.backFlipper() + (backFlipperCount * 3));
         }
+    }
+
+    private String setPointName(ManipulatorSetPoint setPoint)
+    {
+        for (ManipulatorSetPoint s : ManipulatorSetPoint.values())
+        {
+            if (setPoint == s)
+                return s.name();
+        }
+        return setPoint.toString();
+    }
+
+    private void LogValues()
+    {
+        Log("outputSetPoint", setPointName((ManipulatorSetPoint) outputSetPoint));
+        Log("frontFlipperCount", frontFlipperCount);
+        Log("backFlipperCount", backFlipperCount);
+    }
+
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("outputSetPoint", "frontFlipperCount", "backFlipperCount"));
+
+    private void Log(String tag, double value)
+    {
+        Log(tag, String.valueOf(value));
+    }
+
+    private void Log(String tag, String value)
+    {
+        SmartDashboard.putString(tag, value);
+        HotLogger.Log(tag, value);
     }
 
     boolean upPrev = false;
@@ -295,7 +322,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     }
 
     @Override
-    public boolean ARMREZERO() {
+    public boolean ARMREZERO()
+    {
         return armReZeroTimer >= armReZeroCount;
     }
 }
