@@ -19,6 +19,7 @@ import org.hotteam67.HotLogger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ElevatorConstants;
 import frc.robot.constants.IManipulatorSetPoint;
+import frc.robot.constants.WiringIDs;
 
 /**
  * Add your docs here.
@@ -57,10 +58,16 @@ public class Elevator extends MotionMagicActuator
     public void initialize()
     {
         super.initialize();
-        //primaryTalon.setInverted(true);
-        //secondaryTalon.setInverted(true);
-        primaryTalon.setSensorPhase(false);
-        secondaryTalon.setSensorPhase(false);
+        if (WiringIDs.IS_PRACTICE_BOT)
+        {
+            primaryTalon.setInverted(true);
+            secondaryTalon.setInverted(true);
+        }
+        else
+        {
+            primaryTalon.setSensorPhase(false);
+            secondaryTalon.setSensorPhase(false);
+        }
     }
 
     private static void Log(String input, double value)
