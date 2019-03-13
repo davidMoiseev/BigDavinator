@@ -328,6 +328,14 @@ public class DriveTrain implements IPigeonWrapper
         }
     }
 
+    public void steeringAssist(double pipeline, TeleopCommandProvider command){
+        if(command.steeringAssistActivated()){
+            vmotion.setPipeline(pipeline);
+            leftMotor.set(vmotion.turnVision());
+            rightMotor.set(-vmotion.turnVision());
+        }
+    }
+
     /*
     public void updateUsb(int pipeline)
     {
@@ -386,9 +394,13 @@ public class DriveTrain implements IPigeonWrapper
     {
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
-
-        rightMotor.set(command.RightDrive());
-        leftMotor.set(command.LeftDrive() + 0.15 * (HDriveOutput(command.HDrive())));
+        if(!command.steeringAssistActivated()){
+            rightMotor.set(command.RightDrive());
+            leftMotor.set(command.LeftDrive() + 0.15 * (HDriveOutput(command.HDrive())));
+        }else{
+            rightMotor.set(command.RightDriveSteeringAssist());
+            leftMotor.set(command.LeftDriveSteeringAssist());
+        }
 
         if (climbDeployed)
         {
