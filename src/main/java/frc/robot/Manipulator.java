@@ -144,6 +144,7 @@ public class Manipulator
                 initializationState = InitializationState.READY;
                 manipulatorState = ManipulatorState.packagePosition;
                 arm.setPosition(armPigeon.GetAngle());
+                SmartDashboard.putNumber("A Pigeon Angle", armPigeon.GetAngle());
                 wrist.setPosition(armPigeon.GetAngle() - 134);
                 elevator.zeroSensors();
                 frontFlipper.initialize();
