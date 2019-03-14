@@ -12,6 +12,10 @@ public interface IRobotCommandProvider
 
     public double RightDrive();
 
+    public double LeftDriveSteeringAssist();
+
+    public double RightDriveSteeringAssist();
+
     public double HDrive();
 
     public boolean IntakeSolenoid();
@@ -25,4 +29,6 @@ public interface IRobotCommandProvider
     public boolean HatchPickup();
 
     public boolean ARMREZERO();
+
+    public boolean steeringAssistActivated();
 }

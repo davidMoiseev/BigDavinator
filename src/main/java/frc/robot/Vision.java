@@ -111,16 +111,16 @@ public class Vision extends Subsystem
     return tv;
   }
 
-  public double getTX()
+  public double getHorizontal()
   {
-    tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    return tx;
+    double hz = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    return hz;
   }
 
-  public double getTY()
+  public double getVertical()
   {
-    ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    return ty;
+    double vt = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    return vt;
   }
 
   public double getTA()
@@ -150,7 +150,7 @@ public class Vision extends Subsystem
     {
       targetHeight = normalHeight;
     }
-    a2 = getTY();
+    a2 = getVertical();
     // distance = (targetHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + a2));
     limelightAngle = Math.atan((limelightHeight-limelightHeight)/38) - a2; /*calculates angle
     of limelight crosshair relative to ground*/

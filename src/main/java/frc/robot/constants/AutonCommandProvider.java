@@ -29,6 +29,22 @@ public class AutonCommandProvider implements IRobotCommandProvider
     }
 
     @Override
+    public boolean steeringAssistActivated()
+    {
+        return false;
+    }
+
+    @Override
+    public double LeftDriveSteeringAssist() {
+        return 0;
+    }
+
+    @Override
+    public double RightDriveSteeringAssist() {
+        return 0;
+    }
+
+    @Override
     public double HDrive() {
         return 0;
     }

@@ -21,6 +21,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private IManipulatorSetPoint outputSetPoint = null;
     private double LeftDrive = 0;
     private double RightDrive = 0;
+    private double LeftDriveSteeringAssist = 0;
+    private double RightDriveSteeringAssist = 0;
     private double HDrive = 0;
     private boolean intakeSolenoid = false;
     private boolean score = false;
@@ -28,6 +30,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private boolean intakeIn = false;
     private boolean climb = false;
     private boolean hatchPickup = false;
+    private boolean steeringAssist = false;
 
     private double frontFlipperSetPointAdjust = 0;
     private double backFlipperSetPointAdjust = 0;
@@ -68,6 +71,17 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     {
         return RightDrive;
     }
+    @Override
+    public double LeftDriveSteeringAssist()
+    {
+        return LeftDriveSteeringAssist;
+    }
+
+    @Override
+    public double RightDriveSteeringAssist()
+    {
+        return RightDriveSteeringAssist;
+    }
 
     @Override
     public double HDrive()
@@ -79,6 +93,11 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public boolean IntakeSolenoid()
     {
         return intakeSolenoid;
+    }
+
+    @Override
+    public boolean steeringAssistActivated(){
+        return steeringAssist;
     }
 
     boolean commandToBack = true;
@@ -209,6 +228,12 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             intakeSolenoid = false;
         }
 
+        if(driver.getButtonStart()){
+            steeringAssist = true;
+        }else{
+            steeringAssist = false;
+        }
+
         score = driver.getButtonA();
 
         if (operator.getButtonLeftStick() && !flipButtonPrevious)
@@ -221,6 +246,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
 
         RightDrive = -driver.getStickLY() - ((driver.getStickRX() * .5));
         LeftDrive = -driver.getStickLY() + ((driver.getStickRX() * .5));
+        RightDriveSteeringAssist = -driver.getStickLY();
+        LeftDriveSteeringAssist = -driver.getStickLY();
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
 

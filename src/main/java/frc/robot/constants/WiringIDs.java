@@ -44,5 +44,8 @@ public class WiringIDs
     public static final int FLIPPER_FRONT = 13;
     public static final int FLIPPER_BACK = 14;
 
+    public static final int CANIFIER_ARM = 30;
+    public static final int CANIFIER_WRIST = 31;
+
     public static final boolean IS_PRACTICE_BOT = true;
 }

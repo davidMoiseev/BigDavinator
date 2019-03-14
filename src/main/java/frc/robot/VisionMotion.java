@@ -123,7 +123,7 @@ public class VisionMotion
     public boolean definitelySeesTarget()
     {
         double maxHeadingChange = 1000;
-        if ((earlierCanSeeTarget == vision.getTV()) && (Math.abs(prevHeadingVis - vision.getTV()) < maxHeadingChange))
+        if ((earlierCanSeeTarget == vision.getTV()) && (Math.abs(prevHeadingVis - vision.getHorizontal()) < maxHeadingChange))
         {
             earlierCanSeeTarget = vision.getTV();
             prevHeadingVis = vision.getHeading();
@@ -173,15 +173,15 @@ public class VisionMotion
 
     public boolean getHigh()
     { // true = high, false = low
-        if (vision.getTY() > 6)
+        if (vision.getVertical() > 6)
         {
             return true;
         }
-        else if (vision.getTY() < 3)
+        else if (vision.getVertical() < 3)
         {
             return false;
         }
-        else if (vision.getTY() > 3 && vision.getTY() < 6)
+        else if (vision.getVertical() > 3 && vision.getVertical() < 6)
         {
             if (vision.getTA() < 5)
             {
@@ -419,14 +419,14 @@ public class VisionMotion
 
     public boolean detectBallBounce()
     {
-        if (Math.abs(vision.getTY() - bouncePrevY) > 5.0)
+        if (Math.abs(vision.getVertical() - bouncePrevY) > 5.0)
         {
-            bouncePrevY = vision.getTY();
+            bouncePrevY = vision.getVertical();
             return true;
         }
         else
         {
-            bouncePrevY = vision.getTY();
+            bouncePrevY = vision.getVertical();
             return false;
         }
     }

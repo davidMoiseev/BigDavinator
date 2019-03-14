@@ -11,13 +11,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 
 import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
+import frc.robot.constants.WiringIDs;
 import frc.robot.constants.WristConstants;
 
 /**
@@ -25,9 +29,13 @@ import frc.robot.constants.WristConstants;
  */
 public class Wrist extends MotionMagicActuator
 {
+    private CANifier wristCan;
+
     public Wrist(int primaryCAN_ID/* , int secondaryCAN_ID */)
     {
         super(primaryCAN_ID/* , secondaryCAN_ID */);
+        
+        wristCan = new CANifier(WiringIDs.CANIFIER_WRIST);
 
         setNominalOutputForward(WristConstants.nominalOutputForward);
         setNominalOutputReverse(WristConstants.nominalOutputReverse);
@@ -51,6 +59,15 @@ public class Wrist extends MotionMagicActuator
 
     }
 
+    @Override
+    public void initialize()
+    {
+        super.initialize();
+
+        primaryTalon.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 20);
+        primaryTalon.configRemoteFeedbackFilter(WiringIDs.CANIFIER_WRIST, RemoteSensorSource.CANifier_Quadrature, 0);
+    }
+
     private static void Log(String tag, double value)
     {
         SmartDashboard.putNumber(tag, value);
@@ -62,6 +79,7 @@ public class Wrist extends MotionMagicActuator
     {
         Log("Wirst Position ticks", getSensorValue());
         Log("A Wirst Position degree", getPosition());
+        SmartDashboard.putNumber("A WristCan Degree", - wristCan.getQuadraturePosition() * WristConstants.TICKS_TO_DEGREES);
         Log("Wirst Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
@@ -79,7 +97,13 @@ public class Wrist extends MotionMagicActuator
 
     public void setPosition(double angle)
     {
-        primaryTalon.setSelectedSensorPosition((int) (angle / WristConstants.TICKS_TO_DEGREES));
+        wristCan.setQuadraturePosition((int) (angle / WristConstants.TICKS_TO_DEGREES), 100);
+    }
+
+    @Override
+    public void zeroSensors()
+    {
+        wristCan.setQuadraturePosition(0, WristConstants.timeoutms);
     }
 
     @Override
