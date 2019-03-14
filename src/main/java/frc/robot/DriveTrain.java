@@ -66,11 +66,15 @@ public class DriveTrain implements IPigeonWrapper
     private final TalonSRX rightEncoder;
     private final TalonSRX leftEncoder;
     private double[] xyz_dps = new double[3];
-    private double HDriveOutputOld;
-    private int Hstate;
-    double k;
-    double spike;
-    double kAlt;
+    private double hDriveLast;
+
+    private enum HState
+    {
+        Off, Spike, Ramp
+    }
+
+    private HState hState = HState.Off;
+    private int hDriveSpike = 0;
 
     // values without offset
     private double leftEncoderValue = 0;
@@ -108,7 +112,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class ANGLE_PID
     {
-        public static final double P =  .8 * (-1.0 / 80.0);
+        public static final double P = .8 * (-1.0 / 80.0);
     }
 
     /**
@@ -158,7 +162,7 @@ public class DriveTrain implements IPigeonWrapper
 
     public void loadPath(String leftPathFile, String rightPathFile)
     {
-            pathFollower.LoadPath(leftPathFile, rightPathFile);
+        pathFollower.LoadPath(leftPathFile, rightPathFile);
     }
 
     /**
@@ -329,16 +333,10 @@ public class DriveTrain implements IPigeonWrapper
     }
 
     /*
-    public void updateUsb(int pipeline)
-    {
-        vmotion.usbUpdatePipeline(pipeline);
-    }
-
-    public void initUsbCam()
-    {
-        vmotion.usbCamInit();
-    }
-    */
+     * public void updateUsb(int pipeline) { vmotion.usbUpdatePipeline(pipeline); }
+     * 
+     * public void initUsbCam() { vmotion.usbCamInit(); }
+     */
 
     public boolean gyroLineUp(double maxOutput, double targetDistanceStop)
     {
@@ -408,90 +406,50 @@ public class DriveTrain implements IPigeonWrapper
 
     public double HDriveOutput(double input)
     {
-        double HDriveOutput = input;
-        HDriveOutputOld = HDriveOutput;
-        Hstate = 0;
-        k = 0.02;
-        spike = 0.4;
-        kAlt = 0.5;
-        // start up if statements spike in the positive and negative/ or do nothing
-        // Negative
-        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) < 0.0 && HDriveOutputOld == 0.0)
-        {
-            HDriveOutput = HDriveOutput - spike;
-            Hstate++;
-        }
-        // Nothing
-        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) == 0.0)
-        {
-            HDriveOutputOld = HDriveOutput;
-            Hstate = 0;
-        }
-        // Positive
-        if (((Hstate == 0) && (HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) == 0.0))
-        {
-            HDriveOutput = HDriveOutput + spike;
-            Hstate++;
-        }
-        // once moving, either no change, keep state, positive ramp up or ramp down
-        // accordingly
+        double output = input;
 
-        // if at extremes of 0.5 + where spike should be lesser than 0.3
-        if ((Hstate == 1) && Math.abs(HDriveOutput - HDriveOutputOld) > 1.0 && HDriveOutputOld > 0.5 || Hstate == 5)
+        double rampRate = 0.02; // .02 is 100%/s
+        double spike = 0.4; // % output of spike to push down
+        int spikeDuration = 3; // Number of loops to run spike
+
+        if (input == 0)
         {
-            if (HDriveOutput > 0.0)
-            {
-                HDriveOutput = Math.abs(HDriveOutput) - k;
-                Hstate = 5;
-            }
-            if (HDriveOutput < 0.0)
-            {
-                HDriveOutput = HDriveOutput + k;
-                Hstate = 5;
-            }
-            else if (HDriveOutput == 0.0)
-            {
-                HDriveOutput = 0.0;
-                Hstate = 0;
-            }
+            hState = HState.Off;
+            return 0;
         }
-        // nothing
-        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+
+        if (hState == HState.Off)
         {
-            HDriveOutput = HDriveOutputOld;
-            Hstate = 1;
+            hState = HState.Spike;
         }
-        // ramp up
-        if ((Hstate == 1) && Math.abs(HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        if (hState == HState.Spike)
         {
-            if (HDriveOutput > 0.0)
-            {
-                HDriveOutput = Math.abs(HDriveOutput) + k;
-                Hstate = 1;
-            }
+            SmartDashboard.putString("hState", HState.Spike.name());
+            hDriveSpike++;
+            if (hDriveSpike < spikeDuration)
+                output = spike;
             else
             {
-                HDriveOutput = HDriveOutput - k;
-                Hstate = 1;
+                // Start at 5 % after spike
+                hDriveLast = .05;
+                hState = HState.Ramp;
             }
         }
-        // ramp down
-        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) < 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        if (hState == HState.Ramp)
         {
-            if (HDriveOutput > 0.0)
-            {
-                HDriveOutput = Math.abs(HDriveOutput) + k;
-                Hstate = 0;
-            }
-            else
-            {
-                HDriveOutput = HDriveOutput - k;
-                Hstate = 0;
-            }
+            SmartDashboard.putString("hState", HState.Ramp.name());
+            // Commanding value close to current output, keep outputting
+            if (input - rampRate < hDriveLast && input + rampRate > hDriveLast)
+                output = hDriveLast;
+            else if (input < hDriveLast)
+                output = hDriveLast - rampRate;
+            else if (input > hDriveLast)
+                output = hDriveLast + rampRate;
         }
-        // once moving, either no change, keep state, negative ramp up or ramp down
-        // accordingly
-        return HDriveOutput;
+
+        SmartDashboard.putNumber("hDriveOutput", output);
+
+        return output;
     }
 
     /**
@@ -512,8 +470,8 @@ public class DriveTrain implements IPigeonWrapper
         return (pigeon.getState() == PigeonState.Ready);
     }
 
-	public void setAllowClimberDeploy(boolean b)
-	{
+    public void setAllowClimberDeploy(boolean b)
+    {
         allowClimb = b;
-	}
+    }
 }
