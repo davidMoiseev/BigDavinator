@@ -266,12 +266,9 @@ public class TeleopCommandProvider implements IRobotCommandProvider
 
     private String setPointName(ManipulatorSetPoint setPoint)
     {
-        for (ManipulatorSetPoint s : ManipulatorSetPoint.values())
-        {
-            if (setPoint == s)
-                return s.name();
-        }
-        return setPoint.toString();
+        if (setPoint != null)
+            return setPoint.name();
+        else return "null";
     }
 
     private void LogValues()
