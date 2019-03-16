@@ -90,7 +90,7 @@ public class DriveTrain implements IPigeonWrapper
     public double currentYaw;
     public double singleRotationYaw;
     public int state;
-
+    public double motorCorrect;
     public double leftMotorCorrect;
     public double rightMotorCorrect;
     public double hMotorCorrect;
@@ -335,16 +335,18 @@ public class DriveTrain implements IPigeonWrapper
     public void steeringAssist(double pipeline, TeleopCommandProvider command){
         if(command.steeringAssistActivated()){
             vmotion.setPipeline(pipeline);
-            leftMotorCorrect = -vmotion.turnVision();
-            rightMotorCorrect = vmotion.turnVision();
+            motorCorrect = vmotion.turnVision(false);
+            leftMotorCorrect = -motorCorrect;
+            rightMotorCorrect = motorCorrect;
+            hMotorCorrect = vmotion.turnVision(true);
         }
     }
 
     public void steeringAssistH(double pipeline, TeleopCommandProvider command){
         if(command.steeringAssistActivated()){
             vmotion.setPipeline(pipeline);
-            leftMotorCorrect = vmotion.turnVision();
-            rightMotorCorrect = -vmotion.turnVision();
+            leftMotorCorrect = vmotion.turnVision(false);
+            rightMotorCorrect = -vmotion.turnVision(false);
             hMotorCorrect = vmotion.shuffleVisionPID();
         }
     }
@@ -410,11 +412,12 @@ public class DriveTrain implements IPigeonWrapper
         if(!command.steeringAssistActivated()){
             rightMotor.set(command.RightDrive());
             leftMotor.set(command.LeftDrive() + 0.15 * (HDriveOutput(command.HDrive())));
+            hDriveMotor.set(HDriveOutput(command.HDrive()));
         }else{
             steeringAssist(1, command);
-            rightMotor.set(command.RightDriveSteeringAssist() + rightMotorCorrect);
+            rightMotor.set(command.RightDriveSteeringAssist()+ rightMotorCorrect);
             leftMotor.set(command.LeftDriveSteeringAssist() + leftMotorCorrect + (0.15 * (HDriveOutput(command.HDrive()))));
-            hDriveMotor.set(hMotorCorrect);
+            hDriveMotor.set(HDriveOutput(hMotorCorrect));
         }
 
         if (climbDeployed)
@@ -430,7 +433,7 @@ public class DriveTrain implements IPigeonWrapper
         else
             climber.set(false);
 
-        hDriveMotor.set(HDriveOutput(command.HDrive()));
+        
     }
 
     public double HDriveOutput(double input)

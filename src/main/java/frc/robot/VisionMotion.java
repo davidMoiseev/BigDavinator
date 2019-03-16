@@ -28,7 +28,9 @@ public class VisionMotion
     public static final double pGainH = 0.04;
     public static final double iGainH = 0.000008;
     public static final double dGainH = 0.0;
-    public static final double pGainTurn = 0.015;
+    public static double pGainTurn = 0.015;
+    public static final double pGainTurnH = 2;
+    public static final double pGainTurnDrive = 0.015;
     public static final double iGainTurn = 0.0;// 0.0000000008;
     public static final double dGainTurn = 0.0;
     public double integral = 0;
@@ -68,15 +70,21 @@ public class VisionMotion
     public double referenceAngle;
     private int target;
 
-    public double findProportional(double targetHeading)
+    public double findProportional(double targetHeading, boolean hdrive)
     {
         double error = vision.getHeading() - targetHeading;
+        if (hdrive) {
+            error = error * 0.2;
+        }
+        else {
+            error = error * 0.8;
+        }
         return error;
     }
 
-    public double findIntegral(double targetHeading)
+    public double findIntegral(double targetHeading, boolean hdrive)
     {
-        integral = integral + this.findProportional(targetHeading);
+        integral = integral + this.findProportional(targetHeading, hdrive);
         return integral;
     }
 
@@ -102,10 +110,16 @@ public class VisionMotion
         vision.usbCamInit();
     }
 
-    public double turnVision()
+    public double turnVision(boolean hdrive)
     {
-        p = findProportional(0);
-        i = findIntegral(0);
+        p = findProportional(0, hdrive);
+        i = findIntegral(0, hdrive);
+        if (hdrive) {
+            pGainTurn = pGainTurnH;
+        }
+        else {
+            pGainTurn = pGainTurnDrive;
+        }
         if (vision.canSeeTarget() == 0 || vision.getHeading() < 5.0 && vision.getHeading() > -5.0)
         {
             motorOutput = 0.0;
