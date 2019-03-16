@@ -122,6 +122,10 @@ public class Vision extends Subsystem
     double vt = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
     return vt;
   }
+  public double getSkew(){
+    double skew = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ts").getDouble(0);
+    return skew;
+  }
 
   public double getTA()
   {
@@ -133,7 +137,7 @@ public class Vision extends Subsystem
   { // could return targetHeading or heading using a boolean if already reached
     // heading
     getNetworkTables();
-    heading = tx;
+    heading = ty;
     return heading;
   }
   // }

@@ -28,7 +28,7 @@ public class VisionMotion
     public static final double pGainH = 0.04;
     public static final double iGainH = 0.000008;
     public static final double dGainH = 0.0;
-    public static final double pGainTurn = 0.04;
+    public static final double pGainTurn = 0.015;
     public static final double iGainTurn = 0.0;// 0.0000000008;
     public static final double dGainTurn = 0.0;
     public double integral = 0;
@@ -80,6 +80,18 @@ public class VisionMotion
         return integral;
     }
 
+    public double findProportionalSkew(double targetSkew)
+    {
+        double error = vision.getSkew() - targetSkew;
+        return error;
+    }
+
+    public double findIntegralSkew(double targetSkew)
+    {
+        integral = integral + this.findProportionalSkew(targetSkew);
+        return integral;
+    }
+
     public void usbUpdatePipeline(int pipeline)
     {
         vision.usbCamUpdate(pipeline);
@@ -102,13 +114,13 @@ public class VisionMotion
         else if (Math.abs(vision.getHeading()) > 5.0)
         {
             motorOutput = (p * pGainTurn) + (i * iGainTurn);
-            if (motorOutput > 0.4)
+            if (motorOutput > 0.2)
             {
-                motorOutput = 0.4;
+                motorOutput = 0.2;
             }
-            else if (motorOutput < -0.4)
+            else if (motorOutput < -0.2)
             {
-                motorOutput = -0.4;
+                motorOutput = -0.2;
             }
             return motorOutput;
         }
@@ -140,8 +152,8 @@ public class VisionMotion
 
     public double shuffleVisionPID()
     {
-        pAngle = findProportional(vx); // 27;
-        iAngle = findIntegral(0); // 27;
+        pAngle = findProportionalSkew(0); 
+        iAngle = findIntegralSkew(0); 
         double Hspeed = (pAngle * pGainH) + (iAngle * iGainH);
         if (Hspeed > 0.5)
             Hspeed = 0.5;

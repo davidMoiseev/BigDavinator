@@ -91,6 +91,10 @@ public class DriveTrain implements IPigeonWrapper
     public double singleRotationYaw;
     public int state;
 
+    public double leftMotorCorrect;
+    public double rightMotorCorrect;
+    public double hMotorCorrect;
+
     /**
      * Motion Profiling Constants
      */
@@ -331,8 +335,17 @@ public class DriveTrain implements IPigeonWrapper
     public void steeringAssist(double pipeline, TeleopCommandProvider command){
         if(command.steeringAssistActivated()){
             vmotion.setPipeline(pipeline);
-            leftMotor.set(vmotion.turnVision());
-            rightMotor.set(-vmotion.turnVision());
+            leftMotorCorrect = -vmotion.turnVision();
+            rightMotorCorrect = vmotion.turnVision();
+        }
+    }
+
+    public void steeringAssistH(double pipeline, TeleopCommandProvider command){
+        if(command.steeringAssistActivated()){
+            vmotion.setPipeline(pipeline);
+            leftMotorCorrect = vmotion.turnVision();
+            rightMotorCorrect = -vmotion.turnVision();
+            hMotorCorrect = vmotion.shuffleVisionPID();
         }
     }
 
@@ -398,8 +411,10 @@ public class DriveTrain implements IPigeonWrapper
             rightMotor.set(command.RightDrive());
             leftMotor.set(command.LeftDrive() + 0.15 * (HDriveOutput(command.HDrive())));
         }else{
-            rightMotor.set(command.RightDriveSteeringAssist());
-            leftMotor.set(command.LeftDriveSteeringAssist());
+            steeringAssist(1, command);
+            rightMotor.set(command.RightDriveSteeringAssist() + rightMotorCorrect);
+            leftMotor.set(command.LeftDriveSteeringAssist() + leftMotorCorrect + (0.15 * (HDriveOutput(command.HDrive()))));
+            hDriveMotor.set(hMotorCorrect);
         }
 
         if (climbDeployed)
