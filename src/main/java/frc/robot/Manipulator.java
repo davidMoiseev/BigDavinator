@@ -688,17 +688,15 @@ public class Manipulator
                 && elevator.getPosition() + ELEVATOR_TOLERANCE > ManipulatorSetPoint.climb_prep.elevatorHeight());
 
         // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());
-        boolean updateIntake = true;
         if (setPoint != null)
         {
             if (score)
             {
                 setPoint = CreateScoreSetPoint(setPoint);
                 double newArmX = Math.sin(Math.toRadians(setPoint.armAngle())) * ARM_LENGTH;
-                if ((Math.sin(Math.toRadians(arm.getPosition())) * ARM_LENGTH) > (newArmX - 1.5))
+                if ((Math.sin(Math.toRadians(arm.getPosition())) * ARM_LENGTH) > (newArmX - .5))
                 {
-                    pneumaticIntake.Set(true);
-                    updateIntake = false;
+                    robotCommand.SetIntakeSolenoid(true);
                 }
             }
             if (robotCommand.HatchPickup())
@@ -719,7 +717,7 @@ public class Manipulator
             backFlipper.disable();
             SmartDashboard.putBoolean("Disabled thing", true);
         }
-        if (updateIntake) pneumaticIntake.Update(robotCommand);
+        pneumaticIntake.Update(robotCommand);
         // elevator.manual(operator.getStickLY());
 
         SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());

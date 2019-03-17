@@ -31,4 +31,6 @@ public interface IRobotCommandProvider
     public boolean ARMREZERO();
 
     public boolean steeringAssistActivated();
+
+    public void SetIntakeSolenoid(boolean isTrue);
 }

@@ -15,6 +15,9 @@ public class IntakePneumatics
 	Solenoid intakeSingle = new Solenoid(WiringIDs.SOLENOID_INTAKE);
 	HotController joystick;
 
+	boolean lastProvidedValue = false;
+	boolean lastSetValue = false;
+
 	public IntakePneumatics(HotController joystick)
 	{
 		this.joystick = joystick;
@@ -23,10 +26,5 @@ public class IntakePneumatics
 	public void Update(IRobotCommandProvider command)
 	{
 		intakeSingle.set(command.IntakeSolenoid());
-	}
-
-	public void Set(boolean isTrue)
-	{
-		intakeSingle.set(isTrue);
 	}
 }

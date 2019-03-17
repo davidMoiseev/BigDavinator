@@ -81,4 +81,9 @@ public class AutonCommandProvider implements IRobotCommandProvider
         return false;
     }
 
+    @Override
+    public void SetIntakeSolenoid(boolean isTrue)
+    {
+        return;
+    }
 }

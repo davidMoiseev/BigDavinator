@@ -234,13 +234,13 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             steeringAssist = false;
         }
 
-        score = driver.getButtonA();
+        score = driver.getButtonRightStick();
 
-        if (operator.getButtonBack() && !flipButtonPrevious)
+        if (driver.getButtonLeftStick() && !flipButtonPrevious)
         {
             commandToBack = !commandToBack;
         }
-        flipButtonPrevious = operator.getButtonBack();
+        flipButtonPrevious = driver.getButtonLeftStick();
 
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
@@ -349,5 +349,11 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public boolean ARMREZERO()
     {
         return armReZeroTimer >= armReZeroCount;
+    }
+
+    @Override
+    public void SetIntakeSolenoid(boolean isTrue)
+    {
+        intakeSolenoid = isTrue;
     }
 }
