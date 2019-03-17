@@ -14,6 +14,7 @@ import org.hotteam67.HotPathFollower;
 import org.hotteam67.Interpolation;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -45,6 +46,10 @@ public class Robot extends TimedRobot
 
     public int state = 0;
     boolean profileFinished = false;
+    private DigitalInput ffll;
+    private DigitalInput ffrl;
+    private DigitalInput fbll;
+    private DigitalInput fbrl;
 
     @Override
     public void robotInit()
@@ -64,6 +69,11 @@ public class Robot extends TimedRobot
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
+
+        ffll = new DigitalInput(WiringIDs.FLIPPER_FRONT_LEFT_LIMIT_SWITCH);
+        ffrl = new DigitalInput(WiringIDs.FLIPPER_FRONT_RIGHT_LIMIT_SWITCH);
+        fbll = new DigitalInput(WiringIDs.FLIPPER_BACK_LEFT_LIMIT_SWITCH);
+        fbrl = new DigitalInput(WiringIDs.FLIPPER_BACK_RIGHT_LIMIT_SWITCH);
         
 
         HotLogger.Setup("matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
@@ -109,6 +119,11 @@ public class Robot extends TimedRobot
     public void robotPeriodic()
     {
         manipulator.DisplaySensors();
+
+        SmartDashboard.putBoolean("Flipper Front Left Limit ", ffll.get());
+        SmartDashboard.putBoolean("Flipper Front Right Limit ", ffrl.get());
+        SmartDashboard.putBoolean("Flipper Back Left Limit ", fbll.get());
+        SmartDashboard.putBoolean("Flipper Back Right Limit ", fbrl.get());
     }
 
     @Override
