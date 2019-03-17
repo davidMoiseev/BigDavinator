@@ -1,4 +1,5 @@
 {
     "java.format.settings.url": "style.xml",
-    "formatFiles.extensionsToInclude": "*"
+    "formatFiles.extensionsToInclude": "*",
+    "wpilib.online": true
 }
