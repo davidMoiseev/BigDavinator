@@ -38,6 +38,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private boolean lastFlipperUp = false;
     private boolean lastFlipperDown = false;
 
+    private boolean limitSwitchFeedback;
+
     private final double flipper_add = 4;
     private double frontFlipperCount = 0;
     private double backFlipperCount = 0;
@@ -234,18 +236,20 @@ public class TeleopCommandProvider implements IRobotCommandProvider
             steeringAssist = false;
         }
 
-        score = driver.getButtonRightStick();
+        limitSwitchFeedback = driver.getButtonRightStick();
+        score = driver.getButtonA();
 
-        if (driver.getButtonLeftStick() && !flipButtonPrevious)
+        if (driver.getButtonBack() && !flipButtonPrevious)
         {
             commandToBack = !commandToBack;
         }
-        flipButtonPrevious = driver.getButtonLeftStick();
+        flipButtonPrevious = driver.getButtonBack();
 
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
-        RightDrive = -driver.getStickLY() - ((driver.getStickRX() * .5));
-        LeftDrive = -driver.getStickLY() + ((driver.getStickRX() * .5));
+        turnDrive = ((driver.getStickRX() * .5));
+        RightDrive = -driver.getStickLY();
+        LeftDrive = -driver.getStickLY();
         RightDriveSteeringAssist = -driver.getStickLY();
         LeftDriveSteeringAssist = -driver.getStickLY();
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
@@ -355,5 +359,18 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public void SetIntakeSolenoid(boolean isTrue)
     {
         intakeSolenoid = isTrue;
+    }
+
+    @Override
+    public boolean LimitSwitchFeedBack()
+    {
+        return limitSwitchFeedback;
+    }
+
+    private double turnDrive;
+    @Override
+    public double TurnDrive()
+    {
+        return turnDrive;
     }
 }

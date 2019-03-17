@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
@@ -59,6 +60,11 @@ public class Manipulator
     private Flipper backFlipper;
     private Solenoid climber;
 
+    private DigitalInput frontLeftLimit;
+    private DigitalInput frontRightLimit;
+    private DigitalInput backLeftLimit;
+    private DigitalInput backRightLimit;
+
     private HotController driver;
     private HotController operator;
     private ArmPigeon armPigeon;
@@ -100,6 +106,11 @@ public class Manipulator
         this.pneumaticIntake = new IntakePneumatics(driver);
         this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT, false, false);
         this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK, false, true);
+
+        frontLeftLimit = new DigitalInput(WiringIDs.FLIPPER_FRONT_LEFT_LIMIT_SWITCH);
+        frontRightLimit = new DigitalInput(WiringIDs.FLIPPER_FRONT_RIGHT_LIMIT_SWITCH);
+        backLeftLimit = new DigitalInput(WiringIDs.FLIPPER_BACK_LEFT_LIMIT_SWITCH);
+        backRightLimit = new DigitalInput(WiringIDs.FLIPPER_BACK_RIGHT_LIMIT_SWITCH);
 
         this.operator = operator;
         this.driver = driver;
@@ -157,6 +168,10 @@ public class Manipulator
 
     public void DisplaySensors()
     {
+        SmartDashboard.putBoolean("Flipper Front Left Limit ", frontLeftLimit.get());
+        SmartDashboard.putBoolean("Flipper Front Right Limit ", frontRightLimit.get());
+        SmartDashboard.putBoolean("Flipper Back Left Limit ", backLeftLimit.get());
+        SmartDashboard.putBoolean("Flipper Back Right Limit ", backRightLimit.get());
         elevator.displaySensorsValue();
         arm.displaySensorsValue();
         wrist.displaySensorsValue();
@@ -193,6 +208,7 @@ public class Manipulator
             frontFlipper.control(FlipperConstants.CARRY_FRONT);
             backFlipper.control(FlipperConstants.CARRY_BACK);
             if (frontFlipper.reachedTarget() && backFlipper.reachedTarget())
+            // if (backFlipper.reachedTarget());
             {
                 elevator.setTarget(ManipulatorSetPoint.firstPosition);
                 if (elevator.reachedTarget())
@@ -654,6 +670,11 @@ public class Manipulator
     }
 
     boolean zeroingArm = false;
+    int hatchCenterTimer = 0;
+    boolean hatchCenter = false;
+    int scoreCount = 0;
+    int limitSwitchCount = 0;
+    boolean limitSwitchPressed = false;
 
     public void Update(IRobotCommandProvider robotCommand)
     {
@@ -674,14 +695,91 @@ public class Manipulator
         arm.checkEncoder();
         wrist.checkEncoder();
         elevator.checkEncoder(0);
-        pneumaticIntake.Update(robotCommand);
+
+        boolean score = robotCommand.ManipulatorScore();
+
+        drivetrain.slowLeftSide(false);
+        drivetrain.slowRightSide(false);
+
+        if (robotCommand.LimitSwitchFeedBack())
+        {
+            if (getArmSide(arm.getPosition()) == RobotSide.FRONT)
+            {
+                if (frontLeftLimit.get() && !frontRightLimit.get())
+                    drivetrain.slowLeftSide(true);
+                else if (!frontLeftLimit.get() && frontRightLimit.get())
+                    drivetrain.slowRightSide(true);
+                if (frontLeftLimit.get() && frontRightLimit.get())
+                {
+                    limitSwitchCount = 0;
+                    limitSwitchPressed = true;
+                    score = true;
+                }
+                else if (limitSwitchPressed && limitSwitchCount < 20)
+                {
+                    limitSwitchCount++;
+                    score = true;
+                }
+                else
+                {
+                    limitSwitchPressed = false;
+                    score = false;
+                }
+            }
+            else
+            {
+                if (backLeftLimit.get() && !backRightLimit.get())
+                    drivetrain.slowLeftSide(true);
+                else if (!backLeftLimit.get() && backRightLimit.get())
+                    drivetrain.slowRightSide(true);
+
+                if (backLeftLimit.get() && backRightLimit.get())
+                {
+                    limitSwitchCount = 0;
+                    limitSwitchPressed = true;
+                    score = true;
+                }
+                else if (limitSwitchPressed && limitSwitchCount < 20)
+                {
+                    limitSwitchCount++;
+                    score = true;
+                }
+                else
+                {
+                    limitSwitchPressed = false;
+                    score = false;
+                }
+            }
+        }
+
+        if (robotCommand.HatchPickup())
+        {
+            hatchCenter = true;
+            hatchCenterTimer = 0;
+        }
+
+        if (!robotCommand.HatchPickup() && hatchCenter)
+        {
+            hatchCenterTimer++;
+            if (hatchCenterTimer < 80)
+                intake.runIntake(intake.Inputspeed);
+            else
+            {
+                hatchCenter = false;
+                hatchCenterTimer = 0;
+                intake.Update(robotCommand);
+            }
+        }
+        else
+        {
+            intake.Update(robotCommand);
+        }
 
         double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
 
         SmartDashboard.putNumber("wristY", wristY);
 
         IManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
-        boolean score = robotCommand.ManipulatorScore();
 
         // To climb, we must be above climb height and targeting prep position
         drivetrain.setAllowClimberDeploy((setPoint == ManipulatorSetPoint.climb_prep)
@@ -692,12 +790,20 @@ public class Manipulator
         {
             if (score)
             {
+                scoreCount++;
                 setPoint = CreateScoreSetPoint(setPoint);
                 double newArmX = Math.sin(Math.toRadians(setPoint.armAngle())) * ARM_LENGTH;
-                if ((Math.sin(Math.toRadians(arm.getPosition())) * ARM_LENGTH) > (newArmX - .5))
+                // if ((Math.sin(Math.toRadians(arm.getPosition())) * ARM_LENGTH) > (newArmX -
+                // .5))
+
+                if (scoreCount > 12.5)
                 {
                     robotCommand.SetIntakeSolenoid(true);
                 }
+            }
+            else
+            {
+                scoreCount = 0;
             }
             if (robotCommand.HatchPickup())
             {

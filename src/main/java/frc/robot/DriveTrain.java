@@ -112,7 +112,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class ANGLE_PID
     {
-        public static final double P =  .8 * (-1.0 / 80.0);
+        public static final double P = .8 * (-1.0 / 80.0);
     }
 
     /**
@@ -162,7 +162,7 @@ public class DriveTrain implements IPigeonWrapper
 
     public void loadPath(String leftPathFile, String rightPathFile)
     {
-            pathFollower.LoadPath(leftPathFile, rightPathFile);
+        pathFollower.LoadPath(leftPathFile, rightPathFile);
     }
 
     /**
@@ -226,6 +226,19 @@ public class DriveTrain implements IPigeonWrapper
         {
             return false;
         }
+    }
+
+    private boolean slowRight;
+    private boolean slowLeft;
+
+    public void slowRightSide(boolean isTrue)
+    {
+        slowRight = isTrue;
+    }
+
+    public void slowLeftSide(boolean isTrue)
+    {
+        slowLeft = isTrue;
     }
 
     /**
@@ -332,8 +345,10 @@ public class DriveTrain implements IPigeonWrapper
         }
     }
 
-    public void steeringAssist(double pipeline, TeleopCommandProvider command){
-        if(command.steeringAssistActivated()){
+    public void steeringAssist(double pipeline, TeleopCommandProvider command)
+    {
+        if (command.steeringAssistActivated())
+        {
             vmotion.setPipeline(pipeline);
             motorCorrect = vmotion.turnVision(false);
             leftMotorCorrect = -motorCorrect;
@@ -342,8 +357,10 @@ public class DriveTrain implements IPigeonWrapper
         }
     }
 
-    public void steeringAssistH(double pipeline, TeleopCommandProvider command){
-        if(command.steeringAssistActivated()){
+    public void steeringAssistH(double pipeline, TeleopCommandProvider command)
+    {
+        if (command.steeringAssistActivated())
+        {
             vmotion.setPipeline(pipeline);
             leftMotorCorrect = vmotion.turnVision(false);
             rightMotorCorrect = -vmotion.turnVision(false);
@@ -352,16 +369,10 @@ public class DriveTrain implements IPigeonWrapper
     }
 
     /*
-    public void updateUsb(int pipeline)
-    {
-        vmotion.usbUpdatePipeline(pipeline);
-    }
-
-    public void initUsbCam()
-    {
-        vmotion.usbCamInit();
-    }
-    */
+     * public void updateUsb(int pipeline) { vmotion.usbUpdatePipeline(pipeline); }
+     * 
+     * public void initUsbCam() { vmotion.usbCamInit(); }
+     */
 
     public boolean gyroLineUp(double maxOutput, double targetDistanceStop)
     {
@@ -409,14 +420,19 @@ public class DriveTrain implements IPigeonWrapper
     {
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
-        if(!command.steeringAssistActivated()){
-            rightMotor.set(command.RightDrive());
-            leftMotor.set(command.LeftDrive() + 0.15 * (HDriveOutput(command.HDrive())));
+        if (!command.steeringAssistActivated())
+        {
+            rightMotor.set((command.RightDrive() - (command.TurnDrive())) * (slowRight ? .5 : 1));
+            leftMotor.set((command.LeftDrive()
+                    + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive())) * (slowLeft ? .5 : 1));
             hDriveMotor.set(HDriveOutput(command.HDrive()));
-        }else{
+        }
+        else
+        {
             steeringAssist(1, command);
-            rightMotor.set(command.RightDriveSteeringAssist()+ rightMotorCorrect);
-            leftMotor.set(command.LeftDriveSteeringAssist() + leftMotorCorrect + (0.15 * (HDriveOutput(command.HDrive()))));
+            rightMotor.set(command.RightDriveSteeringAssist() + rightMotorCorrect);
+            leftMotor.set(
+                    command.LeftDriveSteeringAssist() + leftMotorCorrect + (0.15 * (HDriveOutput(command.HDrive()))));
             hDriveMotor.set(HDriveOutput(hMotorCorrect));
         }
 
@@ -433,7 +449,6 @@ public class DriveTrain implements IPigeonWrapper
         else
             climber.set(false);
 
-        
     }
 
     public double HDriveOutput(double input)
@@ -542,8 +557,8 @@ public class DriveTrain implements IPigeonWrapper
         return (pigeon.getState() == PigeonState.Ready);
     }
 
-	public void setAllowClimberDeploy(boolean b)
-	{
+    public void setAllowClimberDeploy(boolean b)
+    {
         allowClimb = b;
-	}
+    }
 }

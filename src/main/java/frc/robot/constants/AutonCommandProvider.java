@@ -86,4 +86,16 @@ public class AutonCommandProvider implements IRobotCommandProvider
     {
         return;
     }
+
+    @Override
+    public boolean LimitSwitchFeedBack()
+    {
+        return false;
+    }
+
+    @Override
+    public double TurnDrive()
+    {
+        return 0;
+    }
 }

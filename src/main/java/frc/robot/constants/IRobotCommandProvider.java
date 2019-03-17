@@ -12,6 +12,8 @@ public interface IRobotCommandProvider
 
     public double RightDrive();
 
+    public double TurnDrive();
+
     public double LeftDriveSteeringAssist();
 
     public double RightDriveSteeringAssist();
@@ -31,6 +33,8 @@ public interface IRobotCommandProvider
     public boolean ARMREZERO();
 
     public boolean steeringAssistActivated();
+
+    public boolean LimitSwitchFeedBack();
 
     public void SetIntakeSolenoid(boolean isTrue);
 }

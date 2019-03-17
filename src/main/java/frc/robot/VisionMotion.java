@@ -28,7 +28,7 @@ public class VisionMotion
     public static final double pGainH = 0.04;
     public static final double iGainH = 0.000008;
     public static final double dGainH = 0.0;
-    public static double pGainTurn = 0.015;
+    public static double pGainTurn = 0.013;
     public static final double pGainTurnH = 2;
     public static final double pGainTurnDrive = 0.015;
     public static final double iGainTurn = 0.0;// 0.0000000008;

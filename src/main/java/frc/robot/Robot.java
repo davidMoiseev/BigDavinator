@@ -46,10 +46,6 @@ public class Robot extends TimedRobot
 
     public int state = 0;
     boolean profileFinished = false;
-    private DigitalInput ffll;
-    private DigitalInput ffrl;
-    private DigitalInput fbll;
-    private DigitalInput fbrl;
 
     @Override
     public void robotInit()
@@ -69,11 +65,6 @@ public class Robot extends TimedRobot
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
-
-        ffll = new DigitalInput(WiringIDs.FLIPPER_FRONT_LEFT_LIMIT_SWITCH);
-        ffrl = new DigitalInput(WiringIDs.FLIPPER_FRONT_RIGHT_LIMIT_SWITCH);
-        fbll = new DigitalInput(WiringIDs.FLIPPER_BACK_LEFT_LIMIT_SWITCH);
-        fbrl = new DigitalInput(WiringIDs.FLIPPER_BACK_RIGHT_LIMIT_SWITCH);
         
 
         HotLogger.Setup("matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
@@ -102,9 +93,9 @@ public class Robot extends TimedRobot
         // May have to invert driveturn/drivespeed
         teleopCommandProvider.Update();
 
-        driveTrain.Update(teleopCommandProvider);
+        
         manipulator.Update(teleopCommandProvider);
-
+        driveTrain.Update(teleopCommandProvider);
         //driveTrain.updateUsb(1);
 
         HotLogger.Log("StickLY", -driver.getStickLY());
@@ -119,11 +110,6 @@ public class Robot extends TimedRobot
     public void robotPeriodic()
     {
         manipulator.DisplaySensors();
-
-        SmartDashboard.putBoolean("Flipper Front Left Limit ", ffll.get());
-        SmartDashboard.putBoolean("Flipper Front Right Limit ", ffrl.get());
-        SmartDashboard.putBoolean("Flipper Back Left Limit ", fbll.get());
-        SmartDashboard.putBoolean("Flipper Back Right Limit ", fbrl.get());
     }
 
     @Override
@@ -178,6 +164,7 @@ public class Robot extends TimedRobot
     @Override
     public void disabledPeriodic()
     {
+        teleopCommandProvider.Update();
         /**
          * Clicked for the first time, the robot is stable so start boot calibrate
          */
