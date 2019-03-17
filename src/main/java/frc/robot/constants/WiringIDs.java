@@ -48,4 +48,9 @@ public class WiringIDs
     public static final int CANIFIER_WRIST = 31;
 
     public static final boolean IS_PRACTICE_BOT = true;
+
+    public static final int FLIPPER_FRONT_LEFT_LIMIT_SWITCH = 7; // DIO
+    public static final int FLIPPER_FRONT_RIGHT_LIMIT_SWITCH = 6; // DIO
+    public static final int FLIPPER_BACK_LEFT_LIMIT_SWITCH = 9; // DIO
+    public static final int FLIPPER_BACK_RIGHT_LIMIT_SWITCH = 8; // DIO
 }
