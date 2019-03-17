@@ -24,4 +24,9 @@ public class IntakePneumatics
 	{
 		intakeSingle.set(command.IntakeSolenoid());
 	}
+
+	public void Set(boolean isTrue)
+	{
+		intakeSingle.set(isTrue);
+	}
 }

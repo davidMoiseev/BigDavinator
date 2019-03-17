@@ -236,11 +236,11 @@ public class TeleopCommandProvider implements IRobotCommandProvider
 
         score = driver.getButtonA();
 
-        if (operator.getButtonLeftStick() && !flipButtonPrevious)
+        if (operator.getButtonBack() && !flipButtonPrevious)
         {
             commandToBack = !commandToBack;
         }
-        flipButtonPrevious = operator.getButtonLeftStick();
+        flipButtonPrevious = operator.getButtonBack();
 
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
