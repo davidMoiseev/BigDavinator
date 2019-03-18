@@ -240,6 +240,7 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive currentPitch", xyz_dps[1]);
         SmartDashboard.putNumber("Drive currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+        vmotion.getDist();
 
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
@@ -305,6 +306,7 @@ public class DriveTrain implements IPigeonWrapper
 
     public void Update(TeleopCommandProvider command)
     {
+        SmartDashboard.putNumber("A TURN", command.TurnDrive());
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
         if (!command.SteeringAssist())

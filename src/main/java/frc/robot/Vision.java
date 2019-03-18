@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Subsystem;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.vision.*;
 import org.opencv.core.Mat;
@@ -23,7 +23,7 @@ public class Vision extends Subsystem
   private double targetHeight;
   private double rocketHeight = 38.000;
   private double normalHeight = 28.875;
-  private double limelightHeight = 2.54;
+  private double limelightHeight = 31;
   private double limelightAngle = 0.447;// -2.148;
   private double a2 = 0.0;
   private double distance = 0.0;
@@ -141,26 +141,16 @@ public class Vision extends Subsystem
   }
   // }
 
-  public double findDistance(int target)
+  public double findDistance()
   { // to the vision target, NOT THE BALL
     // getNetworkTables();
-
-    if ((target == 1) || (target == 3))
-    {
-      targetHeight = rocketHeight;
-    }
-    else
-    {
-      targetHeight = normalHeight;
-    }
+    targetHeight = normalHeight;
+    
     a2 = getVertical();
-    // distance = (targetHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + a2));
-    limelightAngle = Math.atan((limelightHeight-limelightHeight)/38) - a2; /*calculates angle
-    of limelight crosshair relative to ground*/
-    return limelightAngle;
-    //double distanceInches = distance / 5.85;
-    // return distanceInches;
-
+    double heightDif = targetHeight - limelightHeight;
+    double dist = heightDif / Math.tan(Math.toRadians(a2));
+    SmartDashboard.putNumber("A DIST", dist);
+    return dist;
   }
 
   public double canSeeTarget()

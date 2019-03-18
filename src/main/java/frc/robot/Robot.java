@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.constants.AutonCommandProvider;
 import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
@@ -42,7 +41,6 @@ public class Robot extends TimedRobot
     HotController operator;
 
     TeleopCommandProvider teleopCommandProvider;
-    AutonCommandProvider autonCommandProvider;
 
     public int state = 0;
     boolean profileFinished = false;
@@ -59,7 +57,6 @@ public class Robot extends TimedRobot
         operator = new HotController(1, true);
 
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
-        autonCommandProvider = new AutonCommandProvider();
 
         driveTrain = new DriveTrain(rightElevator, intake);
         manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
