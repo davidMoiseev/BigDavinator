@@ -137,8 +137,7 @@ public class Vision extends Subsystem
   { // could return targetHeading or heading using a boolean if already reached
     // heading
     getNetworkTables();
-    heading = ty;
-    return heading;
+    return ty;
   }
   // }
 

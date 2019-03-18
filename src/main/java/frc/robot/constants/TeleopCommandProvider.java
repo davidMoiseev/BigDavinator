@@ -21,8 +21,6 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     private IManipulatorSetPoint outputSetPoint = null;
     private double LeftDrive = 0;
     private double RightDrive = 0;
-    private double LeftDriveSteeringAssist = 0;
-    private double RightDriveSteeringAssist = 0;
     private double HDrive = 0;
     private boolean intakeSolenoid = false;
     private boolean score = false;
@@ -73,17 +71,6 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     {
         return RightDrive;
     }
-    @Override
-    public double LeftDriveSteeringAssist()
-    {
-        return LeftDriveSteeringAssist;
-    }
-
-    @Override
-    public double RightDriveSteeringAssist()
-    {
-        return RightDriveSteeringAssist;
-    }
 
     @Override
     public double HDrive()
@@ -98,7 +85,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     }
 
     @Override
-    public boolean steeringAssistActivated(){
+    public boolean SteeringAssist(){
         return steeringAssist;
     }
 
@@ -250,8 +237,6 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         turnDrive = ((driver.getStickRX() * .5));
         RightDrive = -driver.getStickLY();
         LeftDrive = -driver.getStickLY();
-        RightDriveSteeringAssist = -driver.getStickLY();
-        LeftDriveSteeringAssist = -driver.getStickLY();
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
 

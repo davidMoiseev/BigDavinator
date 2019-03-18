@@ -216,18 +216,6 @@ public class DriveTrain implements IPigeonWrapper
             Arrays.asList("Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
                     "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
-    public boolean canseeTarget()
-    {
-        if (vmotion.canSeeTarget() == 1)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     private boolean slowRight;
     private boolean slowLeft;
 
@@ -304,107 +292,6 @@ public class DriveTrain implements IPigeonWrapper
         }
     }
 
-    public boolean turnToReferenceAngle()
-    {
-        getSingleRotationYaw();
-        double referenceAngle;
-        vmotion.sendAngle(singleRotationYaw);
-        vmotion.selectTarget(1.0);
-        referenceAngle = vmotion.getReferenceAngle();
-        if ((singleRotationYaw < (referenceAngle + 0.04)) && (singleRotationYaw > (referenceAngle - 0.04)))
-        {
-            return true;
-        }
-        else if (currentYaw > (referenceAngle + 0.04))
-        {
-            leftMotor.set(0.2);
-            rightMotor.set(-0.2);
-            return false;
-        }
-        else
-        {
-            leftMotor.set(-0.2);
-            rightMotor.set(0.2);
-            return false;
-        }
-    }
-
-    public boolean lineUp(double pipeline)
-    {
-        vmotion.setPipeline(pipeline);
-        hDriveMotor.set(vmotion.shuffleVisionPID());
-        leftMotor.set(vmotion.outputL());
-        rightMotor.set(-vmotion.outputR());
-        if (vmotion.targetReached(20.0, 1) == true)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public void steeringAssist(double pipeline, TeleopCommandProvider command)
-    {
-        if (command.steeringAssistActivated())
-        {
-            vmotion.setPipeline(pipeline);
-            motorCorrect = vmotion.turnVision(false);
-            leftMotorCorrect = -motorCorrect;
-            rightMotorCorrect = motorCorrect;
-            hMotorCorrect = vmotion.turnVision(true);
-        }
-    }
-
-    public void steeringAssistH(double pipeline, TeleopCommandProvider command)
-    {
-        if (command.steeringAssistActivated())
-        {
-            vmotion.setPipeline(pipeline);
-            leftMotorCorrect = vmotion.turnVision(false);
-            rightMotorCorrect = -vmotion.turnVision(false);
-            hMotorCorrect = vmotion.shuffleVisionPID();
-        }
-    }
-
-    /*
-     * public void updateUsb(int pipeline) { vmotion.usbUpdatePipeline(pipeline); }
-     * 
-     * public void initUsbCam() { vmotion.usbCamInit(); }
-     */
-
-    public boolean gyroLineUp(double maxOutput, double targetDistanceStop)
-    {
-        switch (state)
-        {
-        case 0:
-            vmotion.setPipeline(1);
-            this.getSingleRotationYaw();
-            vmotion.sendAngle(singleRotationYaw);
-            vmotion.getTargetAngle();
-            vmotion.setGyroLineUpVars(1.0);
-            state++;
-            break;
-        case 1:
-            this.getSingleRotationYaw();
-            vmotion.gyroTargetLineUp(singleRotationYaw, maxOutput);
-            double hOutput = vmotion.outputGyroH(singleRotationYaw, maxOutput);
-            hDriveMotor.set(hOutput);
-            leftMotor.set(vmotion.outputGyroL(singleRotationYaw, maxOutput) + (0.15 * hOutput));
-            rightMotor.set(-vmotion.outputGyroR(singleRotationYaw, maxOutput));
-            break;
-        }
-        if (vmotion.targetReached(targetDistanceStop, 1) == true)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     /**
      * Manual control, includes deadband
      * 
@@ -420,20 +307,20 @@ public class DriveTrain implements IPigeonWrapper
     {
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
-        if (!command.steeringAssistActivated())
+        if (!command.SteeringAssist())
         {
             rightMotor.set((command.RightDrive() - (command.TurnDrive())) * (slowRight ? .5 : 1));
-            leftMotor.set((command.LeftDrive()
-                    + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive())) * (slowLeft ? .5 : 1));
+            leftMotor.set((command.LeftDrive() + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive()))
+                    * (slowLeft ? .5 : 1));
             hDriveMotor.set(HDriveOutput(command.HDrive()));
         }
         else
         {
-            steeringAssist(1, command);
-            rightMotor.set(command.RightDriveSteeringAssist() + rightMotorCorrect);
-            leftMotor.set(
-                    command.LeftDriveSteeringAssist() + leftMotorCorrect + (0.15 * (HDriveOutput(command.HDrive()))));
-            hDriveMotor.set(HDriveOutput(hMotorCorrect));
+            // Play with slowLeft and slowRight?
+            VisionMotion.Output assist = vmotion.autoAlign(currentYaw);
+            rightMotor.set(command.RightDrive() + assist.Right + rightMotorCorrect);
+            leftMotor.set(command.LeftDrive() + assist.Left + (0.15 * (HDriveOutput(command.HDrive()))));
+            hDriveMotor.set(HDriveOutput(assist.HDrive));
         }
 
         if (climbDeployed)
