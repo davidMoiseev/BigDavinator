@@ -353,7 +353,7 @@ public class DriveTrain implements IPigeonWrapper
             motorCorrect = vmotion.turnVision(false);
             leftMotorCorrect = -motorCorrect;
             rightMotorCorrect = motorCorrect;
-            hMotorCorrect = vmotion.turnVision(true);
+            hMotorCorrect = vmotion.turnVision(false);
         }
     }
 

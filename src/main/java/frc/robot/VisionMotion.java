@@ -30,7 +30,7 @@ public class VisionMotion
     public static final double dGainH = 0.0;
     public static double pGainTurn = 0.013;
     public static final double pGainTurnH = 2;
-    public static final double pGainTurnDrive = 0.015;
+    public static final double pGainTurnDrive = 0.01;
     public static final double iGainTurn = 0.0;// 0.0000000008;
     public static final double dGainTurn = 0.0;
     public double integral = 0;
@@ -120,12 +120,12 @@ public class VisionMotion
         else {
             pGainTurn = pGainTurnDrive;
         }
-        if (vision.canSeeTarget() == 0 || vision.getHeading() < 5.0 && vision.getHeading() > -5.0)
+        if (vision.canSeeTarget() == 0 || vision.getHeading() < 1.0 && vision.getHeading() > -1.0)
         {
             motorOutput = 0.0;
             return motorOutput;
         }
-        else if (Math.abs(vision.getHeading()) > 5.0)
+        else
         {
             motorOutput = (p * pGainTurn) + (i * iGainTurn);
             if (motorOutput > 0.2)
@@ -136,11 +136,8 @@ public class VisionMotion
             {
                 motorOutput = -0.2;
             }
-            return motorOutput;
-        }
-        else
-        {
-            motorOutput = 0.0;
+            if (Math.abs(motorOutput) < .06)
+                motorOutput = Math.signum(motorOutput) * .06;
             return motorOutput;
         }
 
