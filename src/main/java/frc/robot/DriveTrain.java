@@ -390,21 +390,32 @@ public class DriveTrain implements IPigeonWrapper
 
     public void Update(TeleopCommandProvider command)
     {
+        getYaw();
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
         if (!command.steeringAssistActivated())
         {
             rightMotor.set((command.RightDrive() - (command.TurnDrive())) * (slowRight ? .5 : 1));
-            leftMotor.set((command.LeftDrive()
-                    + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive())) * (slowLeft ? .5 : 1));
+            leftMotor.set((command.LeftDrive() + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive()))
+                    * (slowLeft ? .5 : 1));
             hDriveMotor.set(HDriveOutput(command.HDrive()));
             vmotion.resetVision();
         }
         else
         {
-            VisionMotion.Output assist = vmotion.autoAlign(currentYaw);
-            rightMotor.set(command.RightDrive() + assist.Right);
-            leftMotor.set(command.LeftDrive() + assist.Left + (0.15 * (HDriveOutput(command.HDrive()))));
+            if (!vmotion.canSeeTarget() && command.TurnDrive() > 0)
+            {
+                rightMotor.set((command.RightDrive() - (command.TurnDrive())) * (slowRight ? .5 : 1));
+                leftMotor.set((command.LeftDrive() + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive()))
+                        * (slowLeft ? .5 : 1));
+                hDriveMotor.set(HDriveOutput(command.HDrive()));
+            }
+            else
+            {
+                VisionMotion.Output assist = vmotion.autoAlign(xyz_dps[0]);
+                rightMotor.set(command.RightDrive() + assist.Right);
+                leftMotor.set(command.LeftDrive() + assist.Left + (0.15 * (HDriveOutput(command.HDrive()))));
+            }
             hDriveMotor.set(command.HDrive());
         }
 

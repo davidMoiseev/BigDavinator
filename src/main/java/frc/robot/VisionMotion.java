@@ -94,11 +94,11 @@ public class VisionMotion
 
         // Temporary testing things
         SmartDashboard.putNumber("currentYaw", currentYaw);
-        SmartDashboard.putNumber("visionAngle", error);
+        SmartDashboard.putNumber("error", error);
 
         if (Math.abs(error) > 2)
         {
-            double turn = p * error;
+            double turn = TURN_P * error;
 
             // Do max/min turn with signs
             if (Math.abs(turn) > MAX_TURN)
