@@ -10,7 +10,7 @@ import org.hotteam67.HotLogger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Flipper;
 
-public class TeleopCommandProvider implements IRobotCommandProvider
+public class TeleopCommandProvider
 {
     private final HotController driver;
     private final HotController operator;
@@ -50,54 +50,54 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         this.operator = operator;
     }
 
-    @Override
+    
     public IManipulatorSetPoint ManipulatorSetPoint()
     {
         return outputSetPoint;
     }
 
-    @Override
+    
     public boolean ManipulatorScore()
     {
         return score;
     }
 
-    @Override
+    
     public double LeftDrive()
     {
         return LeftDrive;
     }
 
-    @Override
+    
     public double RightDrive()
     {
         return RightDrive;
     }
-    @Override
+    
     public double LeftDriveSteeringAssist()
     {
         return LeftDriveSteeringAssist;
     }
 
-    @Override
+    
     public double RightDriveSteeringAssist()
     {
         return RightDriveSteeringAssist;
     }
 
-    @Override
+    
     public double HDrive()
     {
         return HDrive;
     }
 
-    @Override
+    
     public boolean IntakeSolenoid()
     {
         return intakeSolenoid;
     }
 
-    @Override
+    
     public boolean steeringAssistActivated(){
         return steeringAssist;
     }
@@ -106,7 +106,7 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     boolean flipButtonPrevious = false;
     private boolean allowClimbMotors = false;
 
-    @Override
+    
     public void Update()
     {
         ManipulatorSetPoint frontTargetPosition = null;
@@ -325,50 +325,50 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     boolean upPrev = false;
     boolean downPrev = false;
 
-    @Override
+    
     public boolean IntakeOut()
     {
         return intakeOut;
     }
 
-    @Override
+    
     public boolean IntakeIn()
     {
         return intakeIn;
     }
 
-    @Override
+    
     public boolean ClimberDeploy()
     {
         return climb;
     }
 
-    @Override
+    
     public boolean HatchPickup()
     {
         return hatchPickup;
     }
 
-    @Override
+    
     public boolean ARMREZERO()
     {
         return armReZeroTimer >= armReZeroCount;
     }
 
-    @Override
+    
     public void SetIntakeSolenoid(boolean isTrue)
     {
         intakeSolenoid = isTrue;
     }
 
-    @Override
+    
     public boolean LimitSwitchFeedBack()
     {
         return limitSwitchFeedback;
     }
 
     private double turnDrive;
-    @Override
+    
     public double TurnDrive()
     {
         return turnDrive;

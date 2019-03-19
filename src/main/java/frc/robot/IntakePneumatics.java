@@ -6,7 +6,7 @@ package frc.robot;
 import org.hotteam67.HotController;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import frc.robot.constants.IRobotCommandProvider;
+import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
 public class IntakePneumatics
@@ -23,7 +23,7 @@ public class IntakePneumatics
 		this.joystick = joystick;
 	}
 
-	public void Update(IRobotCommandProvider command)
+	public void Update(TeleopCommandProvider command)
 	{
 		intakeSingle.set(command.IntakeSolenoid());
 	}

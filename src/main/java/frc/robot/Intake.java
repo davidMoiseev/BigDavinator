@@ -16,7 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import org.hotteam67.HotController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.constants.IRobotCommandProvider;
+import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
 public class Intake
@@ -32,7 +32,7 @@ public class Intake
         this.joystick = joystick;
     }
 
-    public void Update(IRobotCommandProvider command)
+    public void Update(TeleopCommandProvider command)
     {
         if (command.IntakeOut())
         {

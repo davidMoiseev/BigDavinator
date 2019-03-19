@@ -398,6 +398,7 @@ public class DriveTrain implements IPigeonWrapper
             leftMotor.set((command.LeftDrive()
                     + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive())) * (slowLeft ? .5 : 1));
             hDriveMotor.set(HDriveOutput(command.HDrive()));
+            vmotion.resetVision();
         }
         else
         {

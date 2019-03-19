@@ -24,7 +24,7 @@ import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.ManualManipulatorSetPoint;
-import frc.robot.constants.IRobotCommandProvider;
+import frc.robot.constants.TeleopCommandProvider;
 
 /**
  * Add your docs here.
@@ -676,7 +676,7 @@ public class Manipulator
     int limitSwitchCount = 0;
     boolean limitSwitchPressed = false;
 
-    public void Update(IRobotCommandProvider robotCommand)
+    public void Update(TeleopCommandProvider robotCommand)
     {
         armPigeon.CalibratePigeon();
         if (robotCommand.ARMREZERO() && !zeroingArm)
