@@ -25,7 +25,7 @@ public class VisionMotion
     private final double p = .007;
     private double scaledP = p;
     public static final double MIN_REF_COUNT = 0;
-    public static final double MAX_TURN = .3;
+    public static final double MAX_TURN = .2;
     public static final double MIN_TURN = .055;
     private int refCount = 0;
     private double yawTarget = 0;
