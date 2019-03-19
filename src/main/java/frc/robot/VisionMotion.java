@@ -7,15 +7,6 @@
 
 package frc.robot;
 
-import org.hotteam67.HotPathFollower;
-
-//import org.graalvm.compiler.nodeinfo.StructuralInput.Memory;
-
-//import static org.junit.Assert.assertArrayEquals;
-
-//import com.sun.org.apache.xpath.internal.axes.SelfIteratorNoPredicate;
-//import com.sun.tools.javac.jvm.Target;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionMotion
@@ -23,7 +14,6 @@ public class VisionMotion
     Vision vision = new Vision();
 
     private final double p = .007;
-    private double scaledP = p;
     public static final double MIN_REF_COUNT = 0;
     public static final double MAX_TURN = .2;
     public static final double MIN_TURN = .055;
@@ -57,11 +47,6 @@ public class VisionMotion
             yawTarget = vision.getHeading() + currentYaw;
             refCount = 0;
             error = yawTarget - currentYaw;
-
-            // Scale P down when we are farther away
-            // double dist = vision.findDistance();
-            // scaledP = p / (dist / 30);
-            // scaledP = scaledP > p ? p : scaledP;
         }
 
         // Temporary testing things
@@ -70,7 +55,7 @@ public class VisionMotion
 
         if (Math.abs(error) > 2)
         {
-            double turn = scaledP * error;
+            double turn = p * error;
 
             // Do max/min turn with signs
             if (Math.abs(turn) > MAX_TURN)
