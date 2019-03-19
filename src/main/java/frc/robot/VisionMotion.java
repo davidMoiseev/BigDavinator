@@ -22,18 +22,8 @@ public class VisionMotion
 
     public double h;
     public double speedH;
-    public boolean isHDown;
-    public double previousCanSeeTarget;
-    public double prevprevCanSeeTarget;
     public static final double pGainH = 0.04;
     public static final double iGainH = 0.000008;
-    public static final double dGainH = 0.0;
-    public static double pGainTurn = 0.013;
-    public static final double pGainTurnH = 2;
-    public static final double pGainTurnDrive = 0.01;
-    public static final double iGainTurn = 0.0;// 0.0000000008;
-    public static final double dGainTurn = 0.0;
-    public double integral = 0;
     public double speed = 0;
     public double Lspeed;
     public double Rspeed;
@@ -52,52 +42,20 @@ public class VisionMotion
     public double bouncePrevY = 0;
     public double earlierCanSeeTarget = 0.0;
     public double prevHeadingVis = 0.0;
-    public int gyroState = 0;
     public double targetAngle;
     public double targetVisDistance = 17.0; // inches, 30.125 + distance btwn robot perimeter and camera, aka constant C
-    public double distanceDiagonal;
     public double distanceHorizontal;
     public double angle2;
     public double angle1;
-    public double vy;
-    public double vx;
-    public double vyh;
-    public double vylr;
-    public double vxh;
-    public double vxlr;
     public double distance = 0;
     public double currentYaw;
     public double referenceAngle;
     private int target;
 
-    public double findProportional(double targetHeading, boolean hdrive)
-    {
-        double error = vision.getHeading() - targetHeading;
-        if (hdrive) {
-            error = error * 0.2;
-        }
-        else {
-            error = error * 0.8;
-        }
-        return error;
-    }
-
-    public double findIntegral(double targetHeading, boolean hdrive)
-    {
-        integral = integral + this.findProportional(targetHeading, hdrive);
-        return integral;
-    }
-
     public double findProportionalSkew(double targetSkew)
     {
         double error = vision.getSkew() - targetSkew;
         return error;
-    }
-
-    public double findIntegralSkew(double targetSkew)
-    {
-        integral = integral + this.findProportionalSkew(targetSkew);
-        return integral;
     }
 
     public void usbUpdatePipeline(int pipeline)
@@ -108,39 +66,6 @@ public class VisionMotion
     public void usbCamInit()
     {
         vision.usbCamInit();
-    }
-
-    public double turnVision(boolean hdrive)
-    {
-        p = findProportional(0, hdrive);
-        i = findIntegral(0, hdrive);
-        if (hdrive) {
-            pGainTurn = pGainTurnH;
-        }
-        else {
-            pGainTurn = pGainTurnDrive;
-        }
-        if (vision.canSeeTarget() == 0 || vision.getHeading() < 1.0 && vision.getHeading() > -1.0)
-        {
-            motorOutput = 0.0;
-            return motorOutput;
-        }
-        else
-        {
-            motorOutput = (p * pGainTurn) + (i * iGainTurn);
-            if (motorOutput > 0.2)
-            {
-                motorOutput = 0.2;
-            }
-            else if (motorOutput < -0.2)
-            {
-                motorOutput = -0.2;
-            }
-            if (Math.abs(motorOutput) < .06)
-                motorOutput = Math.signum(motorOutput) * .06;
-            return motorOutput;
-        }
-
     }
 
     public boolean definitelySeesTarget()
@@ -164,7 +89,6 @@ public class VisionMotion
     public double shuffleVisionPID()
     {
         pAngle = findProportionalSkew(0); 
-        iAngle = findIntegralSkew(0); 
         double Hspeed = (pAngle * pGainH) + (iAngle * iGainH);
         if (Hspeed > 0.5)
             Hspeed = 0.5;
@@ -391,21 +315,16 @@ public class VisionMotion
         { // front camera, no limelight
             gyroLoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
             gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
-            gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
+            //gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
         }
         else
         { // back camera, limelight
             gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
             gyroRoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
-            gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
+            //gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
         }
 
         SmartDashboard.putNumber("vt", vt);
-    }
-
-    public void ballTargetLineUp()
-    {
-
     }
 
     public boolean targetReached(double distanceTarget, double pipeline)
@@ -463,14 +382,13 @@ public class VisionMotion
     {
         SmartDashboard.putNumber("heading", vision.getHeading());
         SmartDashboard.putNumber("Can Detect Target", vision.canSeeTarget());
-        SmartDashboard.putBoolean("Is h down", isHDown);
         SmartDashboard.putNumber("targetAngle", targetAngle);
         SmartDashboard.putNumber("distanceHorizontal", distanceHorizontal);
         SmartDashboard.putNumber("targetVisDistance", targetVisDistance);
         SmartDashboard.putNumber("angle2", angle2);
         SmartDashboard.putNumber("angle1", angle1);
-        SmartDashboard.putNumber("vy", vy);
-        SmartDashboard.putNumber("vx", vx);
+        //SmartDashboard.putNumber("vy", vy);
+        //SmartDashboard.putNumber("vx", vx);
         SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
         SmartDashboard.putNumber("currentYawVMotion", currentYaw);
     }
