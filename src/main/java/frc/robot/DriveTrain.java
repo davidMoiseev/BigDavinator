@@ -240,7 +240,6 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive currentPitch", xyz_dps[1]);
         SmartDashboard.putNumber("Drive currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
-        vmotion.getDist();
 
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
@@ -304,20 +303,38 @@ public class DriveTrain implements IPigeonWrapper
      *                    the hdrive output value
      */
 
+
     public void Update(TeleopCommandProvider command)
     {
-        SmartDashboard.putNumber("A TURN", command.TurnDrive());
+        getYaw();
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
+
         if (!command.SteeringAssist())
         {
             rightMotor.set((command.RightDrive() - (command.TurnDrive())) * (slowRight ? .5 : 1));
             leftMotor.set((command.LeftDrive() + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive()))
                     * (slowLeft ? .5 : 1));
             hDriveMotor.set(HDriveOutput(command.HDrive()));
+            vmotion.resetVision();
+
+
+            command.rumbleLeft(0);
+            command.rumbleRight(0);
         }
         else
         {
+            if (vmotion.canSeeTarget())
+            {
+                command.rumbleLeft(0);
+                command.rumbleRight(0);
+            }
+            else
+            {
+                command.rumbleLeft(0);
+                command.rumbleRight(0);
+            }
+
             // Play with slowLeft and slowRight?
             VisionMotion.Output assist = vmotion.autoAlign(currentYaw);
             rightMotor.set(command.RightDrive() + assist.Right + rightMotorCorrect);

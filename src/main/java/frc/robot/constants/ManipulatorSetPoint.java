@@ -14,7 +14,7 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     // hatch low , cargo pickup
 
     // 0 16 115
-    firstPosition(7, 0, 0, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), 
+    firstPosition(12, 0, 0, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), 
     carry_front(7, -1, 10, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // X
     carry_back(7, 1, -10, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // X
     hatch_low_front(17.75, 164, 87, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // A

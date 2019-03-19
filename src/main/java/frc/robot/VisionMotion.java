@@ -22,19 +22,16 @@ public class VisionMotion
 {
     Vision vision = new Vision();
 
-    private final double p = .015;
-    private double scaledP = .015;
-    public static final double MIN_REF_COUNT = 25;
+    private final double p = .007;
+    private double scaledP = p;
+    public static final double MIN_REF_COUNT = 0;
     public static final double MAX_TURN = .3;
-    public static final double MIN_TURN = .07;
+    public static final double MIN_TURN = .055;
     private int refCount = 0;
     private double yawTarget = 0;
-    VisionState visionState = VisionState.GetReference;
-
-    enum VisionState
-    {
-        GetReference, TurnToReference
-    }
+    public static final double MAX_ACCEL = .015;
+    double prevOutput = 0;
+    private boolean hasResetVision = true;
 
     public static class Output
     {
@@ -52,24 +49,24 @@ public class VisionMotion
 
     public Output autoAlign(double currentYaw)
     {
-        vision.setPipeline(0);
+        vision.setPipeline(1);
         double error = yawTarget - currentYaw;
-        if (Math.abs(error) < 2 && refCount > MIN_REF_COUNT)
+        refCount++;
+        if ((hasResetVision || refCount > MIN_REF_COUNT) && canSeeTarget())
         {
-            yawTarget = vision.getHeading();
-            visionState = VisionState.TurnToReference;
+            yawTarget = vision.getHeading() + currentYaw;
             refCount = 0;
             error = yawTarget - currentYaw;
 
             // Scale P down when we are farther away
-            double dist = vision.findDistance();
-            scaledP = p / (dist / 30);
-            scaledP = scaledP > p ? p : scaledP;
+            // double dist = vision.findDistance();
+            // scaledP = p / (dist / 30);
+            // scaledP = scaledP > p ? p : scaledP;
         }
 
         // Temporary testing things
-        error = vision.getHeading();
-        scaledP = p;
+        SmartDashboard.putNumber("currentYaw", currentYaw);
+        SmartDashboard.putNumber("visionAngle", error);
 
         if (Math.abs(error) > 2)
         {
@@ -85,8 +82,17 @@ public class VisionMotion
                 turn = Math.signum(turn) * MIN_TURN;
             }
 
-            return new Output(turn, -turn, 0);
+            double absTurn = Math.abs(turn);
+            double absPrev = Math.abs(prevOutput);
+            if (absTurn > absPrev && absTurn - absPrev > MAX_ACCEL)
+            {
+                absTurn = absPrev + MAX_ACCEL;
+                turn = absTurn * Math.signum(turn);
+            }
+            prevOutput = turn;
+            return new Output(-turn, turn, 0);
         }
+        prevOutput = 0;
         return new Output(0, 0, 0);
     }
 
@@ -99,5 +105,16 @@ public class VisionMotion
     public void clearPipeline()
     {
         vision.setPipeline(2);
+    }
+
+    public boolean canSeeTarget()
+    {
+        return vision.canSeeTarget() == 1;
+    }
+
+    public void resetVision()
+    {
+        hasResetVision = true;
+        clearPipeline();
     }
 };

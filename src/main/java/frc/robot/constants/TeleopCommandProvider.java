@@ -7,6 +7,7 @@ import java.util.List;
 import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Flipper;
 
@@ -235,8 +236,8 @@ public class TeleopCommandProvider implements IRobotCommandProvider
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
         turnDrive = ((driver.getStickRX() * .5));
-        RightDrive = -driver.getStickLY();
-        LeftDrive = -driver.getStickLY();
+        RightDrive = driver.getStickLY();
+        LeftDrive = driver.getStickLY();
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
 
@@ -357,5 +358,15 @@ public class TeleopCommandProvider implements IRobotCommandProvider
     public double TurnDrive()
     {
         return turnDrive;
+    }
+
+    public void rumbleLeft(double val)
+    {
+        driver.setRumble(RumbleType.kLeftRumble, val);
+    }
+
+    public void rumbleRight(double val)
+    {
+        driver.setRumble(RumbleType.kRightRumble, val);
     }
 }
