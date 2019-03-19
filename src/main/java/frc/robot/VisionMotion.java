@@ -52,6 +52,100 @@ public class VisionMotion
     public double referenceAngle;
     private int target;
 
+    /*
+     * Auto-Align Members
+     */
+    public static final double TURN_P = .007;
+    public static final double MIN_REF_COUNT = 0;
+    public static final double MAX_TURN = .2;
+    public static final double MIN_TURN = .055;
+    public static final double MAX_ACCEL = .015;
+
+    private int turn_referenceAngleCount = 0;
+    private double turn_referenceAngle = 0;
+    private double turn_previousOutput = 0;
+    private boolean turn_hasReset = true;
+
+    public static class Output
+    {
+        public final double Left;
+        public final double Right;
+        public final double HDrive;
+
+        public Output(double left, double right, double hDrive)
+        {
+            Left = left;
+            Right = right;
+            HDrive = hDrive;
+        }
+    }
+
+    public Output autoAlign(double currentYaw)
+    {
+        vision.setPipeline(1);
+        double error = turn_referenceAngle - currentYaw;
+        turn_referenceAngleCount++;
+        if ((turn_hasReset || turn_referenceAngleCount > MIN_REF_COUNT) && canSeeTarget())
+        {
+            turn_referenceAngle = vision.getHeading() + currentYaw;
+            turn_referenceAngleCount = 0;
+            error = turn_referenceAngle - currentYaw;
+        }
+
+        // Temporary testing things
+        SmartDashboard.putNumber("currentYaw", currentYaw);
+        SmartDashboard.putNumber("visionAngle", error);
+
+        if (Math.abs(error) > 2)
+        {
+            double turn = p * error;
+
+            // Do max/min turn with signs
+            if (Math.abs(turn) > MAX_TURN)
+            {
+                turn = Math.signum(turn) * MAX_TURN;
+            }
+            if (Math.abs(turn) < MIN_TURN)
+            {
+                turn = Math.signum(turn) * MIN_TURN;
+            }
+
+            double absTurn = Math.abs(turn);
+            double absPrev = Math.abs(turn_previousOutput);
+            if (absTurn > absPrev && absTurn - absPrev > MAX_ACCEL)
+            {
+                absTurn = absPrev + MAX_ACCEL;
+                turn = absTurn * Math.signum(turn);
+            }
+            turn_previousOutput = turn;
+            return new Output(-turn, turn, 0);
+        }
+        turn_previousOutput = 0;
+        return new Output(0, 0, 0);
+    }
+
+    public double getDist()
+    {
+        vision.setPipeline(1);
+        return vision.findDistance();
+    }
+
+    public void clearPipeline()
+    {
+        vision.setPipeline(2);
+    }
+
+    public boolean canSeeTarget()
+    {
+        return vision.canSeeTarget() == 1;
+    }
+
+    public void resetVision()
+    {
+        turn_hasReset = true;
+        clearPipeline();
+    }
+
     public double findProportionalSkew(double targetSkew)
     {
         double error = vision.getSkew() - targetSkew;
@@ -71,7 +165,8 @@ public class VisionMotion
     public boolean definitelySeesTarget()
     {
         double maxHeadingChange = 1000;
-        if ((earlierCanSeeTarget == vision.getTV()) && (Math.abs(prevHeadingVis - vision.getHorizontal()) < maxHeadingChange))
+        if ((earlierCanSeeTarget == vision.getTV())
+                && (Math.abs(prevHeadingVis - vision.getHorizontal()) < maxHeadingChange))
         {
             earlierCanSeeTarget = vision.getTV();
             prevHeadingVis = vision.getHeading();
@@ -88,7 +183,7 @@ public class VisionMotion
 
     public double shuffleVisionPID()
     {
-        pAngle = findProportionalSkew(0); 
+        pAngle = findProportionalSkew(0);
         double Hspeed = (pAngle * pGainH) + (iAngle * iGainH);
         if (Hspeed > 0.5)
             Hspeed = 0.5;
@@ -302,26 +397,28 @@ public class VisionMotion
 
     public void gyroTargetLineUp(double yaw, double vt)
     { // vt is the motor output of the resultant
-        // vy = Math.tan(yaw * vision.getHeading()) * ;//Math.sin(yaw) * vt;
-        // vx = //Math.cos(yaw)* vt;
-        // vxh = vx * Math.cos(yaw);
-        // vxlr = vx * Math.sin(yaw);
-        // vyh = vy * Math.sin(yaw);
-        // vylr = vy * Math.cos(yaw);
-        // gyroLoutput = vy;//(vylr + vxlr);
-        // gyroRoutput = vy;//(vylr + vxlr);
-        // gyroHoutput = vx;//(vyh + vxh);
+      // vy = Math.tan(yaw * vision.getHeading()) * ;//Math.sin(yaw) * vt;
+      // vx = //Math.cos(yaw)* vt;
+      // vxh = vx * Math.cos(yaw);
+      // vxlr = vx * Math.sin(yaw);
+      // vyh = vy * Math.sin(yaw);
+      // vylr = vy * Math.cos(yaw);
+      // gyroLoutput = vy;//(vylr + vxlr);
+      // gyroRoutput = vy;//(vylr + vxlr);
+      // gyroHoutput = vx;//(vyh + vxh);
         if (whichCamera() == true)
         { // front camera, no limelight
             gyroLoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
             gyroRoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
-            //gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
+            // gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal +
+            // distance);
         }
         else
         { // back camera, limelight
             gyroLoutput = (distance * vt) / (distance + Math.abs(distanceHorizontal));
             gyroRoutput = -(distance * vt) / (distance + Math.abs(distanceHorizontal));
-            //gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal + distance);
+            // gyroHoutput = -.1 * vx;// (distanceHorizontal * vt) / (distanceHorizontal +
+            // distance);
         }
 
         SmartDashboard.putNumber("vt", vt);
@@ -373,11 +470,6 @@ public class VisionMotion
         }
     }
 
-    public double canSeeTarget()
-    {
-        return vision.canSeeTarget();
-    }
-
     public void writeDashBoardVis()
     {
         SmartDashboard.putNumber("heading", vision.getHeading());
@@ -387,8 +479,8 @@ public class VisionMotion
         SmartDashboard.putNumber("targetVisDistance", targetVisDistance);
         SmartDashboard.putNumber("angle2", angle2);
         SmartDashboard.putNumber("angle1", angle1);
-        //SmartDashboard.putNumber("vy", vy);
-        //SmartDashboard.putNumber("vx", vx);
+        // SmartDashboard.putNumber("vy", vy);
+        // SmartDashboard.putNumber("vx", vx);
         SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
         SmartDashboard.putNumber("currentYawVMotion", currentYaw);
     }

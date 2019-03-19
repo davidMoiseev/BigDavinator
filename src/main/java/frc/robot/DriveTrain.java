@@ -90,10 +90,6 @@ public class DriveTrain implements IPigeonWrapper
     public double currentYaw;
     public double singleRotationYaw;
     public int state;
-    public double motorCorrect;
-    public double leftMotorCorrect;
-    public double rightMotorCorrect;
-    public double hMotorCorrect;
 
     /**
      * Motion Profiling Constants
@@ -218,7 +214,7 @@ public class DriveTrain implements IPigeonWrapper
 
     public boolean canseeTarget()
     {
-        if (vmotion.canSeeTarget() == 1)
+        if (vmotion.canSeeTarget())
         {
             return true;
         }
@@ -344,30 +340,6 @@ public class DriveTrain implements IPigeonWrapper
             return false;
         }
     }
-
-    public void steeringAssist(double pipeline, TeleopCommandProvider command)
-    {
-        if (command.steeringAssistActivated())
-        {
-            vmotion.setPipeline(pipeline);
-            motorCorrect = vmotion.turnVision(false);
-            leftMotorCorrect = -motorCorrect;
-            rightMotorCorrect = motorCorrect;
-            hMotorCorrect = vmotion.turnVision(false);
-        }
-    }
-
-    public void steeringAssistH(double pipeline, TeleopCommandProvider command)
-    {
-        if (command.steeringAssistActivated())
-        {
-            vmotion.setPipeline(pipeline);
-            leftMotorCorrect = vmotion.turnVision(false);
-            rightMotorCorrect = -vmotion.turnVision(false);
-            hMotorCorrect = vmotion.shuffleVisionPID();
-        }
-    }
-
     /*
      * public void updateUsb(int pipeline) { vmotion.usbUpdatePipeline(pipeline); }
      * 
@@ -429,11 +401,10 @@ public class DriveTrain implements IPigeonWrapper
         }
         else
         {
-            steeringAssist(1, command);
-            rightMotor.set(command.RightDriveSteeringAssist() + rightMotorCorrect);
-            leftMotor.set(
-                    command.LeftDriveSteeringAssist() + leftMotorCorrect + (0.15 * (HDriveOutput(command.HDrive()))));
-            hDriveMotor.set(HDriveOutput(hMotorCorrect));
+            VisionMotion.Output assist = vmotion.autoAlign(currentYaw);
+            rightMotor.set(command.RightDrive() + assist.Right);
+            leftMotor.set(command.LeftDrive() + assist.Left + (0.15 * (HDriveOutput(command.HDrive()))));
+            hDriveMotor.set(command.HDrive());
         }
 
         if (climbDeployed)

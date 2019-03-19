@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Subsystem;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.vision.*;
 import org.opencv.core.Mat;
@@ -23,7 +23,7 @@ public class Vision extends Subsystem
   private double targetHeight;
   private double rocketHeight = 38.000;
   private double normalHeight = 28.875;
-  private double limelightHeight = 2.54;
+  private double limelightHeight = 31;
   private double limelightAngle = 0.447;// -2.148;
   private double a2 = 0.0;
   private double distance = 0.0;
@@ -101,8 +101,8 @@ public class Vision extends Subsystem
   public void getNetworkTables()
   {
     tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    tx =  NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    ty =  NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
   }
 
   public double getTV()
@@ -122,7 +122,9 @@ public class Vision extends Subsystem
     double vt = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
     return vt;
   }
-  public double getSkew(){
+
+  public double getSkew()
+  {
     double skew = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ts").getDouble(0);
     return skew;
   }
@@ -137,10 +139,32 @@ public class Vision extends Subsystem
   { // could return targetHeading or heading using a boolean if already reached
     // heading
     getNetworkTables();
-    heading = ty;
-    return heading;
+    return ty;
   }
   // }
+
+  public double findDistance()
+  { // to the vision target, NOT THE BALL
+    // getNetworkTables();
+    targetHeight = normalHeight;
+
+    a2 = getVertical();
+    double heightDif = targetHeight - limelightHeight;
+    double dist = heightDif / Math.tan(Math.toRadians(a2));
+    SmartDashboard.putNumber("A DIST", dist);
+    return dist;
+  }
+
+  public double canSeeTarget()
+  {
+    tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
+    return 1;// tv;
+  }
+
+  public void setPipeline(double pipeline)
+  {
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(pipeline);
+  }
 
   public double findDistance(int target)
   { // to the vision target, NOT THE BALL
@@ -155,24 +179,16 @@ public class Vision extends Subsystem
       targetHeight = normalHeight;
     }
     a2 = getVertical();
-    // distance = (targetHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + a2));
-    limelightAngle = Math.atan((limelightHeight-limelightHeight)/38) - a2; /*calculates angle
-    of limelight crosshair relative to ground*/
+    // distance = (targetHeight - limelightHeight) /
+    // Math.tan(Math.toRadians(limelightAngle + a2));
+    limelightAngle = Math.atan((limelightHeight - limelightHeight) / 38)
+        - a2; /*
+               * calculates angle of limelight crosshair relative to ground
+               */
     return limelightAngle;
-    //double distanceInches = distance / 5.85;
+    // double distanceInches = distance / 5.85;
     // return distanceInches;
 
-  }
-
-  public double canSeeTarget()
-  {
-    tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    return 1;// tv;
-  }
-
-  public void setPipeline(double pipeline)
-  {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(pipeline);
   }
 
 }
