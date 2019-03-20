@@ -62,7 +62,7 @@ public class VisionMotion
     public static final double MAX_ACCEL = .015;
 
     private int turn_referenceAngleCount = 0;
-    private double turn_referenceAngle = 0;
+    private Double turn_referenceAngle = null;
     private double turn_previousOutput = 0;
     private boolean turn_hasReset = true;
 
@@ -83,7 +83,7 @@ public class VisionMotion
     public Output autoAlign(double currentYaw)
     {
         vision.setPipeline(1);
-        double error = turn_referenceAngle - currentYaw;
+        double error;
         turn_referenceAngleCount++;
         if ((turn_hasReset || turn_referenceAngleCount > MIN_REF_COUNT) && canSeeTarget())
         {
@@ -91,6 +91,11 @@ public class VisionMotion
             turn_referenceAngleCount = 0;
             error = turn_referenceAngle - currentYaw;
         }
+
+        if (turn_referenceAngle == null)
+            return new Output(0, 0, 0);
+
+        error = turn_referenceAngle - currentYaw;
 
         // Temporary testing things
         SmartDashboard.putNumber("currentYaw", currentYaw);
@@ -132,7 +137,7 @@ public class VisionMotion
 
     public void clearPipeline()
     {
-        vision.setPipeline(2);
+        vision.setPipeline(0);
     }
 
     public boolean canSeeTarget()
@@ -143,6 +148,7 @@ public class VisionMotion
     public void resetVision()
     {
         turn_hasReset = true;
+        turn_referenceAngle = null;
         clearPipeline();
     }
 
