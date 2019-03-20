@@ -683,15 +683,19 @@ public class Manipulator
         return ARM_LENGTH * Math.sin(Math.toRadians(armAngle)) + lengthWristX(wristAngle);
     }
 
+    // Whether we are re-zeroing the arm
     boolean zeroingArm = false;
+    // Delay count for how long to center the hatc
     int hatchCenterTimer = 0;
+    // Whether we are centering the hatch
     boolean hatchCenter = false;
+    // Delay count for when to release hatch when placing one
     int scoreCount = 0;
+    // Delay count for when limit switches are considered un-fired again
     int limitSwitchCount = 0;
+    // Whether limit switches were pressed, stays true until count goes too high
     boolean limitSwitchPressed = false;
-
-    boolean rumbling = false;
-    int rumbleTimer = 0;
+    boolean wasLimitSwitching = false;
 
     public void Update(TeleopCommandProvider robotCommand)
     {
@@ -712,18 +716,6 @@ public class Manipulator
         arm.checkEncoder();
         wrist.checkEncoder();
         elevator.checkEncoder(0);
-
-        if (rumbling && rumbleTimer < 20)
-        {
-            robotCommand.Rumble(.5);
-            rumbleTimer++;
-        }
-        else
-        {
-            robotCommand.Rumble(0);
-            rumbling = false;
-            rumbleTimer = 0;
-        }
 
         boolean scoreHatch = false;
         boolean grabHatch = false;
