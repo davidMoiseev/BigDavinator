@@ -511,6 +511,20 @@ public class Manipulator
             }
         }
 
+        // Don't hit the flipper if we are on the way up
+        if (arm.getPosition() > 100 && armTarget > arm.getPosition()
+                && elevTarget > elevator.getPosition() + ELEVATOR_TOLERANCE && elevator.getPosition() < 7
+                && frontFlipper.getPosition() < 100)
+        {
+            armTarget = prevArmAngle;
+        }
+        if (arm.getPosition() < -100 && armTarget < arm.getPosition()
+                && elevTarget > elevator.getPosition() + ELEVATOR_TOLERANCE && elevator.getPosition() < 7
+                && backFlipper.getPosition() < 100)
+        {
+            armTarget = prevArmAngle;
+        }
+
         if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative < -110)
         {
             armTarget = prevArmAngle;
@@ -696,60 +710,23 @@ public class Manipulator
         wrist.checkEncoder();
         elevator.checkEncoder(0);
 
-        boolean score = robotCommand.ManipulatorScore();
+        boolean scoreHatch = false;
+        boolean grabHatch = false;
 
         drivetrain.slowLeftSide(false);
         drivetrain.slowRightSide(false);
 
-        if (robotCommand.LimitSwitchFeedBack())
+        if (!robotCommand.CommandedSpearsClosed())
         {
-            if (getArmSide(arm.getPosition()) == RobotSide.FRONT)
-            {
-                if (frontLeftLimit.get() && !frontRightLimit.get())
-                    drivetrain.slowLeftSide(true);
-                else if (!frontLeftLimit.get() && frontRightLimit.get())
-                    drivetrain.slowRightSide(true);
-                if (frontLeftLimit.get() && frontRightLimit.get())
-                {
-                    limitSwitchCount = 0;
-                    limitSwitchPressed = true;
-                    score = true;
-                }
-                else if (limitSwitchPressed && limitSwitchCount < 20)
-                {
-                    limitSwitchCount++;
-                    score = true;
-                }
-                else
-                {
-                    limitSwitchPressed = false;
-                    score = false;
-                }
-            }
-            else
-            {
-                if (backLeftLimit.get() && !backRightLimit.get())
-                    drivetrain.slowLeftSide(true);
-                else if (!backLeftLimit.get() && backRightLimit.get())
-                    drivetrain.slowRightSide(true);
-
-                if (backLeftLimit.get() && backRightLimit.get())
-                {
-                    limitSwitchCount = 0;
-                    limitSwitchPressed = true;
-                    score = true;
-                }
-                else if (limitSwitchPressed && limitSwitchCount < 20)
-                {
-                    limitSwitchCount++;
-                    score = true;
-                }
-                else
-                {
-                    limitSwitchPressed = false;
-                    score = false;
-                }
-            }
+            scoreHatch = robotCommand.ManipulatorScore();
+            if (!scoreHatch && robotCommand.LimitSwitchFeedBack())
+                scoreHatch = limitSwitchScore();
+        }
+        else
+        {
+            grabHatch = robotCommand.ManipulatorScore();
+            if (!grabHatch && robotCommand.LimitSwitchFeedBack())
+                grabHatch = limitSwitchScore();
         }
 
         if (robotCommand.HatchPickup())
@@ -758,7 +735,7 @@ public class Manipulator
             hatchCenterTimer = 0;
         }
 
-        if (!robotCommand.HatchPickup() && hatchCenter)
+        if (!grabHatch && !robotCommand.HatchPickup() && hatchCenter)
         {
             hatchCenterTimer++;
             if (hatchCenterTimer < 80)
@@ -775,39 +752,49 @@ public class Manipulator
             intake.Update(robotCommand);
         }
 
-        double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
-
-        SmartDashboard.putNumber("wristY", wristY);
-
         IManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
 
         // To climb, we must be above climb height and targeting prep position
         drivetrain.setAllowClimberDeploy((setPoint == ManipulatorSetPoint.climb_prep)
                 && elevator.getPosition() + ELEVATOR_TOLERANCE > ManipulatorSetPoint.climb_prep.elevatorHeight());
 
-        // elevator.setTarget(ManipulatorSetPoint.hatch_low_front.elevatorHeight());
+        boolean hatchPickup = robotCommand.HatchPickup();
+
+        boolean rumbling = false;
         if (setPoint != null)
         {
-            if (score)
+            if (scoreHatch)
             {
-                scoreCount++;
                 setPoint = CreateScoreSetPoint(setPoint);
-                double newArmX = Math.sin(Math.toRadians(setPoint.armAngle())) * ARM_LENGTH;
-                // if ((Math.sin(Math.toRadians(arm.getPosition())) * ARM_LENGTH) > (newArmX -
-                // .5))
 
-                if (scoreCount > 12.5)
+                if (scoreCount > 12)
                 {
-                    robotCommand.SetIntakeSolenoid(true);
+                    robotCommand.SetSpearsClosed(true);
+                    rumbling = true;
                 }
+                else
+                {
+                    scoreCount++;
+                }
+            }
+            else if (grabHatch)
+            {
+                robotCommand.SetSpearsClosed(false);
+                hatchCenterTimer = 0;
+                // Might need to wait to center hatch
+                hatchCenter = true;
+                hatchPickup = true;
+                rumbling = true;
             }
             else
             {
                 scoreCount = 0;
+                robotCommand.ClearSpearsClosed();
             }
-            if (robotCommand.HatchPickup())
+
+            if (hatchPickup)
             {
-                double elevHeight = (setPoint.elevatorHeight() + 2.5 > 30 ? 30 : setPoint.elevatorHeight() + 2.5);
+                double elevHeight = (setPoint.elevatorHeight() + 2.5 > 32 ? 32 : setPoint.elevatorHeight() + 2.5);
                 setPoint = new ManualManipulatorSetPoint(setPoint.armAngle(), setPoint.wristAngle(), elevHeight,
                         setPoint.frontFlipper(), setPoint.backFlipper());
             }
@@ -823,6 +810,9 @@ public class Manipulator
             backFlipper.disable();
             SmartDashboard.putBoolean("Disabled thing", true);
         }
+
+        if (rumbling) robotCommand.Rumble(.25);
+        else robotCommand.Rumble(0);
         pneumaticIntake.Update(robotCommand);
         // elevator.manual(operator.getStickLY());
 
@@ -830,26 +820,6 @@ public class Manipulator
         SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());
         SmartDashboard.putNumber("frontFlipper error", frontFlipper.getError());
         SmartDashboard.putNumber("backFlipper error", backFlipper.getError());
-
-        SmartDashboard.putBoolean("COLLIDE FRAME",
-                willCollideWithFrame(elevator.getPosition(), arm.getPosition(), wrist.getPosition()));
-        SmartDashboard.putBoolean("COLLIDE SUPPORTS",
-                willCollideWithSupports(elevator.getPosition(), arm.getPosition(), wrist.getPosition()));
-        SmartDashboard.putNumber("Wrist Width", widthManipulator(arm.getPosition(), wrist.getPosition()));
-        SmartDashboard.putNumber("Wrist Height",
-                heightManipulator(elevator.getPosition(), arm.getPosition(), wrist.getPosition()));
-
-        SmartDashboard.putNumber("WristTopPostitionX", widthManipulator(arm.getPosition(), wrist.getPosition())
-                - 13.5 / 2 * Math.cos(Math.toRadians(wrist.getPosition())));
-        SmartDashboard.putNumber("WristBottonPostitionX", widthManipulator(arm.getPosition(), wrist.getPosition())
-                + 13.5 / 2 * Math.cos(Math.toRadians(wrist.getPosition())));
-
-        SmartDashboard.putNumber("WristTopPostitionY",
-                heightManipulator(elevator.getPosition(), arm.getPosition(), wrist.getPosition())
-                        + 13.5 / 2 * Math.sin(Math.toRadians(wrist.getPosition())));
-        SmartDashboard.putNumber("WristBottonPostitionY",
-                heightManipulator(elevator.getPosition(), arm.getPosition(), wrist.getPosition())
-                        - 13.5 / 2 * Math.sin(Math.toRadians(wrist.getPosition())));
 
         if (!holdingElevator)
             prevElevHeight = elevator.getPosition();
@@ -861,6 +831,37 @@ public class Manipulator
             prevFrontFlipperAngle = frontFlipper.getPosition();
         if (!holdingBackFlipper)
             prevBackFlipperAngle = backFlipper.getPosition();
+    }
+
+    private boolean limitSwitchScore()
+    {
+        boolean score = false;
+        DigitalInput leftLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontLeftLimit : backLeftLimit;
+        DigitalInput rightLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontRightLimit : backLeftLimit;
+
+        if (leftLimit.get() && !rightLimit.get())
+            drivetrain.slowLeftSide(true);
+        else if (!leftLimit.get() && rightLimit.get())
+            drivetrain.slowRightSide(true);
+
+        if (leftLimit.get() && rightLimit.get())
+        {
+            limitSwitchCount = 0;
+            limitSwitchPressed = true;
+            score = true;
+        }
+        else if (limitSwitchPressed && limitSwitchCount < 20)
+        {
+            limitSwitchCount++;
+            score = true;
+        }
+        else
+        {
+            limitSwitchPressed = false;
+            score = false;
+        }
+
+        return score;
     }
 
     private IManipulatorSetPoint CreateScoreSetPoint(IManipulatorSetPoint setPoint)
