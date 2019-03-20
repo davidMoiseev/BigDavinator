@@ -7,6 +7,7 @@ import java.util.List;
 import org.hotteam67.HotController;
 import org.hotteam67.HotLogger;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Flipper;
 
@@ -372,5 +373,11 @@ public class TeleopCommandProvider
     public double TurnDrive()
     {
         return turnDrive;
+    }
+
+    public void Rumble(double val)
+    {
+        driver.setRumble(RumbleType.kLeftRumble, val);
+        driver.setRumble(RumbleType.kRightRumble, val);
     }
 }
