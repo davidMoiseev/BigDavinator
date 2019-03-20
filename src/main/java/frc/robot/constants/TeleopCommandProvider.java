@@ -92,7 +92,7 @@ public class TeleopCommandProvider
     }
 
     
-    public boolean IntakeSolenoid()
+    public boolean SpearsClosed()
     {
         return intakeSolenoid;
     }
@@ -356,7 +356,7 @@ public class TeleopCommandProvider
     }
 
     
-    public void SetIntakeSolenoid(boolean isTrue)
+    public void SetSpearsClosed(boolean isTrue)
     {
         intakeSolenoid = isTrue;
     }
