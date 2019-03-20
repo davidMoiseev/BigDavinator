@@ -15,6 +15,7 @@ import edu.wpi.cscore.UsbCamera;
 public class Vision extends Subsystem
 {
 
+  private final String networkTable;
   public double tv = 0;
   private double tx = 0;
   private double ty = 0;
@@ -32,13 +33,18 @@ public class Vision extends Subsystem
 
   UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 
+  public Vision(String name)
+  {
+    networkTable = name;
+  }
+
   public void initDefaultCommand()
   {
     /*
      * setDefaultCommand(new MySpecialCommand());
-     * NetworkTableInstance.getDefault().getTable("limelight").getEntry("<tv>").
+     * NetworkTableInstance.getDefault().getTable(networkTable).getEntry("<tv>").
      * getDouble(0);
-     * NetworkTableInstance.getDefault().getTable("limelight").getEntry("<tx>").
+     * NetworkTableInstance.getDefault().getTable(networkTable).getEntry("<tx>").
      * getDouble(0); if (tv == 1) { boolean frc.robot.DriveTrain.turnComplete(tv);
      * 
      * } else{ }
@@ -100,38 +106,38 @@ public class Vision extends Subsystem
 
   public void getNetworkTables()
   {
-    tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    tv = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("tv").getDouble(0);
+    tx = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("tx").getDouble(0);
+    ty = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("ty").getDouble(0);
   }
 
   public double getTV()
   {
-    tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
+    tv = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("tv").getDouble(0);
     return tv;
   }
 
   public double getHorizontal()
   {
-    double hz = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    double hz = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("ty").getDouble(0);
     return hz;
   }
 
   public double getVertical()
   {
-    double vt = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    double vt = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("tx").getDouble(0);
     return vt;
   }
 
   public double getSkew()
   {
-    double skew = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ts").getDouble(0);
+    double skew = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("ts").getDouble(0);
     return skew;
   }
 
   public double getTA()
   {
-    ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
+    ta = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("ta").getDouble(0);
     return ta;
   }
 
@@ -157,13 +163,13 @@ public class Vision extends Subsystem
 
   public double canSeeTarget()
   {
-    tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
+    tv = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("tv").getDouble(0);
     return 1;// tv;
   }
 
   public void setPipeline(double pipeline)
   {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(pipeline);
+    NetworkTableInstance.getDefault().getTable(networkTable).getEntry("pipeline").setNumber(pipeline);
   }
 
   public double findDistance(int target)

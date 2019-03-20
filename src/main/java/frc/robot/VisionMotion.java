@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionMotion
 {
-    Vision vision = new Vision();
+    Vision vision = new Vision("limelight-back");
 
     public double h;
     public double speedH;
