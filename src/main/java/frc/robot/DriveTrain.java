@@ -66,12 +66,8 @@ public class DriveTrain implements IPigeonWrapper
     private final TalonSRX rightEncoder;
     private final TalonSRX leftEncoder;
     private double[] xyz_dps = new double[3];
-    private double hDrivePrevious;
-    private HDriveState hDriveState = HDriveState.Off;
-    private enum HDriveState
-    {
-        Off, Spike, Ramping
-    }
+    private double HDriveOutputOld;
+    private int Hstate;
     double k;
     double spike;
     double kAlt;
@@ -427,45 +423,92 @@ public class DriveTrain implements IPigeonWrapper
 
     }
 
-    private int spikeCounter = 0;
-    public static final int H_SPIKE_DURATION = 5;
-    public static final double H_SPIKE_MAGNITUDE = .4;
-    public static final double H_RAMP = .01;
     public double HDriveOutput(double input)
     {
-        double output = 0;
-        if (input == 0)
+        double HDriveOutput = input;
+        HDriveOutputOld = HDriveOutput;
+        Hstate = 0;
+        k = 0.02;
+        spike = 0.4;
+        kAlt = 0.5;
+        // start up if statements spike in the positive and negative/ or do nothing
+        // Negative
+        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) < 0.0 && HDriveOutputOld == 0.0)
         {
-            hDriveState = HDriveState.Off;
-            return 0;
+            HDriveOutput = HDriveOutput - spike;
+            Hstate++;
         }
+        // Nothing
+        if ((Hstate == 0) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) == 0.0)
+        {
+            HDriveOutputOld = HDriveOutput;
+            Hstate = 0;
+        }
+        // Positive
+        if (((Hstate == 0) && (HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) == 0.0))
+        {
+            HDriveOutput = HDriveOutput + spike;
+            Hstate++;
+        }
+        // once moving, either no change, keep state, positive ramp up or ramp down
+        // accordingly
 
-        if (hDriveState == HDriveState.Off)
+        // if at extremes of 0.5 + where spike should be lesser than 0.3
+        if ((Hstate == 1) && Math.abs(HDriveOutput - HDriveOutputOld) > 1.0 && HDriveOutputOld > 0.5 || Hstate == 5)
         {
-            hDriveState = HDriveState.Spike;
-            hDrivePrevious = 0;
-            spikeCounter = 0;
-        }
-        if (hDriveState == HDriveState.Spike)
-        {
-            spikeCounter++;
-            if (spikeCounter > H_SPIKE_DURATION)
-                hDriveState = HDriveState.Ramping;
-            else
-                output = H_SPIKE_MAGNITUDE;
-        }
-        if (hDriveState == HDriveState.Ramping)
-        {
-            if (Math.abs(input) - Math.abs(hDrivePrevious) > H_RAMP)
+            if (HDriveOutput > 0.0)
             {
-                output = input +  H_RAMP * Math.signum(input);
+                HDriveOutput = Math.abs(HDriveOutput) - k;
+                Hstate = 5;
+            }
+            if (HDriveOutput < 0.0)
+            {
+                HDriveOutput = HDriveOutput + k;
+                Hstate = 5;
+            }
+            else if (HDriveOutput == 0.0)
+            {
+                HDriveOutput = 0.0;
+                Hstate = 0;
+            }
+        }
+        // nothing
+        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) == 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+            HDriveOutput = HDriveOutputOld;
+            Hstate = 1;
+        }
+        // ramp up
+        if ((Hstate == 1) && Math.abs(HDriveOutput - HDriveOutputOld) > 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+            if (HDriveOutput > 0.0)
+            {
+                HDriveOutput = Math.abs(HDriveOutput) + k;
+                Hstate = 1;
             }
             else
-                output = input;
+            {
+                HDriveOutput = HDriveOutput - k;
+                Hstate = 1;
+            }
         }
-
-        hDrivePrevious = output;
-        return output;
+        // ramp down
+        if ((Hstate == 1) && (HDriveOutput - HDriveOutputOld) < 0.0 && Math.abs(HDriveOutputOld) > 0.0)
+        {
+            if (HDriveOutput > 0.0)
+            {
+                HDriveOutput = Math.abs(HDriveOutput) + k;
+                Hstate = 0;
+            }
+            else
+            {
+                HDriveOutput = HDriveOutput - k;
+                Hstate = 0;
+            }
+        }
+        // once moving, either no change, keep state, negative ramp up or ramp down
+        // accordingly
+        return HDriveOutput;
     }
 
     /**

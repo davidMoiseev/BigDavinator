@@ -25,6 +25,6 @@ public class IntakePneumatics
 
 	public void Update(TeleopCommandProvider command)
 	{
-		intakeSingle.set(command.SpearsClosed());
+		intakeSingle.set(command.IntakeSolenoid());
 	}
 }
