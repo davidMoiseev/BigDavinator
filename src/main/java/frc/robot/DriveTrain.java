@@ -414,8 +414,8 @@ public class DriveTrain implements IPigeonWrapper
             else
             {
                 VisionMotion.Output assist = vmotion.autoAlign(xyz_dps[0]);
-                rightMotor.set(command.RightDrive() + assist.Right);
-                leftMotor.set(command.LeftDrive() + assist.Left + (0.15 * (HDriveOutput(command.HDrive()))));
+                rightMotor.set((command.RightDrive() + assist.Right) * (slowLeft ? .5 : 1));
+                leftMotor.set(command.LeftDrive() + assist.Left + (0.15 * (HDriveOutput(command.HDrive()))) * (slowLeft ? .5 : 1));
             }
             hDriveMotor.set(command.HDrive());
         }
