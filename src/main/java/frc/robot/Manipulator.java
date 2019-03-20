@@ -690,6 +690,9 @@ public class Manipulator
     int limitSwitchCount = 0;
     boolean limitSwitchPressed = false;
 
+    boolean rumbling = false;
+    int rumbleTimer = 0;
+
     public void Update(TeleopCommandProvider robotCommand)
     {
         armPigeon.CalibratePigeon();
@@ -709,6 +712,18 @@ public class Manipulator
         arm.checkEncoder();
         wrist.checkEncoder();
         elevator.checkEncoder(0);
+
+        if (rumbling && rumbleTimer < 20)
+        {
+            robotCommand.Rumble(.5);
+            rumbleTimer++;
+        }
+        else
+        {
+            robotCommand.Rumble(0);
+            rumbling = false;
+            rumbleTimer = 0;
+        }
 
         boolean scoreHatch = false;
         boolean grabHatch = false;
