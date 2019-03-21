@@ -138,7 +138,8 @@ public class VisionMotion
 
     public void clearPipeline()
     {
-        getCamera().setPipeline(0);
+        frontCamera.setPipeline(0);
+        backCamera.setPipeline(0);
     }
 
     public boolean canSeeTarget()

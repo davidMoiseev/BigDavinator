@@ -68,6 +68,7 @@ public class DriveTrain implements IPigeonWrapper
     private double[] xyz_dps = new double[3];
     private double hDrivePrevious;
     private HDriveState hDriveState = HDriveState.Off;
+
     private enum HDriveState
     {
         Off, Spike, Ramping
@@ -389,6 +390,15 @@ public class DriveTrain implements IPigeonWrapper
      *                    the hdrive output value
      */
 
+    private void arcadeDrive(TeleopCommandProvider command)
+    {
+        double hDrive = HDriveOutput(command.HDrive());
+        double hDriveCorrect = 0.15 * hDrive;
+        rightMotor.set((command.RightDrive() - command.TurnDrive()) * (slowRight ? .5 : 1));
+        leftMotor.set((command.LeftDrive() + hDriveCorrect + command.TurnDrive()) * (slowLeft ? .5 : 1));
+        hDriveMotor.set(HDriveOutput(hDrive));
+    }
+
     public void Update(TeleopCommandProvider command)
     {
         getYaw();
@@ -396,26 +406,20 @@ public class DriveTrain implements IPigeonWrapper
         // driver.getRawAxis(2)) / 2.0);
         if (!command.steeringAssistActivated())
         {
-            rightMotor.set((command.RightDrive() - (command.TurnDrive())) * (slowRight ? .5 : 1));
-            leftMotor.set((command.LeftDrive() + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive()))
-                    * (slowLeft ? .5 : 1));
-            hDriveMotor.set(HDriveOutput(command.HDrive()));
+            arcadeDrive(command);
             vmotion.resetVision();
         }
         else
         {
             if (!vmotion.canSeeTarget() && command.TurnDrive() > 0)
             {
-                rightMotor.set((command.RightDrive() - (command.TurnDrive())) * (slowRight ? .5 : 1));
-                leftMotor.set((command.LeftDrive() + (0.15 * (HDriveOutput(command.HDrive())) + command.TurnDrive()))
-                        * (slowLeft ? .5 : 1));
-                hDriveMotor.set(HDriveOutput(command.HDrive()));
+                arcadeDrive(command);
             }
             else
             {
                 VisionMotion.Output assist = vmotion.autoAlign(xyz_dps[0]);
-                rightMotor.set((command.RightDrive() + assist.Right) * (slowLeft ? .5 : 1));
-                leftMotor.set(command.LeftDrive() + assist.Left + (0.15 * (HDriveOutput(command.HDrive()))) * (slowLeft ? .5 : 1));
+                rightMotor.set((command.RightDrive() + assist.Right) * (slowRight ? .5 : 1));
+                leftMotor.set((command.LeftDrive() + assist.Left) * (slowLeft ? .5 : 1));
             }
             hDriveMotor.set(command.HDrive());
         }
@@ -439,6 +443,7 @@ public class DriveTrain implements IPigeonWrapper
     public static final int H_SPIKE_DURATION = 5;
     public static final double H_SPIKE_MAGNITUDE = .4;
     public static final double H_RAMP = .01;
+
     public double HDriveOutput(double input)
     {
         double output = 0;
@@ -466,7 +471,7 @@ public class DriveTrain implements IPigeonWrapper
         {
             if (Math.abs(input) - Math.abs(hDrivePrevious) > H_RAMP)
             {
-                output = input +  H_RAMP * Math.signum(input);
+                output = input + H_RAMP * Math.signum(input);
             }
             else
                 output = input;
@@ -499,8 +504,8 @@ public class DriveTrain implements IPigeonWrapper
         allowClimb = b;
     }
 
-	public void useBackCamera(boolean b)
-	{
+    public void useBackCamera(boolean b)
+    {
         vmotion.useBackCamera(b);
-	}
+    }
 }

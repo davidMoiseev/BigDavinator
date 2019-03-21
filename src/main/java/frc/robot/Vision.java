@@ -23,22 +23,19 @@ public class Vision
   private double rocketHeight = 38.000;
   private final double hatchHeight = 28.875;
   private final double limelightHeight;
-  private final double limelightAngle;
   private final double limelightX;
 
   public Vision(String name)
   {
     networkTable = name;
     limelightHeight = 31;
-    limelightAngle = 0.447;// -2.148;
     limelightX = 5;
   }
 
-  public Vision(String name, double X, double angle, double height)
+  public Vision(String name, double X, double height)
   {
     networkTable = name;
     limelightX = X;
-    limelightAngle = angle;
     limelightHeight = height;
   }
 
@@ -97,14 +94,14 @@ public class Vision
 
   public double findX(double dist, double horizontal)
   {
-    return limelightX - Math.sin(-90 + limelightAngle + horizontal) * dist;
+    return limelightX - Math.sin(horizontal) * dist;
   }
 
   public double angleFromCenter()
   {
     double dist = findDistance();
     double horizontal = getHorizontal();
-    return Math.atan(findX(dist, horizontal) / (dist * Math.cos(-90 + limelightAngle + horizontal)));
+    return Math.atan(limelightX + (Math.sin(horizontal) * dist) / (dist * Math.cos(horizontal)));
   }
 
   public double canSeeTarget()
