@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionMotion
 {
-    Vision vision = new Vision("limelight-back");
+    Vision backCamera = new Vision("limelight-back");
+    Vision frontCamera = new Vision("limelight-front");
 
     public double h;
     public double speedH;
@@ -82,12 +83,12 @@ public class VisionMotion
 
     public Output autoAlign(double currentYaw)
     {
-        vision.setPipeline(1);
+        getCamera().setPipeline(1);
         double error;
         turn_referenceAngleCount++;
         if ((turn_hasReset || turn_referenceAngleCount > MIN_REF_COUNT) && canSeeTarget())
         {
-            turn_referenceAngle = vision.getHeading() + currentYaw;
+            turn_referenceAngle = getCamera().getHeading() + currentYaw;
             turn_referenceAngleCount = 0;
             error = turn_referenceAngle - currentYaw;
         }
@@ -131,18 +132,18 @@ public class VisionMotion
 
     public double getDist()
     {
-        vision.setPipeline(1);
-        return vision.findDistance();
+        getCamera().setPipeline(1);
+        return getCamera().findDistance();
     }
 
     public void clearPipeline()
     {
-        vision.setPipeline(0);
+        getCamera().setPipeline(0);
     }
 
     public boolean canSeeTarget()
     {
-        return vision.canSeeTarget() == 1;
+        return getCamera().canSeeTarget() == 1;
     }
 
     public void resetVision()
@@ -154,34 +155,24 @@ public class VisionMotion
 
     public double findProportionalSkew(double targetSkew)
     {
-        double error = vision.getSkew() - targetSkew;
+        double error = getCamera().getSkew() - targetSkew;
         return error;
-    }
-
-    public void usbUpdatePipeline(int pipeline)
-    {
-        vision.usbCamUpdate(pipeline);
-    }
-
-    public void usbCamInit()
-    {
-        vision.usbCamInit();
     }
 
     public boolean definitelySeesTarget()
     {
         double maxHeadingChange = 1000;
-        if ((earlierCanSeeTarget == vision.getTV())
-                && (Math.abs(prevHeadingVis - vision.getHorizontal()) < maxHeadingChange))
+        if ((earlierCanSeeTarget == getCamera().getTV())
+                && (Math.abs(prevHeadingVis - getCamera().getHorizontal()) < maxHeadingChange))
         {
-            earlierCanSeeTarget = vision.getTV();
-            prevHeadingVis = vision.getHeading();
+            earlierCanSeeTarget = getCamera().getTV();
+            prevHeadingVis = getCamera().getHeading();
             return true;
         }
         else
         {
-            earlierCanSeeTarget = vision.getTV();
-            prevHeadingVis = vision.getHeading();
+            earlierCanSeeTarget = getCamera().getTV();
+            prevHeadingVis = getCamera().getHeading();
             return false;
         }
 
@@ -210,7 +201,7 @@ public class VisionMotion
 
     public void setPipeline(double pipeline)
     {
-        vision.setPipeline(pipeline);
+        getCamera().setPipeline(pipeline);
     }
 
     public void sendAngle(double yaw)
@@ -221,17 +212,17 @@ public class VisionMotion
 
     public boolean getHigh()
     { // true = high, false = low
-        if (vision.getVertical() > 6)
+        if (getCamera().getVertical() > 6)
         {
             return true;
         }
-        else if (vision.getVertical() < 3)
+        else if (getCamera().getVertical() < 3)
         {
             return false;
         }
-        else if (vision.getVertical() > 3 && vision.getVertical() < 6)
+        else if (getCamera().getVertical() > 3 && getCamera().getVertical() < 6)
         {
-            if (vision.getTA() < 5)
+            if (getCamera().getTA() < 5)
             {
                 return true;
             }
@@ -320,7 +311,7 @@ public class VisionMotion
 
     public double driveToVisionDistance(double pipeline)
     {
-        if (vision.findDistance(this.selectTarget(pipeline)) < 20.0)
+        if (getCamera().findDistance(this.selectTarget(pipeline)) < 20.0)
         {
             motorOutput = 0.0;
             return motorOutput;
@@ -383,12 +374,12 @@ public class VisionMotion
 
     public void getTargetAngle()
     {
-        targetAngle = referenceAngle + Math.toRadians(vision.getHeading());
+        targetAngle = referenceAngle + Math.toRadians(getCamera().getHeading());
     }
 
     public boolean setGyroLineUpVars(double pipeline)
     {
-        distance = vision.findDistance(target);
+        distance = getCamera().findDistance(target);
         distanceHorizontal = distance * Math.tan(targetAngle);
         angle2 = Math.atan((distance - targetVisDistance) / distanceHorizontal);
         angle1 = ((Math.PI / 2) - targetAngle) - angle2;
@@ -403,7 +394,7 @@ public class VisionMotion
 
     public void gyroTargetLineUp(double yaw, double vt)
     { // vt is the motor output of the resultant
-      // vy = Math.tan(yaw * vision.getHeading()) * ;//Math.sin(yaw) * vt;
+      // vy = Math.tan(yaw * getCamera().getHeading()) * ;//Math.sin(yaw) * vt;
       // vx = //Math.cos(yaw)* vt;
       // vxh = vx * Math.cos(yaw);
       // vxlr = vx * Math.sin(yaw);
@@ -434,7 +425,7 @@ public class VisionMotion
     {
         // distanceDiagonal = Math.sqrt((distance * distance) + (distanceHorizontal *
         // distanceHorizontal));
-        if (vision.findDistance(this.selectTarget(pipeline)) <= distanceTarget)
+        if (getCamera().findDistance(this.selectTarget(pipeline)) <= distanceTarget)
         {
             return true;
         }
@@ -464,22 +455,22 @@ public class VisionMotion
 
     public boolean detectBallBounce()
     {
-        if (Math.abs(vision.getVertical() - bouncePrevY) > 5.0)
+        if (Math.abs(getCamera().getVertical() - bouncePrevY) > 5.0)
         {
-            bouncePrevY = vision.getVertical();
+            bouncePrevY = getCamera().getVertical();
             return true;
         }
         else
         {
-            bouncePrevY = vision.getVertical();
+            bouncePrevY = getCamera().getVertical();
             return false;
         }
     }
 
     public void writeDashBoardVis()
     {
-        SmartDashboard.putNumber("heading", vision.getHeading());
-        SmartDashboard.putNumber("Can Detect Target", vision.canSeeTarget());
+        SmartDashboard.putNumber("heading", getCamera().getHeading());
+        SmartDashboard.putNumber("Can Detect Target", getCamera().canSeeTarget());
         SmartDashboard.putNumber("targetAngle", targetAngle);
         SmartDashboard.putNumber("distanceHorizontal", distanceHorizontal);
         SmartDashboard.putNumber("targetVisDistance", targetVisDistance);
@@ -491,4 +482,14 @@ public class VisionMotion
         SmartDashboard.putNumber("currentYawVMotion", currentYaw);
     }
 
+    boolean useBackCamera = false;
+	public void useBackCamera(boolean b)
+	{
+        useBackCamera = b;
+    }
+    
+    private Vision getCamera()
+    {
+        return (useBackCamera) ? backCamera : frontCamera;
+    }
 };

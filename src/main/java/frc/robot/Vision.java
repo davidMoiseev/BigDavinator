@@ -12,7 +12,7 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 
-public class Vision extends Subsystem
+public class Vision
 {
 
   private final String networkTable;
@@ -20,88 +20,26 @@ public class Vision extends Subsystem
   private double tx = 0;
   private double ty = 0;
   private double ta = 0;
-  private double heading = 0;
-  private double targetHeight;
   private double rocketHeight = 38.000;
-  private double normalHeight = 28.875;
-  private double limelightHeight = 31;
-  private double limelightAngle = 0.447;// -2.148;
-  private double a2 = 0.0;
-  private double distance = 0.0;
-  private int brightness;
-  private int exposure;
-
-  UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+  private final double hatchHeight = 28.875;
+  private final double limelightHeight;
+  private final double limelightAngle;
+  private final double limelightX;
 
   public Vision(String name)
   {
     networkTable = name;
+    limelightHeight = 31;
+    limelightAngle = 0.447;// -2.148;
+    limelightX = 5;
   }
 
-  public void initDefaultCommand()
+  public Vision(String name, double X, double angle, double height)
   {
-    /*
-     * setDefaultCommand(new MySpecialCommand());
-     * NetworkTableInstance.getDefault().getTable(networkTable).getEntry("<tv>").
-     * getDouble(0);
-     * NetworkTableInstance.getDefault().getTable(networkTable).getEntry("<tx>").
-     * getDouble(0); if (tv == 1) { boolean frc.robot.DriveTrain.turnComplete(tv);
-     * 
-     * } else{ }
-     */
-  }
-
-  public void setUsbPipeline(int pipeline)
-  {
-    if (pipeline == 0)
-    {
-      brightness = 100000;
-      exposure = 10000;
-    }
-    else if (pipeline == 1)
-    {
-      brightness = 2;
-      exposure = 2;
-    }
-    else
-    {
-      brightness = 75;
-      exposure = 35;
-    }
-  }
-
-  public void usbCamInit()
-  {
-    new Thread(() ->
-    {
-      camera.setResolution(640, 480);
-
-      CvSink cvSink = CameraServer.getInstance().getVideo();
-      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
-
-      Mat source = new Mat();
-      Mat output = new Mat();
-
-      setUsbPipeline(2);
-      camera.setBrightness(brightness);
-      camera.setExposureManual(exposure);
-
-      while (!Thread.interrupted())
-      {
-        cvSink.grabFrame(source);
-        Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-        outputStream.putFrame(output);
-      }
-    }).start();
-
-    CameraServer.getInstance().startAutomaticCapture();
-  }
-
-  public void usbCamUpdate(int pipeline)
-  {
-    setUsbPipeline(pipeline);
-    camera.setBrightness(brightness);
-    camera.setExposureManual(exposure);
+    networkTable = name;
+    limelightX = X;
+    limelightAngle = angle;
+    limelightHeight = height;
   }
 
   public void getNetworkTables()
@@ -151,14 +89,22 @@ public class Vision extends Subsystem
 
   public double findDistance()
   { // to the vision target, NOT THE BALL
-    // getNetworkTables();
-    targetHeight = normalHeight;
-
-    a2 = getVertical();
-    double heightDif = targetHeight - limelightHeight;
-    double dist = heightDif / Math.tan(Math.toRadians(a2));
-    SmartDashboard.putNumber("A DIST", dist);
+    double angle = getVertical();
+    double heightDif = limelightHeight - hatchHeight;
+    double dist = heightDif / Math.tan(Math.toRadians(angle));
     return dist;
+  }
+
+  public double findX(double dist, double horizontal)
+  {
+    return limelightX - Math.sin(-90 + limelightAngle + horizontal) * dist;
+  }
+
+  public double angleFromCenter()
+  {
+    double dist = findDistance();
+    double horizontal = getHorizontal();
+    return Math.atan(findX(dist, horizontal) / (dist * Math.cos(-90 + limelightAngle + horizontal)));
   }
 
   public double canSeeTarget()
@@ -174,27 +120,7 @@ public class Vision extends Subsystem
 
   public double findDistance(int target)
   { // to the vision target, NOT THE BALL
-    // getNetworkTables();
-
-    if ((target == 1) || (target == 3))
-    {
-      targetHeight = rocketHeight;
-    }
-    else
-    {
-      targetHeight = normalHeight;
-    }
-    a2 = getVertical();
-    // distance = (targetHeight - limelightHeight) /
-    // Math.tan(Math.toRadians(limelightAngle + a2));
-    limelightAngle = Math.atan((limelightHeight - limelightHeight) / 38)
-        - a2; /*
-               * calculates angle of limelight crosshair relative to ground
-               */
-    return limelightAngle;
-    // double distanceInches = distance / 5.85;
-    // return distanceInches;
-
+    return 0;
   }
 
 }

@@ -807,6 +807,7 @@ public class Manipulator
             }
             Control(setPoint);
             SmartDashboard.putBoolean("Disabled thing", false);
+            drivetrain.useBackCamera(getArmSide(setPoint.armAngle()) == RobotSide.BACK);
         }
         else
         {

@@ -498,4 +498,9 @@ public class DriveTrain implements IPigeonWrapper
     {
         allowClimb = b;
     }
+
+	public void useBackCamera(boolean b)
+	{
+        vmotion.useBackCamera(b);
+	}
 }
