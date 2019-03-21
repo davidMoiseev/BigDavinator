@@ -261,6 +261,8 @@ public class DriveTrain implements IPigeonWrapper
         HotLogger.Log("Drive currentYaw", xyz_dps[0]);
         HotLogger.Log("Drive currentVelocityRight", rightEncoder.getSelectedSensorPosition());
         HotLogger.Log("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+
+        vmotion.writeDashBoardVis();
     }
 
     /**

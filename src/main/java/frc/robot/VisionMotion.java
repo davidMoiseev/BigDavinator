@@ -470,17 +470,10 @@ public class VisionMotion
 
     public void writeDashBoardVis()
     {
-        SmartDashboard.putNumber("heading", getCamera().getHeading());
-        SmartDashboard.putNumber("Can Detect Target", getCamera().canSeeTarget());
-        SmartDashboard.putNumber("targetAngle", targetAngle);
-        SmartDashboard.putNumber("distanceHorizontal", distanceHorizontal);
-        SmartDashboard.putNumber("targetVisDistance", targetVisDistance);
-        SmartDashboard.putNumber("angle2", angle2);
-        SmartDashboard.putNumber("angle1", angle1);
-        // SmartDashboard.putNumber("vy", vy);
-        // SmartDashboard.putNumber("vx", vx);
-        SmartDashboard.putNumber("atan(targetAngle)", Math.atan(targetAngle));
-        SmartDashboard.putNumber("currentYawVMotion", currentYaw);
+        SmartDashboard.putNumber("AAA DIST FRONT", frontCamera.findDistance());
+        SmartDashboard.putNumber("AAA DIST BACK", backCamera.findDistance());
+        SmartDashboard.putNumber("AAA ANGLE FRONT", frontCamera.angleFromCenter());
+        SmartDashboard.putNumber("AAA ANGLE BACK", backCamera.angleFromCenter());
     }
 
     boolean useBackCamera = false;

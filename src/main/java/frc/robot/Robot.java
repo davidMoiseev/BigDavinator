@@ -97,16 +97,14 @@ public class Robot extends TimedRobot
 
         HotLogger.Log("StickLY", -driver.getStickLY());
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
-
-        driveTrain.readSensors();
-        driveTrain.writeLogs();
-
     }
 
     @Override
     public void robotPeriodic()
     {
         manipulator.DisplaySensors();
+        driveTrain.readSensors();
+        driveTrain.writeLogs();
     }
 
     @Override
@@ -125,8 +123,6 @@ public class Robot extends TimedRobot
         HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
         // driveTrain.updateUsb(1);
         HotLogger.Log("StickLY", -driver.getStickLY());
-        driveTrain.readSensors();
-        driveTrain.writeLogs();
 
     }
 
