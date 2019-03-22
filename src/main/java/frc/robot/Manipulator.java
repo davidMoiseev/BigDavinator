@@ -723,18 +723,14 @@ public class Manipulator
         drivetrain.slowLeftSide(false);
         drivetrain.slowRightSide(false);
 
-        if (!robotCommand.CommandedSpearsClosed())
-        {
-            scoreHatch = robotCommand.ManipulatorScore();
-            if (!scoreHatch && robotCommand.LimitSwitchFeedBack())
-                scoreHatch = limitSwitchScore();
-        }
-        else
-        {
-            grabHatch = robotCommand.ManipulatorScore();
-            if (!grabHatch && robotCommand.LimitSwitchFeedBack())
-                grabHatch = limitSwitchScore();
-        }
+        boolean limitSwitchScore = limitSwitchScore();
+        SmartDashboard.putBoolean("AAA SCORE", limitSwitchScore);
+        scoreHatch = robotCommand.ManipulatorScore();
+        if (!scoreHatch && robotCommand.LimitSwitchScore())
+            scoreHatch = limitSwitchScore;
+        grabHatch = robotCommand.HatchPickup();
+        if (!grabHatch && robotCommand.LimitSwitchPickup())
+            grabHatch = limitSwitchScore;
 
         if (robotCommand.HatchPickup())
         {
@@ -796,7 +792,6 @@ public class Manipulator
             else
             {
                 scoreCount = 0;
-                robotCommand.ClearSpearsClosed();
             }
 
             if (hatchPickup)
@@ -819,8 +814,8 @@ public class Manipulator
             SmartDashboard.putBoolean("Disabled thing", true);
         }
 
-        if (rumbling) robotCommand.Rumble(.25);
-        else robotCommand.Rumble(0);
+        if (rumbling)
+            robotCommand.Rumble();
         pneumaticIntake.Update(robotCommand);
         // elevator.manual(operator.getStickLY());
 
@@ -845,7 +840,7 @@ public class Manipulator
     {
         boolean score = false;
         DigitalInput leftLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontLeftLimit : backLeftLimit;
-        DigitalInput rightLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontRightLimit : backLeftLimit;
+        DigitalInput rightLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontRightLimit : backRightLimit;
 
         if (leftLimit.get() && !rightLimit.get())
             drivetrain.slowLeftSide(true);
@@ -868,7 +863,6 @@ public class Manipulator
             limitSwitchPressed = false;
             score = false;
         }
-
         return score;
     }
 

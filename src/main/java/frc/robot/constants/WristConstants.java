@@ -27,7 +27,7 @@ public class WristConstants
     public static final int slotIdx = 0;
     public static final int pidIdx = 0;
     public static final double feedForward = 0.314;
-    public static final double proportional = 3.7;
+    public static final double proportional = 3.4;
     public static final double derivative = 0.1 * 0;
     public static final double integral = 0.0024 * 0;
     public static final FeedbackDevice feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative;

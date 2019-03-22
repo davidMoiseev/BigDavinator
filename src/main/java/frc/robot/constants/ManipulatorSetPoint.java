@@ -25,8 +25,8 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     hatch_high_back(32, -8.5, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // Y
     cargo_pickup_front(1, 111, 134, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // M3-M6
     cargo_pickup_back(1, -105, -134, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // M3-M6
-    cargo_shuttle_front(3, 29, 107, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // RB
-    cargo_shuttle_back(3, -29, -107, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // RB
+    cargo_shuttle_front(3, 29, 107, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // RB
+    cargo_shuttle_back(3, -29, -107, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // RB
     cargo_rocketLow_front(21, 155, 72, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // LB
     cargo_rocketLow_back(21, -155, -72, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // LB
     cargo_rocketMid_front(11, 10, 83, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // LT

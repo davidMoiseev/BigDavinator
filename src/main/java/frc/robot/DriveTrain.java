@@ -395,14 +395,29 @@ public class DriveTrain implements IPigeonWrapper
     private void arcadeDrive(TeleopCommandProvider command)
     {
         double hDrive = HDriveOutput(command.HDrive());
-        double hDriveCorrect = 0.15 * hDrive;
+        double hDriveCorrect = 0.15 * hDrive * 0;
         rightMotor.set((command.RightDrive() - command.TurnDrive()) * (slowRight ? .5 : 1));
         leftMotor.set((command.LeftDrive() + hDriveCorrect + command.TurnDrive()) * (slowLeft ? .5 : 1));
         hDriveMotor.set(HDriveOutput(hDrive));
     }
 
+    boolean havingTarget = false;
+    int targetCount = 0;
+    boolean hadTargetLast = false;
+    boolean hasObtainedTarget = false;
+    boolean autoAssistLast = false;
     public void Update(TeleopCommandProvider command)
     {
+        if (havingTarget && targetCount < 15)
+        {
+            targetCount++;
+            command.Rumble();
+        }
+        else
+        {
+            targetCount = 0;
+            havingTarget = false;
+        }
         getYaw();
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
@@ -410,10 +425,18 @@ public class DriveTrain implements IPigeonWrapper
         {
             arcadeDrive(command);
             vmotion.resetVision();
+            hasObtainedTarget = false;
+            havingTarget = false;
         }
         else
         {
-            if (!vmotion.canSeeTarget() && command.TurnDrive() > 0)
+            if (!autoAssistLast) hasObtainedTarget = false;
+            if (!hasObtainedTarget && vmotion.canSeeTarget())
+            {
+                havingTarget = true;
+                hasObtainedTarget = true;
+            }
+            if (!vmotion.canSeeTarget() && Math.abs(command.TurnDrive()) > 0)
             {
                 arcadeDrive(command);
             }
@@ -439,6 +462,7 @@ public class DriveTrain implements IPigeonWrapper
         else
             climber.set(false);
 
+        autoAssistLast = command.steeringAssistActivated();
     }
 
     private int spikeCounter = 0;
@@ -448,16 +472,19 @@ public class DriveTrain implements IPigeonWrapper
 
     public double HDriveOutput(double input)
     {
+        SmartDashboard.putString("HState", hDriveState.name());
         double output = 0;
         if (input == 0)
         {
             hDriveState = HDriveState.Off;
+            hDrivePrevious = 0;
+            spikeCounter = 0;
             return 0;
         }
 
         if (hDriveState == HDriveState.Off)
         {
-            hDriveState = HDriveState.Spike;
+            hDriveState = HDriveState.Ramping;
             hDrivePrevious = 0;
             spikeCounter = 0;
         }
@@ -465,21 +492,34 @@ public class DriveTrain implements IPigeonWrapper
         {
             spikeCounter++;
             if (spikeCounter > H_SPIKE_DURATION)
+            {
                 hDriveState = HDriveState.Ramping;
+                hDrivePrevious = 0;
+                spikeCounter = 0;
+            }
             else
-                output = H_SPIKE_MAGNITUDE;
+                output = H_SPIKE_MAGNITUDE * Math.signum(input);
         }
         if (hDriveState == HDriveState.Ramping)
         {
+            SmartDashboard.putNumber("ramp", Math.abs(input) - Math.abs(hDrivePrevious));
             if (Math.abs(input) - Math.abs(hDrivePrevious) > H_RAMP)
             {
-                output = input + H_RAMP * Math.signum(input);
+                System.out.println("RAMPING");
+                output = hDrivePrevious + H_RAMP * Math.signum(input);
             }
             else
                 output = input;
         }
 
+        if (Math.abs(output) > 1 && hDriveState != HDriveState.Spike)
+        {
+            output = Math.signum(output) * 1;
+        }
         hDrivePrevious = output;
+        HotLogger.Log("H_DRIVE", output);
+        SmartDashboard.putNumber("AAA HDRIVE", output);
+        SmartDashboard.putNumber("AAA HINPUT", input);
         return output;
     }
 

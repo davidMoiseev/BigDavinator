@@ -105,7 +105,7 @@ public class Vision
   public double canSeeTarget()
   {
     tv = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("tv").getDouble(0);
-    return 1;// tv;
+    return tv;// tv;
   }
 
   public void setPipeline(double pipeline)

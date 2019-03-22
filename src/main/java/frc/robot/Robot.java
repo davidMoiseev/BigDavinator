@@ -64,7 +64,7 @@ public class Robot extends TimedRobot
         manipulator.RestartInitialization();
         
 
-        HotLogger.Setup("matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
+        HotLogger.Setup("H_DRIVE", "matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
                 Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
         driver.setDeadBandLY(.1);
@@ -86,7 +86,6 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        
         // May have to invert driveturn/drivespeed
         teleopCommandProvider.Update();
 

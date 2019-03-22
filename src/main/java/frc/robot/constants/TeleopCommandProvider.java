@@ -26,7 +26,6 @@ public class TeleopCommandProvider
     private double RightDriveSteeringAssist = 0;
     private double HDrive = 0;
     private boolean intakeSolenoid = false;
-    private Boolean manualIntakeSolenoid = null;
     private boolean score = false;
     private boolean intakeOut = false;
     private boolean intakeIn = false;
@@ -40,7 +39,7 @@ public class TeleopCommandProvider
     private boolean lastFlipperUp = false;
     private boolean lastFlipperDown = false;
 
-    private boolean limitSwitchFeedback;
+    private boolean limitSwitchScore;
 
     private final double flipper_add = 4;
     private double frontFlipperCount = 0;
@@ -89,14 +88,6 @@ public class TeleopCommandProvider
 
     public boolean SpearsClosed()
     {
-        if (manualIntakeSolenoid != null)
-            return manualIntakeSolenoid;
-        return intakeSolenoid;
-    }
-
-    // Commanded, but not actually used in intake's update. Used for auto-pickup
-    public boolean CommandedSpearsClosed()
-    {
         return intakeSolenoid;
     }
 
@@ -105,7 +96,7 @@ public class TeleopCommandProvider
         return steeringAssist;
     }
 
-    boolean commandToBack = true;
+    boolean commandToBack = false;
     boolean flipButtonPrevious = false;
     private boolean allowClimbMotors = false;
 
@@ -207,14 +198,14 @@ public class TeleopCommandProvider
 
         if (driver.getButtonRightBumper())
         {
-            intakeOut = true;
-            intakeIn = false;
+            intakeOut = false;
+            intakeIn = true;
 
         }
         if (driver.getButtonLeftBumper())
         {
-            intakeOut = false;
-            intakeIn = true;
+            intakeOut = true;
+            intakeIn = false;
         }
         if (!driver.getButtonLeftBumper() && !driver.getButtonRightBumper())
         {
@@ -241,7 +232,8 @@ public class TeleopCommandProvider
             steeringAssist = false;
         }
 
-        limitSwitchFeedback = driver.getButtonRightStick();
+        limitSwitchScore = driver.getButtonRightStick();
+        limitSwitchPickup = driver.getButtonLeftStick();
         score = driver.getButtonA();
 
         if (driver.getButtonBack() && !flipButtonPrevious)
@@ -253,8 +245,8 @@ public class TeleopCommandProvider
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
         turnDrive = ((driver.getStickRX() * .5));
-        RightDrive = driver.getStickLY();
-        LeftDrive = driver.getStickLY();
+        RightDrive = -driver.getStickLY();
+        LeftDrive = -driver.getStickLY();
         RightDriveSteeringAssist = driver.getStickLY();
         LeftDriveSteeringAssist = driver.getStickLY();
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
@@ -297,6 +289,19 @@ public class TeleopCommandProvider
                         outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper(),
                         outputSetPoint.backFlipper() + (backFlipperCount * 3));
         }
+
+        if (rumble)
+        {
+            driver.setRumble(RumbleType.kLeftRumble, .25);
+            driver.setRumble(RumbleType.kRightRumble, .25);
+        }
+        else
+        {
+            driver.setRumble(RumbleType.kLeftRumble, 0);
+            driver.setRumble(RumbleType.kRightRumble, 0);
+        }
+
+        rumble = false;
     }
 
     private String setPointName(ManipulatorSetPoint setPoint)
@@ -330,6 +335,7 @@ public class TeleopCommandProvider
 
     boolean upPrev = false;
     boolean downPrev = false;
+    private boolean limitSwitchPickup = false;
 
     public boolean IntakeOut()
     {
@@ -356,23 +362,14 @@ public class TeleopCommandProvider
         return armReZeroTimer >= armReZeroCount;
     }
 
-    public void SetSpearsClosed(boolean isTrue)
+    public boolean LimitSwitchScore()
     {
-        manualIntakeSolenoid = isTrue;
+        return limitSwitchScore;
     }
 
-    public void ClearSpearsClosed()
+    public boolean LimitSwitchPickup()
     {
-        if (manualIntakeSolenoid != null)
-        {
-            intakeSolenoid = manualIntakeSolenoid;
-            manualIntakeSolenoid = null;
-        }
-    }
-
-    public boolean LimitSwitchFeedBack()
-    {
-        return limitSwitchFeedback;
+        return limitSwitchPickup;
     }
 
     private double turnDrive;
@@ -382,9 +379,14 @@ public class TeleopCommandProvider
         return turnDrive;
     }
 
-    public void Rumble(double val)
+    boolean rumble = false;
+    public void Rumble()
     {
-        driver.setRumble(RumbleType.kLeftRumble, val);
-        driver.setRumble(RumbleType.kRightRumble, val);
+        rumble = true;
     }
+
+	public void SetSpearsClosed(boolean b)
+	{
+        intakeSolenoid = b;
+	}
 }

@@ -6,5 +6,5 @@ public class FlipperConstants
     public static final double HATCH_BACK = 170;
 
     public static final double CARRY_FRONT = 25;
-    public static final double HATCH_FRONT = 146;
+    public static final double HATCH_FRONT = 145;
 }
