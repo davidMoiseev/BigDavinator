@@ -15,11 +15,12 @@ package frc.robot;
 //import com.sun.tools.javac.jvm.Target;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.WiringIDs;
 
 public class VisionMotion
 {
-    Vision backCamera = new Vision("limelight-back");
-    Vision frontCamera = new Vision("limelight-front");
+    Vision backCamera = new Vision("limelight-front", Vision.X_BACK, Vision.HEIGHT_BACK);
+    Vision frontCamera = new Vision("limelight-back", Vision.X_FRONT, Vision.HEIGHT_FRONT);
 
     public double h;
     public double speedH;
@@ -85,6 +86,8 @@ public class VisionMotion
     {
         getCamera().setPipeline(1);
         double error;
+        if (!WiringIDs.IS_PRACTICE_BOT)
+            currentYaw = -currentYaw;
         turn_referenceAngleCount++;
         if ((turn_hasReset || turn_referenceAngleCount > MIN_REF_COUNT) && canSeeTarget())
         {

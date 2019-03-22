@@ -25,12 +25,10 @@ public class Vision
   private final double limelightHeight;
   private final double limelightX;
 
-  public Vision(String name)
-  {
-    networkTable = name;
-    limelightHeight = 31;
-    limelightX = 5;
-  }
+  public static final double HEIGHT_BACK = 29;
+  public static final double X_BACK = 4.5;
+  public static final double HEIGHT_FRONT = 30.75;
+  public static final double X_FRONT = 8.5;
 
   public Vision(String name, double X, double height)
   {
@@ -89,7 +87,7 @@ public class Vision
     double angle = getVertical();
     double heightDif = limelightHeight - hatchHeight;
     double dist = heightDif / Math.tan(Math.toRadians(angle));
-    return dist;
+    return Math.abs(dist);
   }
 
   public double findX(double dist, double horizontal)
@@ -100,8 +98,8 @@ public class Vision
   public double angleFromCenter()
   {
     double dist = findDistance();
-    double horizontal = getHorizontal();
-    return Math.atan(limelightX + (Math.sin(horizontal) * dist) / (dist * Math.cos(horizontal)));
+    double horizontal = Math.toRadians(getHorizontal());
+    return Math.toDegrees(Math.atan((limelightX + (Math.sin(horizontal) * dist)) / (dist * Math.cos(horizontal))));
   }
 
   public double canSeeTarget()
