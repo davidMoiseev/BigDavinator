@@ -84,7 +84,7 @@ public class VisionMotion
 
     public Output autoAlign(double currentYaw)
     {
-        getCamera().setPipeline(1);
+        getCamera().setPipeline(2);
         double error;
         if (!WiringIDs.IS_PRACTICE_BOT)
             currentYaw = -currentYaw;
