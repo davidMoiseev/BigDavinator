@@ -401,13 +401,16 @@ public class DriveTrain implements IPigeonWrapper
         hDriveMotor.set(HDriveOutput(hDrive));
     }
 
+    /*
     boolean havingTarget = false;
     int targetCount = 0;
     boolean hadTargetLast = false;
     boolean hasObtainedTarget = false;
     boolean autoAssistLast = false;
+    */
     public void Update(TeleopCommandProvider command)
     {
+        /*
         if (havingTarget && targetCount < 15)
         {
             targetCount++;
@@ -418,31 +421,39 @@ public class DriveTrain implements IPigeonWrapper
             targetCount = 0;
             havingTarget = false;
         }
+        */
         getYaw();
         // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
         // driver.getRawAxis(2)) / 2.0);
         if (!command.steeringAssistActivated())
         {
+            System.out.println("NO VISION");
             arcadeDrive(command);
             vmotion.resetVision();
+            /*
             hasObtainedTarget = false;
             havingTarget = false;
+            */
         }
         else
         {
+            System.out.println("VISION");
+            /*
             if (!autoAssistLast) hasObtainedTarget = false;
             if (!hasObtainedTarget && vmotion.canSeeTarget())
             {
                 havingTarget = true;
                 hasObtainedTarget = true;
             }
+            */
+            /*
             if (!vmotion.canSeeTarget() && Math.abs(command.TurnDrive()) > 0)
             {
                 arcadeDrive(command);
             }
-            else
+            else*/
             {
-                VisionMotion.Output assist = vmotion.autoAlign(xyz_dps[0]);
+                VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
                 rightMotor.set((command.RightDrive() + assist.Right) * (slowRight ? .5 : 1));
                 leftMotor.set((command.LeftDrive() + assist.Left) * (slowLeft ? .5 : 1));
             }
@@ -462,7 +473,7 @@ public class DriveTrain implements IPigeonWrapper
         else
             climber.set(false);
 
-        autoAssistLast = command.steeringAssistActivated();
+        //autoAssistLast = command.steeringAssistActivated();
     }
 
     private int spikeCounter = 0;
