@@ -17,12 +17,12 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     firstPosition(7, 0, 0, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), 
     carry_front(7, -1, 10, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // X
     carry_back(7, 1, -10, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // X
-    hatch_low_front(17.75, 164, 87, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // A
-    hatch_low_back(16.5, -160, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // A
-    hatch_mid_front(5, 14, 90, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // B
-    hatch_mid_back(5, -14, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // B
-    hatch_high_front(32, 8.5, 90, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // Y
-    hatch_high_back(32, -8.5, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // Y
+    hatch_low_front(15.75, 164, 67, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // A
+    hatch_low_back(16.5, -160, -87, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // A
+    hatch_mid_front(5, 7, 90, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // B
+    hatch_mid_back(5, -7, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // B
+    hatch_high_front(32, 4.5, 90, FlipperConstants.HATCH_FRONT, FlipperConstants.CARRY_BACK), // Y
+    hatch_high_back(32, -4.5, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.HATCH_BACK), // Y
     cargo_pickup_front(1, 111, 134, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // M3-M6
     cargo_pickup_back(1, -105, -134, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // M3-M6
     cargo_shuttle_front(3, 29, 107, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK), // RB

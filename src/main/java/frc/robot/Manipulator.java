@@ -90,7 +90,7 @@ public class Manipulator
     private final double SUPPORTS_COLLISION = 14; // need?
     private final double FRAME_LENGTH = 16; // 14
     private final double intakeHeight = 13.5;
-    private final double SCORE_DISTANCE = 5; // inches to move arm/intake forward for scoring
+    private final double SCORE_DISTANCE = 7; // inches to move arm/intake forward for scoring
 
     private final double FLIPPER_LENGTH = 13;
     private final double FLIPPER_HEIGHT = 3;
@@ -178,7 +178,7 @@ public class Manipulator
         // frontFlipper.displaySensorsValue();
         backFlipper.displaySensorsValue();
     }
-
+    int elevatorWait = 0;
     private void Control(IManipulatorSetPoint targetPosition)
     {
         if (manipulatorState == ManipulatorState.initializing)
@@ -211,7 +211,7 @@ public class Manipulator
             // if (backFlipper.reachedTarget());
             {
                 elevator.setTarget(ManipulatorSetPoint.firstPosition);
-                if (elevator.reachedTarget())
+                if (elevator.getPosition() > 5)
                 {
                     arm.setTarget(tmpArm);
                     wrist.setTarget(ManipulatorSetPoint.firstPosition);
@@ -770,7 +770,7 @@ public class Manipulator
             {
                 setPoint = CreateScoreSetPoint(setPoint);
 
-                if (scoreCount > 12)
+                if (scoreCount > 18)
                 {
                     robotCommand.SetSpearsClosed(true);
                     rumbling = true;
@@ -905,11 +905,21 @@ public class Manipulator
         double newElevatorHeight = setPoint.elevatorHeight()
                 + (ARM_LENGTH * (Math.cos(armAngle) - Math.cos(newArmAngle)));
         newElevatorHeight = (newElevatorHeight > 33) ? 33 : newElevatorHeight;
+        double newWristAngle = setPoint.wristAngle();
+        newArmAngle = Math.toDegrees(newArmAngle);
+        
+        if (newElevatorHeight < setPoint.elevatorHeight())
+        {
+            newElevatorHeight = setPoint.elevatorHeight();
+            //newArmAngle -= (20 * Math.signum(newArmAngle));
+            //newWristAngle = setPoint.wristAngle() + (20 * Math.signum(setPoint.wristAngle()));
+        }
+        
 
-        SmartDashboard.putNumber("New Arm Angle", Math.toDegrees(newArmAngle));
+        SmartDashboard.putNumber("New Arm Angle", newArmAngle);
         SmartDashboard.putNumber("New Elevator Height", newElevatorHeight);
 
-        return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
+        return new ManualManipulatorSetPoint(newArmAngle, newWristAngle, newElevatorHeight,
                 setPoint.frontFlipper(), setPoint.backFlipper());
     }
 }
