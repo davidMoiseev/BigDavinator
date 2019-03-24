@@ -65,7 +65,7 @@ public class DriveTrain implements IPigeonWrapper
     VisionMotion vmotion = new VisionMotion();
     private final TalonSRX rightEncoder;
     private final TalonSRX leftEncoder;
-    private double[] xyz_dps = new double[3];
+    private double[] xyz_dps = new double[] { 0, 0, 0 };
     private double hDrivePrevious;
     private HDriveState hDriveState = HDriveState.Off;
 
@@ -561,4 +561,13 @@ public class DriveTrain implements IPigeonWrapper
     {
         vmotion.useBackCamera(b);
     }
+
+	public void UpdateRobotState()
+	{
+        RobotState state = RobotState.getInstance();
+
+        state.setLeftDriveEncoder(leftEncoderValue);
+        state.setRightDriveEncoder(rightEncoderValue);
+        state.setHeading(-xyz_dps[0]);
+	}
 }

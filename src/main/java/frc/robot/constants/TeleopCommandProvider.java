@@ -19,7 +19,7 @@ public class TeleopCommandProvider
     private double armReZeroTimer = 0;
     private double armReZeroCount = 50;
 
-    private IManipulatorSetPoint outputSetPoint = null;
+    private ManipulatorSetPoint outputSetPoint = null;
     private double LeftDrive = 0;
     private double RightDrive = 0;
     private double LeftDriveSteeringAssist = 0;
@@ -33,17 +33,17 @@ public class TeleopCommandProvider
     private boolean hatchPickup = false;
     private boolean steeringAssist = false;
 
-    private double frontFlipperSetPointAdjust = 0;
-    private double backFlipperSetPointAdjust = 0;
+    boolean upPrev = false;
+    boolean downPrev = false;
 
-    private boolean lastFlipperUp = false;
-    private boolean lastFlipperDown = false;
+    private boolean limitSwitchPickup = false;
+    private boolean limitSwitchPlace = false;
 
-    private boolean limitSwitchScore;
+    private int frontFlipperCount = 0;
+    private int backFlipperCount = 0;
 
-    private final double flipper_add = 4;
-    private double frontFlipperCount = 0;
-    private double backFlipperCount = 0;
+    boolean commandToBack = true;
+    boolean flipButtonPrevious = false;
 
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
@@ -51,7 +51,39 @@ public class TeleopCommandProvider
         this.operator = operator;
     }
 
-    public IManipulatorSetPoint ManipulatorSetPoint()
+    public void Reset()
+    {
+        armReZeroTimer = 0;
+        armReZeroCount = 50;
+
+        outputSetPoint = null;
+        LeftDrive = 0;
+        RightDrive = 0;
+        LeftDriveSteeringAssist = 0;
+        RightDriveSteeringAssist = 0;
+        HDrive = 0;
+        intakeSolenoid = false;
+        score = false;
+        intakeOut = false;
+        intakeIn = false;
+        climb = false;
+        hatchPickup = false;
+        steeringAssist = false;
+
+        upPrev = false;
+        downPrev = false;
+
+        limitSwitchPickup = false;
+        limitSwitchPlace = false;
+
+        frontFlipperCount = 0;
+        backFlipperCount = 0;
+
+        commandToBack = true;
+        flipButtonPrevious = false;
+    }
+
+    public ManipulatorSetPoint ManipulatorSetPoint()
     {
         return outputSetPoint;
     }
@@ -95,10 +127,6 @@ public class TeleopCommandProvider
     {
         return steeringAssist;
     }
-
-    boolean commandToBack = true;
-    boolean flipButtonPrevious = false;
-    private boolean allowClimbMotors = false;
 
     public void Update()
     {
@@ -177,13 +205,6 @@ public class TeleopCommandProvider
 
         climb = driver.getButtonB();
 
-        if (operator.getButtonLeftStick())
-        {
-            /*
-             * frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
-             * backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
-             */
-        }
         if (operator.getButtonRightStick())
         {
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
@@ -232,7 +253,7 @@ public class TeleopCommandProvider
             steeringAssist = false;
         }
 
-        limitSwitchScore = driver.getButtonRightStick();
+        limitSwitchPlace = driver.getButtonRightStick();
         limitSwitchPickup = driver.getButtonLeftStick();
         score = driver.getButtonA();
 
@@ -278,18 +299,6 @@ public class TeleopCommandProvider
         upPrev = operator.getPOV() == 180;
         downPrev = operator.getPOV() == 0;
 
-        if (outputSetPoint != null)
-        {
-            if (outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
-                outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
-                        outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper() + (frontFlipperCount * 3),
-                        outputSetPoint.backFlipper());
-            else if (outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
-                outputSetPoint = new ManualManipulatorSetPoint(outputSetPoint.armAngle(), outputSetPoint.wristAngle(),
-                        outputSetPoint.elevatorHeight(), outputSetPoint.frontFlipper(),
-                        outputSetPoint.backFlipper() + (backFlipperCount * 3));
-        }
-
         if (rumble)
         {
             driver.setRumble(RumbleType.kLeftRumble, .25);
@@ -302,6 +311,16 @@ public class TeleopCommandProvider
         }
 
         rumble = false;
+    }
+
+    public int FrontFlipperBumpCount()
+    {
+        return frontFlipperCount;
+    }
+
+    public int BackFlipperBumpCount()
+    {
+        return backFlipperCount;
     }
 
     private String setPointName(ManipulatorSetPoint setPoint)
@@ -333,10 +352,6 @@ public class TeleopCommandProvider
         HotLogger.Log(tag, value);
     }
 
-    boolean upPrev = false;
-    boolean downPrev = false;
-    private boolean limitSwitchPickup = false;
-
     public boolean IntakeOut()
     {
         return intakeOut;
@@ -364,7 +379,7 @@ public class TeleopCommandProvider
 
     public boolean LimitSwitchScore()
     {
-        return limitSwitchScore;
+        return limitSwitchPlace;
     }
 
     public boolean LimitSwitchPickup()
@@ -372,7 +387,7 @@ public class TeleopCommandProvider
         return limitSwitchPickup;
     }
 
-    private double turnDrive;
+    private double turnDrive = 0;
 
     public double TurnDrive()
     {
@@ -380,13 +395,14 @@ public class TeleopCommandProvider
     }
 
     boolean rumble = false;
+
     public void Rumble()
     {
         rumble = true;
     }
 
-	public void SetSpearsClosed(boolean b)
-	{
+    public void SetSpearsClosed(boolean b)
+    {
         intakeSolenoid = b;
-	}
+    }
 }
