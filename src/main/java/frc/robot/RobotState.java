@@ -1,5 +1,7 @@
 package frc.robot;
 
+import frc.robot.constants.ManipulatorSetPoint;
+
 public class RobotState
 {
     private static RobotState mRobotState;
@@ -17,8 +19,45 @@ public class RobotState
     private double armPosition = 0;
     private double wristPosition = 0;
     private double elevatorPosition = 0;
+
     private double frontFlipperPosition = 0;
     private double backFlipperPosition = 0;
+
+    private boolean leftLimitSwitch = false;
+    private boolean rightLimitSwitch = false;
+    private ManipulatorSetPoint commandedSetPoint = null;
+
+    public boolean isLeftLimitSwitch() {
+        return this.leftLimitSwitch;
+    }
+
+    public boolean getLeftLimitSwitch() {
+        return this.leftLimitSwitch;
+    }
+
+    public void setLeftLimitSwitch(boolean leftLimitSwitch) {
+        this.leftLimitSwitch = leftLimitSwitch;
+    }
+
+    public boolean isRightLimitSwitch() {
+        return this.rightLimitSwitch;
+    }
+
+    public boolean getRightLimitSwitch() {
+        return this.rightLimitSwitch;
+    }
+
+    public void setRightLimitSwitch(boolean rightLimitSwitch) {
+        this.rightLimitSwitch = rightLimitSwitch;
+    }
+
+    public ManipulatorSetPoint getCommandedSetPoint() {
+        return this.commandedSetPoint;
+    }
+
+    public void setCommandedSetPoint(ManipulatorSetPoint commandedSetPoint) {
+        this.commandedSetPoint = commandedSetPoint;
+    }
 
     public double getFrontFlipperPosition() {
         return this.frontFlipperPosition;

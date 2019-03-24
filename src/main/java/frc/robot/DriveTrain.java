@@ -20,6 +20,8 @@ import org.hotteam67.HotPathFollower.State;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.ElevatorConstants;
+import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
@@ -58,14 +60,16 @@ public class DriveTrain implements IPigeonWrapper
     private VictorSPX rightClimbMotor;
     private Solenoid climber;
 
-    private boolean allowClimb = false;
+    private final RobotState robotState;
+
     private boolean climbDeployed = false;
 
     private final PigeonIMU pigeon;
     VisionMotion vmotion = new VisionMotion();
     private final TalonSRX rightEncoder;
     private final TalonSRX leftEncoder;
-    private double[] xyz_dps = new double[] { 0, 0, 0 };
+    private double[] xyz_dps = new double[]
+    { 0, 0, 0 };
     private double hDrivePrevious;
     private HDriveState hDriveState = HDriveState.Off;
 
@@ -131,6 +135,8 @@ public class DriveTrain implements IPigeonWrapper
         rightClimbMotor.setInverted(true);
 
         climber = new Solenoid(WiringIDs.SOLENOID_CLIMBER);
+
+        robotState = RobotState.getInstance();
 
         this.rightEncoder = rightEncoder;
         this.leftEncoder = leftEncoder;
@@ -224,19 +230,6 @@ public class DriveTrain implements IPigeonWrapper
         {
             return false;
         }
-    }
-
-    private boolean slowRight;
-    private boolean slowLeft;
-
-    public void slowRightSide(boolean isTrue)
-    {
-        slowRight = isTrue;
-    }
-
-    public void slowLeftSide(boolean isTrue)
-    {
-        slowLeft = isTrue;
     }
 
     /**
@@ -396,21 +389,25 @@ public class DriveTrain implements IPigeonWrapper
     {
         double hDrive = HDriveOutput(command.HDrive());
         double hDriveCorrect = 0.15 * hDrive * 0;
+        boolean slowLeft = robotState.isLeftLimitSwitch();
+        boolean slowRight = robotState.isRightLimitSwitch();
         rightMotor.set((command.RightDrive() - command.TurnDrive()) * (slowRight ? .5 : 1));
         leftMotor.set((command.LeftDrive() + hDriveCorrect + command.TurnDrive()) * (slowLeft ? .5 : 1));
         hDriveMotor.set(HDriveOutput(hDrive));
     }
 
-    /*
     boolean havingTarget = false;
     int targetCount = 0;
     boolean hadTargetLast = false;
     boolean hasObtainedTarget = false;
     boolean autoAssistLast = false;
-    */
+
     public void Update(TeleopCommandProvider command)
     {
-        /*
+        vmotion.useBackCamera(robotState.getCommandedSetPoint().wristAngle() < 0);
+        boolean slowLeft = robotState.isLeftLimitSwitch();
+        boolean slowRight = robotState.isRightLimitSwitch();
+
         if (havingTarget && targetCount < 15)
         {
             targetCount++;
@@ -421,37 +418,27 @@ public class DriveTrain implements IPigeonWrapper
             targetCount = 0;
             havingTarget = false;
         }
-        */
         getYaw();
-        // (joystick.getStickRX(), -driver.getStickLY(), (driver.getRawAxis(3) -
-        // driver.getRawAxis(2)) / 2.0);
         if (!command.steeringAssistActivated())
         {
             System.out.println("NO VISION");
             arcadeDrive(command);
             vmotion.resetVision();
             /*
-            hasObtainedTarget = false;
-            havingTarget = false;
-            */
+             * hasObtainedTarget = false; havingTarget = false;
+             */
         }
         else
         {
             System.out.println("VISION");
-            /*
-            if (!autoAssistLast) hasObtainedTarget = false;
+
+            if (!autoAssistLast)
+                hasObtainedTarget = false;
             if (!hasObtainedTarget && vmotion.canSeeTarget())
             {
                 havingTarget = true;
                 hasObtainedTarget = true;
             }
-            */
-            /*
-            if (!vmotion.canSeeTarget() && Math.abs(command.TurnDrive()) > 0)
-            {
-                arcadeDrive(command);
-            }
-            else*/
             {
                 VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
                 rightMotor.set((command.RightDrive() + assist.Right) * (slowRight ? .5 : 1));
@@ -465,7 +452,9 @@ public class DriveTrain implements IPigeonWrapper
             leftClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.LeftDrive());
             rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
-        if (allowClimb && command.ClimberDeploy())
+        if (command.ClimberDeploy() && robotState.getCommandedSetPoint() == ManipulatorSetPoint.climb_prep
+                && robotState.getElevatorPosition()
+                        + ElevatorConstants.allowableErrorInches >= ManipulatorSetPoint.climb_prep.elevatorHeight())
         {
             climbDeployed = true;
             climber.set(true);
@@ -473,7 +462,7 @@ public class DriveTrain implements IPigeonWrapper
         else
             climber.set(false);
 
-        //autoAssistLast = command.steeringAssistActivated();
+        // autoAssistLast = command.steeringAssistActivated();
     }
 
     private int spikeCounter = 0;
@@ -552,22 +541,12 @@ public class DriveTrain implements IPigeonWrapper
         return (pigeon.getState() == PigeonState.Ready);
     }
 
-    public void setAllowClimberDeploy(boolean b)
+    public void UpdateRobotState()
     {
-        allowClimb = b;
-    }
-
-    public void useBackCamera(boolean b)
-    {
-        vmotion.useBackCamera(b);
-    }
-
-	public void UpdateRobotState()
-	{
         RobotState state = RobotState.getInstance();
 
         state.setLeftDriveEncoder(leftEncoderValue);
         state.setRightDriveEncoder(rightEncoderValue);
         state.setHeading(-xyz_dps[0]);
-	}
+    }
 }

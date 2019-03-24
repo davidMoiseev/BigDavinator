@@ -68,7 +68,6 @@ public class Manipulator
     private final DigitalInput backRightLimit;
 
     private final ArmPigeon armPigeon;
-    private DriveTrain drivetrain;
     private InitializationState initializationState;
     private ManipulatorState manipulatorState;
 
@@ -101,8 +100,7 @@ public class Manipulator
     private final double FLIPPER_LENGTH = 13;
     private final double FLIPPER_HEIGHT = 3;
 
-    public Manipulator(TalonSRX rightElevator, TalonSRX intake,
-            DriveTrain drivetrain)
+    public Manipulator(TalonSRX rightElevator, TalonSRX intake)
     {
         this.elevator = new Elevator(new TalonSRX(WiringIDs.LEFT_ELEVATOR), rightElevator);
         this.wrist = new Wrist(WiringIDs.WRIST);
@@ -118,7 +116,6 @@ public class Manipulator
         frontRightLimit = new DigitalInput(WiringIDs.FLIPPER_FRONT_RIGHT_LIMIT_SWITCH);
         backLeftLimit = new DigitalInput(WiringIDs.FLIPPER_BACK_LEFT_LIMIT_SWITCH);
         backRightLimit = new DigitalInput(WiringIDs.FLIPPER_BACK_RIGHT_LIMIT_SWITCH);
-        this.drivetrain = drivetrain;
 
         RestartInitialization();
         manipulatorState = ManipulatorState.initializing;
@@ -701,11 +698,10 @@ public class Manipulator
         wrist.checkEncoder();
         elevator.checkEncoder(0);
 
+        RobotState.getInstance().setCommandedSetPoint(robotCommand.ManipulatorSetPoint());
+
         boolean scoreHatch = false;
         boolean grabHatch = false;
-
-        drivetrain.slowLeftSide(false);
-        drivetrain.slowRightSide(false);
 
         boolean limitSwitchScore = limitSwitchesFired();
         SmartDashboard.putBoolean("AAA SCORE", limitSwitchScore);
@@ -738,10 +734,6 @@ public class Manipulator
         {
             intake.Update(robotCommand);
         }
-
-        // To climb, we must be above climb height and targeting prep position
-        drivetrain.setAllowClimberDeploy((robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.climb_prep)
-                && elevator.getPosition() + ELEVATOR_TOLERANCE > ManipulatorSetPoint.climb_prep.elevatorHeight());
 
         boolean hatchPickup = robotCommand.HatchPickup();
 
@@ -782,7 +774,6 @@ public class Manipulator
                     robotCommand.BackFlipperBumpCount());
             Control(output);
             SmartDashboard.putBoolean("Disabled thing", false);
-            drivetrain.useBackCamera(getArmSide(output.armAngle()) == RobotSide.BACK);
         }
         else
         {
@@ -820,10 +811,9 @@ public class Manipulator
         DigitalInput leftLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontLeftLimit : backLeftLimit;
         DigitalInput rightLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontRightLimit : backRightLimit;
 
-        if (leftLimit.get() && !rightLimit.get())
-            drivetrain.slowLeftSide(true);
-        else if (!leftLimit.get() && rightLimit.get())
-            drivetrain.slowRightSide(true);
+        RobotState state = RobotState.getInstance();
+        state.setLeftLimitSwitch(leftLimit.get());
+        state.setRightLimitSwitch(rightLimit.get());
 
         if (leftLimit.get() && rightLimit.get())
         {

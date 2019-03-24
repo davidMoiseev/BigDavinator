@@ -59,7 +59,7 @@ public class Robot extends TimedRobot
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
 
         driveTrain = new DriveTrain(rightElevator, intake);
-        manipulator = new Manipulator(rightElevator, intake, driveTrain);
+        manipulator = new Manipulator(rightElevator, intake);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
         
