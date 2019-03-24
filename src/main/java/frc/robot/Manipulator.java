@@ -715,13 +715,7 @@ public class Manipulator
         if (!grabHatch && robotCommand.LimitSwitchPickup())
             grabHatch = limitSwitchScore;
 
-        if (robotCommand.HatchPickup())
-        {
-            hatchCenter = true;
-            hatchCenterTimer = 0;
-        }
-
-        if (!grabHatch && !robotCommand.HatchPickup() && hatchCenter)
+        if (!grabHatch && hatchCenter)
         {
             hatchCenterTimer++;
             if (hatchCenterTimer < 80)
@@ -742,7 +736,7 @@ public class Manipulator
 
         if (robotCommand.ManipulatorSetPoint() != null)
         {
-            IManipulatorSetPoint output = robotCommand.ManipulatorSetPoint();
+            IManipulatorSetPoint output;
             if (scoreHatch)
             {
                 output = hatchPlacer.GetPlacingSetPoint(robotCommand.ManipulatorSetPoint());
@@ -758,10 +752,20 @@ public class Manipulator
             }
             else
             {
+                if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_low_back
+                        && RobotState.getInstance().isSpearsClosed())
+                {
+                    output = ManipulatorSetPoint.hatch_pickup_back;
+                }
+                else
+                {
+                    output = robotCommand.ManipulatorSetPoint();
+                }
+
                 hatchPlacer.Reset();
             }
 
-            if (grabHatch)
+            if (grabHatch && !scoreHatch)
             {
                 robotCommand.SetSpearsClosed(false);
                 hatchCenterTimer = 0;
