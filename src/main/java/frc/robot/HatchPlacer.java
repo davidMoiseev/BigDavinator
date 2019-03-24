@@ -14,13 +14,13 @@ import frc.robot.constants.WristConstants;
 
 public class HatchPlacer
 {
-    private final double ARM_LENGTH = 21;
-    private final double SCORE_DISTANCE_HIGH = 6.5;
-    private final double SCORE_DISTANCE_LOW = 3;
+    private static final double ARM_LENGTH = 21;
+    private static final double SCORE_DISTANCE_HIGH = 6.5;
+    private static final double SCORE_DISTANCE_LOW = 3;
 
     enum HatchPlacingState
     {
-        Off, Placing, RetractingArm, RetractingAll
+        Off, Placing, RetractingArm, RetractingAll, Complete
     }
 
     HatchPlacingState hatchPlacingState;
@@ -35,14 +35,15 @@ public class HatchPlacer
         robotState = RobotState.getInstance();
     }
 
-    public IManipulatorSetPoint GetPlacingSetPoint(ManipulatorSetPoint setPoint)
+    public IManipulatorSetPoint GetPlacingSetPoint(final ManipulatorSetPoint setPoint)
     {
-        if (setPoint == null)
-            return null;
-
         IManipulatorSetPoint scorePosition = GetScorePosition(setPoint);
+        IManipulatorSetPoint output = null;
         if (scorePosition == null)
+        {
+            lastOutput = setPoint;
             return setPoint;
+        }
 
         if (hatchPlacingState == HatchPlacingState.Off)
         {
@@ -63,7 +64,7 @@ public class HatchPlacer
             }
             else
             {
-                return scorePosition;
+                output = setPoint;
             }
         }
         // Retracting the arm first
@@ -75,24 +76,31 @@ public class HatchPlacer
             }
             else
             {
-                return new ManualManipulatorSetPoint(setPoint.armAngle(), scorePosition.wristAngle(),
+                output = new ManualManipulatorSetPoint(setPoint.armAngle(), scorePosition.wristAngle(),
                         scorePosition.elevatorHeight(), scorePosition.frontFlipper(), scorePosition.backFlipper());
             }
         }
         // Retracting all of it, for high setpoints
         if (hatchPlacingState == HatchPlacingState.RetractingAll)
         {
-            return setPoint;
+            output = setPoint;
+            if (onTarget(output))
+                hatchPlacingState = HatchPlacingState.Complete;
+        }
+        // Continue holding retract all, but we know we are there
+        if (hatchPlacingState == HatchPlacingState.Complete)
+        {
+            output = setPoint;
         }
 
-        lastOutput = setPoint;
+        lastOutput = output;
         return setPoint;
     }
 
     public boolean onTarget()
     {
         if (lastOutput == null)
-            return false;
+            return true;
         return onTarget(lastOutput);
     }
 
@@ -109,7 +117,7 @@ public class HatchPlacer
                         elevatorHeight - robotState.getElevatorPosition()) <= ElevatorConstants.allowableErrorInches);
     }
 
-    private IManipulatorSetPoint GetScorePosition(ManipulatorSetPoint setPoint)
+    private static IManipulatorSetPoint GetScorePosition(ManipulatorSetPoint setPoint)
     {
         IManipulatorSetPoint output = null;
         if (highPlacePoints.contains(setPoint))
@@ -127,7 +135,7 @@ public class HatchPlacer
         return output;
     }
 
-    private IManipulatorSetPoint CreateLowFrontSetPoint(ManipulatorSetPoint setPoint)
+    private static IManipulatorSetPoint CreateLowFrontSetPoint(ManipulatorSetPoint setPoint)
     {
 
         IManipulatorSetPoint push = CreatePush(setPoint, false, SCORE_DISTANCE_LOW);
@@ -136,12 +144,12 @@ public class HatchPlacer
                 push.backFlipper());
     }
 
-    private IManipulatorSetPoint CreateLowBackSetPoint(ManipulatorSetPoint setPoint)
+    private static IManipulatorSetPoint CreateLowBackSetPoint(ManipulatorSetPoint setPoint)
     {
         return CreatePush(setPoint, false, SCORE_DISTANCE_LOW);
     }
 
-    private IManipulatorSetPoint CreatePush(ManipulatorSetPoint setPoint, boolean useElevator, double xAddition)
+    private static IManipulatorSetPoint CreatePush(ManipulatorSetPoint setPoint, boolean useElevator, double xAddition)
     {
         double armAngle = Math.toRadians(setPoint.armAngle());
 
@@ -203,4 +211,9 @@ public class HatchPlacer
         hatchPlacingState = HatchPlacingState.Off;
         lastOutput = null;
     }
+
+	public boolean isActive()
+	{
+		return !(hatchPlacingState == HatchPlacingState.Off || hatchPlacingState == HatchPlacingState.Complete);
+	}
 }

@@ -707,7 +707,10 @@ public class Manipulator
         SmartDashboard.putBoolean("AAA SCORE", limitSwitchScore);
         scoreHatch = robotCommand.ManipulatorScore();
         if (!scoreHatch && robotCommand.LimitSwitchScore())
-            scoreHatch = limitSwitchScore;
+        {
+            if (limitSwitchScore || hatchPlacer.isActive())
+                scoreHatch = true;
+        }
         grabHatch = robotCommand.HatchPickup();
         if (!grabHatch && robotCommand.LimitSwitchPickup())
             grabHatch = limitSwitchScore;
@@ -748,6 +751,10 @@ public class Manipulator
                 {
                     robotCommand.SetSpearsClosed(true);
                 }
+                if (hatchPlacer.getState() == HatchPlacingState.Complete)
+                {
+                    robotCommand.Rumble();
+                }
             }
             else
             {
@@ -785,7 +792,7 @@ public class Manipulator
             hatchPlacer.Reset();
             SmartDashboard.putBoolean("Disabled thing", true);
         }
-        
+
         intakePneumatics.Update(robotCommand);
 
         SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
@@ -833,7 +840,6 @@ public class Manipulator
         }
         return score;
     }
-
 
     private IManipulatorSetPoint CreateBumpedFlipperSetPoint(IManipulatorSetPoint setPoint, int frontCount,
             int backCount)
