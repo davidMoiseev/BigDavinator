@@ -421,16 +421,14 @@ public class DriveTrain implements IPigeonWrapper
         getYaw();
         if (!command.steeringAssistActivated())
         {
-            System.out.println("NO VISION");
             arcadeDrive(command);
             vmotion.resetVision();
-            /*
-             * hasObtainedTarget = false; havingTarget = false;
-             */
+            
+              hasObtainedTarget = false; havingTarget = false;
+             
         }
         else
         {
-            System.out.println("VISION");
 
             if (!autoAssistLast)
                 hasObtainedTarget = false;
