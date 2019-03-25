@@ -470,7 +470,7 @@ public class DriveTrain implements IPigeonWrapper
 
     public double HDriveOutput(double input)
     {
-        SmartDashboard.putString("HState", hDriveState.name());
+        //SmartDashboard.putString("HState", hDriveState.name());
         double output = 0;
         if (input == 0)
         {
@@ -500,7 +500,7 @@ public class DriveTrain implements IPigeonWrapper
         }
         if (hDriveState == HDriveState.Ramping)
         {
-            SmartDashboard.putNumber("ramp", Math.abs(input) - Math.abs(hDrivePrevious));
+            //SmartDashboard.putNumber("ramp", Math.abs(input) - Math.abs(hDrivePrevious));
             if (Math.abs(input) - Math.abs(hDrivePrevious) > H_RAMP)
             {
                 System.out.println("RAMPING");
@@ -516,8 +516,8 @@ public class DriveTrain implements IPigeonWrapper
         }
         hDrivePrevious = output;
         HotLogger.Log("H_DRIVE", output);
-        SmartDashboard.putNumber("AAA HDRIVE", output);
-        SmartDashboard.putNumber("AAA HINPUT", input);
+        //SmartDashboard.putNumber("AAA HDRIVE", output);
+        //SmartDashboard.putNumber("AAA HINPUT", input);
         return output;
     }
 

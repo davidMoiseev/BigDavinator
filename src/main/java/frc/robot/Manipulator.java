@@ -409,8 +409,8 @@ public class Manipulator
     {
         double wristY = Math.cos(Math.toRadians(wrist)) * WRIST_LENGTH;
         double armY = Math.cos(Math.toRadians(arm)) * ARM_LENGTH;
-        SmartDashboard.putNumber("wrist component Y", wristY);
-        SmartDashboard.putNumber("arm component Y", armY);
+        //SmartDashboard.putNumber("wrist component Y", wristY);
+        //SmartDashboard.putNumber("arm component Y", armY);
         return wristY + ELEVATOR_LENGTH + elevator + armY;
     }
 
@@ -424,7 +424,7 @@ public class Manipulator
 
         // The angle from arm angle, negative is counter-clockwise
         double wristAngleRelative = wrist.getPosition() - arm.getPosition();
-        SmartDashboard.putNumber("wristAngleRelative", wristAngleRelative);
+        //SmartDashboard.putNumber("wristAngleRelative", wristAngleRelative);
 
         // Elevator waits if the arm is coming down
         if (elevTarget < elevator.getPosition() - ELEVATOR_TOLERANCE && Math.abs(arm.getPosition()) > 90
@@ -702,7 +702,6 @@ public class Manipulator
         boolean grabHatch = false;
 
         boolean limitSwitchScore = limitSwitchesFired();
-        SmartDashboard.putBoolean("AAA SCORE", limitSwitchScore);
 
         scoreHatch = robotCommand.ManipulatorScore();
         if (!scoreHatch && robotCommand.LimitSwitchScore())
@@ -790,7 +789,6 @@ public class Manipulator
             output = CreateBumpedFlipperSetPoint(output, robotCommand.FrontFlipperBumpCount(),
                     robotCommand.BackFlipperBumpCount());
             Control(output);
-            SmartDashboard.putBoolean("Disabled thing", false);
         }
         else
         {
@@ -807,8 +805,6 @@ public class Manipulator
 
         SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
         SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());
-        SmartDashboard.putNumber("frontFlipper error", frontFlipper.getError());
-        SmartDashboard.putNumber("backFlipper error", backFlipper.getError());
 
         if (!holdingElevator)
             prevElevHeight = elevator.getPosition();

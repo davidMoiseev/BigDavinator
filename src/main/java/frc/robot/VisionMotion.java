@@ -102,8 +102,8 @@ public class VisionMotion
         error = turn_referenceAngle - currentYaw;
 
         // Temporary testing things
-        SmartDashboard.putNumber("currentYaw", currentYaw);
-        SmartDashboard.putNumber("error", error);
+        //SmartDashboard.putNumber("currentYaw", currentYaw);
+        //SmartDashboard.putNumber("error", error);
 
         if (Math.abs(error) > 2)
         {
@@ -309,7 +309,7 @@ public class VisionMotion
                 target = 0; // front cargo ship
             }
         }
-        SmartDashboard.putNumber("referenceAngle", referenceAngle);
+        //SmartDashboard.putNumber("referenceAngle", referenceAngle);
         return target;
     }
 
@@ -473,10 +473,12 @@ public class VisionMotion
 
     public void writeDashBoardVis()
     {
+        /*
         SmartDashboard.putNumber("AAA DIST FRONT", frontCamera.findDistance());
         SmartDashboard.putNumber("AAA DIST BACK", backCamera.findDistance());
         SmartDashboard.putNumber("AAA ANGLE FRONT", frontCamera.angleFromCenter());
         SmartDashboard.putNumber("AAA ANGLE BACK", backCamera.angleFromCenter());
+        */
     }
 
     boolean useBackCamera = false;
