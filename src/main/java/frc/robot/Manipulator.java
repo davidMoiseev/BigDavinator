@@ -20,7 +20,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
-import frc.robot.HatchPlacer.HatchPlacingState;
+import frc.robot.routines.HatchPlacer;
+import frc.robot.routines.HatchPlacer.HatchPlacingState;
 import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
@@ -708,7 +709,7 @@ public class Manipulator
         scoreHatch = robotCommand.ManipulatorScore();
         if (!scoreHatch && robotCommand.LimitSwitchScore())
         {
-            if (limitSwitchScore || hatchPlacer.isActive())
+            if (limitSwitchScore || hatchPlacer.IsActive())
                 scoreHatch = true;
         }
         grabHatch = robotCommand.HatchPickup();

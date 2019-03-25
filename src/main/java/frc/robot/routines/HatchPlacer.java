@@ -1,39 +1,30 @@
-package frc.robot;
+package frc.robot.routines;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.constants.ArmConstants;
-import frc.robot.constants.ElevatorConstants;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.ManualManipulatorSetPoint;
-import frc.robot.constants.WristConstants;
 
-public class HatchPlacer
+public class HatchPlacer extends ManipulatorRoutineBase
 {
     private static final double ARM_LENGTH = 21;
     private static final double SCORE_DISTANCE_HIGH = 6.5;
     private static final double SCORE_DISTANCE_LOW = 3;
-
-    enum HatchPlacingState
-    {
-        Off, Placing, RetractingArm, RetractingAll, Complete
-    }
-
-    HatchPlacingState hatchPlacingState;
-    final RobotState robotState;
     static final List<ManipulatorSetPoint> highPlacePoints = new ArrayList<>(
             Arrays.asList(ManipulatorSetPoint.hatch_high_back, ManipulatorSetPoint.hatch_high_front,
                     ManipulatorSetPoint.hatch_mid_front, ManipulatorSetPoint.hatch_mid_back));
-    private IManipulatorSetPoint lastOutput = null;
 
-    public HatchPlacer()
+    public enum HatchPlacingState
     {
-        robotState = RobotState.getInstance();
+        Off, Placing, RetractingArm, RetractingAll, Complete
     }
+    HatchPlacingState hatchPlacingState;
+
+    private IManipulatorSetPoint lastOutput = null;
 
     public IManipulatorSetPoint GetPlacingSetPoint(final ManipulatorSetPoint setPoint)
     {
@@ -107,14 +98,6 @@ public class HatchPlacer
     public HatchPlacingState getState()
     {
         return hatchPlacingState;
-    }
-
-    private boolean onTarget(double armAngle, double wristAngle, double elevatorHeight)
-    {
-        return (Math.abs(armAngle - robotState.getArmPosition()) <= ArmConstants.allowableErrorDegrees
-                && Math.abs(wristAngle - robotState.getWristPosition()) <= WristConstants.allowableErrorDegrees
-                && Math.abs(
-                        elevatorHeight - robotState.getElevatorPosition()) <= ElevatorConstants.allowableErrorInches);
     }
 
     private static IManipulatorSetPoint GetScorePosition(ManipulatorSetPoint setPoint)
@@ -197,23 +180,22 @@ public class HatchPlacer
                 setPoint.frontFlipper(), setPoint.backFlipper());
     }
 
-    private boolean onTarget(IManipulatorSetPoint setPoint)
-    {
-        return (Math.abs(setPoint.armAngle() - robotState.getArmPosition()) <= ArmConstants.allowableErrorDegrees
-                && Math.abs(
-                        setPoint.wristAngle() - robotState.getWristPosition()) <= WristConstants.allowableErrorDegrees
-                && Math.abs(setPoint.elevatorHeight()
-                        - robotState.getElevatorPosition()) <= ElevatorConstants.allowableErrorInches);
-    }
-
+    @Override
     public void Reset()
     {
         hatchPlacingState = HatchPlacingState.Off;
         lastOutput = null;
     }
 
-	public boolean isActive()
+    @Override
+	public boolean IsActive()
 	{
 		return !(hatchPlacingState == HatchPlacingState.Off || hatchPlacingState == HatchPlacingState.Complete);
 	}
+
+    @Override
+    public IManipulatorSetPoint GetLastOutput()
+    {
+        return lastOutput;
+    }
 }
