@@ -82,7 +82,12 @@ public class HatchGrabber extends ManipulatorRoutineBase
     @Override
     public IManipulatorSetPoint GetLastOutput()
     {
-        return null;
+        return lastOutput;
     }
+
+	public HatchGrabberState getState()
+	{
+		return hatchGrabberState;
+	}
 
 }

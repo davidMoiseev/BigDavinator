@@ -20,7 +20,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
+import frc.robot.routines.HatchGrabber;
 import frc.robot.routines.HatchPlacer;
+import frc.robot.routines.HatchGrabber.HatchGrabberState;
 import frc.robot.routines.HatchPlacer.HatchPlacingState;
 import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.IManipulatorSetPoint;
@@ -62,6 +64,7 @@ public class Manipulator
     private final Flipper backFlipper;
 
     private final HatchPlacer hatchPlacer;
+    private final HatchGrabber hatchGrabber;
 
     private final DigitalInput frontLeftLimit;
     private final DigitalInput frontRightLimit;
@@ -112,6 +115,7 @@ public class Manipulator
         this.frontFlipper = new Flipper(WiringIDs.FLIPPER_FRONT, false, false);
         this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK, false, true);
         this.hatchPlacer = new HatchPlacer();
+        this.hatchGrabber = new HatchGrabber();
 
         frontLeftLimit = new DigitalInput(WiringIDs.FLIPPER_FRONT_LEFT_LIMIT_SWITCH);
         frontRightLimit = new DigitalInput(WiringIDs.FLIPPER_FRONT_RIGHT_LIMIT_SWITCH);
@@ -697,7 +701,7 @@ public class Manipulator
 
         arm.checkEncoder();
         wrist.checkEncoder();
-        elevator.checkEncoder(0);
+        elevator.checkEncoder();
 
         RobotState.getInstance().setCommandedSetPoint(robotCommand.ManipulatorSetPoint());
 
@@ -706,15 +710,19 @@ public class Manipulator
 
         boolean limitSwitchScore = limitSwitchesFired();
         SmartDashboard.putBoolean("AAA SCORE", limitSwitchScore);
+
         scoreHatch = robotCommand.ManipulatorScore();
         if (!scoreHatch && robotCommand.LimitSwitchScore())
-        {
-            if (limitSwitchScore || hatchPlacer.IsActive())
-                scoreHatch = true;
-        }
+            scoreHatch = (limitSwitchScore || hatchGrabber.IsActive());
+
         grabHatch = robotCommand.HatchPickup();
         if (!grabHatch && robotCommand.LimitSwitchPickup())
-            grabHatch = limitSwitchScore;
+            grabHatch = (limitSwitchScore || hatchGrabber.IsActive());
+
+        if (grabHatch && scoreHatch)
+        {
+            scoreHatch = false;
+        }
 
         if (!grabHatch && hatchCenter)
         {
@@ -733,8 +741,6 @@ public class Manipulator
             intake.Update(robotCommand);
         }
 
-        boolean hatchPickup = robotCommand.HatchPickup();
-
         if (robotCommand.ManipulatorSetPoint() != null)
         {
             IManipulatorSetPoint output;
@@ -742,12 +748,25 @@ public class Manipulator
             {
                 output = hatchPlacer.GetPlacingSetPoint(robotCommand.ManipulatorSetPoint());
 
-                if (hatchPlacer.onTarget() && hatchPlacer.getState() == HatchPlacingState.Placing)
+                if (hatchPlacer.onTarget() && hatchPlacer.getState() == HatchPlacingState.Placing
+                        || hatchPlacer.getState() == HatchPlacingState.RetractingArm
+                        || hatchPlacer.getState() == HatchPlacingState.RetractingAll)
                 {
                     robotCommand.SetSpearsClosed(true);
+                    robotCommand.Rumble();
                 }
-                if (hatchPlacer.getState() == HatchPlacingState.Complete)
+            }
+            else if (grabHatch)
+            {
+                output = hatchGrabber.GetPickupSetPoint(robotCommand.ManipulatorSetPoint());
+
+                if (hatchGrabber.onTarget() && hatchGrabber.getState() == HatchGrabberState.Grabbing
+                        || hatchGrabber.getState() == HatchGrabberState.Driving
+                        || hatchGrabber.getState() == HatchGrabberState.Complete)
                 {
+                    robotCommand.SetSpearsClosed(false);
+                    hatchCenterTimer = 0;
+                    hatchCenter = true;
                     robotCommand.Rumble();
                 }
             }
@@ -762,26 +781,19 @@ public class Manipulator
                 {
                     output = robotCommand.ManipulatorSetPoint();
                 }
+            }
 
+            if (!grabHatch)
+                hatchGrabber.Reset();
+            if (!scoreHatch)
                 hatchPlacer.Reset();
+
+            if (robotCommand.HatchPickup())
+            {
+                output = new ManualManipulatorSetPoint(output.armAngle(), output.wristAngle(),
+                        output.elevatorHeight() + 3, output.frontFlipper(), output.backFlipper());
             }
 
-            if (grabHatch && !scoreHatch)
-            {
-                robotCommand.SetSpearsClosed(false);
-                hatchCenterTimer = 0;
-                // Might need to wait to center hatch
-                hatchCenter = true;
-                hatchPickup = true;
-                robotCommand.Rumble();
-            }
-
-            if (hatchPickup)
-            {
-                double elevHeight = (output.elevatorHeight() + 2.5 > 32 ? 32 : output.elevatorHeight() + 2.5);
-                output = new ManualManipulatorSetPoint(output.armAngle(), output.wristAngle(), elevHeight,
-                        output.frontFlipper(), output.backFlipper());
-            }
             output = CreateBumpedFlipperSetPoint(output, robotCommand.FrontFlipperBumpCount(),
                     robotCommand.BackFlipperBumpCount());
             Control(output);
@@ -795,7 +807,7 @@ public class Manipulator
             frontFlipper.disable();
             backFlipper.disable();
             hatchPlacer.Reset();
-            SmartDashboard.putBoolean("Disabled thing", true);
+            hatchGrabber.Reset();
         }
 
         intakePneumatics.Update(robotCommand);
