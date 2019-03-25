@@ -675,13 +675,6 @@ public class Manipulator
     int hatchCenterTimer = 0;
     // Whether we are centering the hatch
     boolean hatchCenter = false;
-    // Delay count for when to release hatch when placing one
-    int scoreCount = 0;
-    // Delay count for when limit switches are considered un-fired again
-    int limitSwitchCount = 0;
-    // Whether limit switches were pressed, stays true until count goes too high
-    boolean limitSwitchPressed = false;
-    boolean wasLimitSwitching = false;
 
     public void Update(TeleopCommandProvider robotCommand)
     {
@@ -839,23 +832,7 @@ public class Manipulator
         state.setLeftLimitSwitch(leftLimit.get());
         state.setRightLimitSwitch(rightLimit.get());
 
-        if (leftLimit.get() && rightLimit.get())
-        {
-            limitSwitchCount = 0;
-            limitSwitchPressed = true;
-            score = true;
-        }
-        else if (limitSwitchPressed && limitSwitchCount < 20)
-        {
-            limitSwitchCount++;
-            score = true;
-        }
-        else
-        {
-            limitSwitchPressed = false;
-            score = false;
-        }
-        return score;
+        return leftLimit.get() && rightLimit.get();
     }
 
     private IManipulatorSetPoint CreateBumpedFlipperSetPoint(IManipulatorSetPoint setPoint, int frontCount,
