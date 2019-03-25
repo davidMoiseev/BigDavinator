@@ -211,7 +211,7 @@ public class Manipulator
             // if (backFlipper.reachedTarget());
             {
                 elevator.setTarget(ManipulatorSetPoint.firstPosition);
-                if (elevator.reachedTarget())
+                if (elevator.getPosition() > ManipulatorSetPoint.firstPosition.elevatorHeight() - 2)
                 {
                     arm.setTarget(tmpArm);
                     wrist.setTarget(ManipulatorSetPoint.firstPosition);
