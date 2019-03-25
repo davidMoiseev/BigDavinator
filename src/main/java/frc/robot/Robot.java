@@ -59,7 +59,7 @@ public class Robot extends TimedRobot
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
 
         driveTrain = new DriveTrain(rightElevator, intake);
-        manipulator = new Manipulator(operator, driver, rightElevator, intake, driveTrain);
+        manipulator = new Manipulator(rightElevator, intake);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
         
@@ -72,6 +72,13 @@ public class Robot extends TimedRobot
         driver.setDeadBandRX(.1);
         driver.setDeadBandRY(.1);
         //driveTrain.initUsbCam();
+    }
+
+    private void Teleop()
+    {
+        teleopCommandProvider.Update();
+        manipulator.Update(teleopCommandProvider);
+        driveTrain.Update(teleopCommandProvider);
     }
 
     @Override
@@ -87,15 +94,7 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         // May have to invert driveturn/drivespeed
-        teleopCommandProvider.Update();
-
-        
-        manipulator.Update(teleopCommandProvider);
-        driveTrain.Update(teleopCommandProvider);
-        //driveTrain.updateUsb(1);
-
-        HotLogger.Log("StickLY", -driver.getStickLY());
-        HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
+        Teleop();
     }
 
     @Override
@@ -104,6 +103,9 @@ public class Robot extends TimedRobot
         manipulator.DisplaySensors();
         driveTrain.readSensors();
         driveTrain.writeLogs();
+
+        manipulator.UpdateRobotState();
+        driveTrain.UpdateRobotState();
     }
 
     @Override
@@ -116,13 +118,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        teleopCommandProvider.Update();
-        driveTrain.Update(teleopCommandProvider);
-        manipulator.Update(teleopCommandProvider);
-        HotLogger.Log("Compressor Current", compressor.getCompressorCurrent());
-        // driveTrain.updateUsb(1);
-        HotLogger.Log("StickLY", -driver.getStickLY());
-
+        Teleop();
     }
 
     /**
@@ -141,7 +137,6 @@ public class Robot extends TimedRobot
     public void disabledInit()
     {
         // More precise than x^2, change the denominator of constant to calibrate
-
         driver.setRumble(RumbleType.kLeftRumble, 0);
         driver.setRumble(RumbleType.kRightRumble, 0);
         driveTrain.zeroSensors();
@@ -156,7 +151,7 @@ public class Robot extends TimedRobot
     @Override
     public void disabledPeriodic()
     {
-        teleopCommandProvider.Update();
+        teleopCommandProvider.Reset();
         /**
          * Clicked for the first time, the robot is stable so start boot calibrate
          */
@@ -168,9 +163,7 @@ public class Robot extends TimedRobot
             manipulator.RestartInitialization();
             pigeonInitializing = true;
         }
-        
-        
-
+    
         /**
          * Pigeon is done initializing but we have not informed the DashBoard
          */

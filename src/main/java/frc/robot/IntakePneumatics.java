@@ -13,18 +13,21 @@ public class IntakePneumatics
 {
 
 	Solenoid intakeSingle = new Solenoid(WiringIDs.SOLENOID_INTAKE);
-	HotController joystick;
 
 	boolean lastProvidedValue = false;
 	boolean lastSetValue = false;
 
-	public IntakePneumatics(HotController joystick)
+	public IntakePneumatics()
 	{
-		this.joystick = joystick;
 	}
 
 	public void Update(TeleopCommandProvider command)
 	{
 		intakeSingle.set(command.SpearsClosed());
+	}
+	
+	public boolean SpearsClosed()
+	{
+		return intakeSingle.get();
 	}
 }

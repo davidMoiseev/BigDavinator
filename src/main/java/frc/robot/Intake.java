@@ -23,13 +23,11 @@ public class Intake
 {
     double Outspeed = -0.9 * ((WiringIDs.IS_PRACTICE_BOT) ? 1 : -1);
     double Inputspeed = 0.9 * ((WiringIDs.IS_PRACTICE_BOT) ? 1 : -1);
-    HotController joystick;
 
     WPI_TalonSRX BeltTalon = new WPI_TalonSRX(WiringIDs.INTAKE);
 
-    public Intake(HotController joystick)
+    public Intake()
     {
-        this.joystick = joystick;
     }
 
     public void Update(TeleopCommandProvider command)
@@ -52,7 +50,6 @@ public class Intake
 
     public void allOff()
     {
-
         BeltTalon.set(ControlMode.PercentOutput, 0.0);
     }
 
@@ -70,12 +67,5 @@ public class Intake
     {
         SmartDashboard.putNumber("Outputspeed", Outspeed);
         SmartDashboard.putNumber("Inputspeed", Inputspeed);
-        SmartDashboard.putBoolean("Left Bumper", joystick.getButtonLeftBumper());
-        SmartDashboard.putBoolean("Right Bumper", joystick.getButtonRightBumper());
     }
-    // SmartDashboard.putBoolean("valueA", valueA);
-    // SmartDashboard.putBoolean("valueB", valueB);
-    // SmartDashboard.putNumber("speedR", );
-    // SmartDashboard.putNumber("JoystickL", ());
-    // SmartDashboard.putNumber("JoystickR", ());
 }
