@@ -409,8 +409,8 @@ public class Manipulator
     {
         double wristY = Math.cos(Math.toRadians(wrist)) * WRIST_LENGTH;
         double armY = Math.cos(Math.toRadians(arm)) * ARM_LENGTH;
-        //SmartDashboard.putNumber("wrist component Y", wristY);
-        //SmartDashboard.putNumber("arm component Y", armY);
+        // SmartDashboard.putNumber("wrist component Y", wristY);
+        // SmartDashboard.putNumber("arm component Y", armY);
         return wristY + ELEVATOR_LENGTH + elevator + armY;
     }
 
@@ -424,7 +424,7 @@ public class Manipulator
 
         // The angle from arm angle, negative is counter-clockwise
         double wristAngleRelative = wrist.getPosition() - arm.getPosition();
-        //SmartDashboard.putNumber("wristAngleRelative", wristAngleRelative);
+        // SmartDashboard.putNumber("wristAngleRelative", wristAngleRelative);
 
         // Elevator waits if the arm is coming down
         if (elevTarget < elevator.getPosition() - ELEVATOR_TOLERANCE && Math.abs(arm.getPosition()) > 90
@@ -733,9 +733,12 @@ public class Manipulator
             intake.Update(robotCommand);
         }
 
+        SmartDashboard.putString("hatchPlacer State", hatchPlacer.getState().name());
+        SmartDashboard.putString("hatchGrabber State", hatchGrabber.getState().name());
+
         if (robotCommand.ManipulatorSetPoint() != null)
         {
-            IManipulatorSetPoint output;
+            IManipulatorSetPoint output = robotCommand.ManipulatorSetPoint();
             if (scoreHatch)
             {
                 output = hatchPlacer.GetPlacingSetPoint(robotCommand.ManipulatorSetPoint());
@@ -751,23 +754,23 @@ public class Manipulator
             else if (grabHatch)
             {
                 output = hatchGrabber.GetPickupSetPoint(robotCommand.ManipulatorSetPoint());
+                hatchCenterTimer = 0;
+                hatchCenter = true;
 
                 if (hatchGrabber.onTarget() && hatchGrabber.getState() == HatchGrabberState.Grabbing
                         || hatchGrabber.getState() == HatchGrabberState.Driving
                         || hatchGrabber.getState() == HatchGrabberState.Complete)
                 {
                     robotCommand.SetSpearsClosed(false);
-                    hatchCenterTimer = 0;
-                    hatchCenter = true;
                     robotCommand.Rumble();
                 }
             }
             else
             {
-                if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_low_back
+                if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_low_front
                         && RobotState.getInstance().isSpearsClosed())
                 {
-                    output = ManipulatorSetPoint.hatch_pickup_back;
+                    output = ManipulatorSetPoint.hatch_pickup_front;
                 }
                 else
                 {
@@ -779,12 +782,6 @@ public class Manipulator
                 hatchGrabber.Reset();
             if (!scoreHatch)
                 hatchPlacer.Reset();
-
-            if (robotCommand.HatchPickup())
-            {
-                output = new ManualManipulatorSetPoint(output.armAngle(), output.wristAngle(),
-                        output.elevatorHeight() + 3, output.frontFlipper(), output.backFlipper());
-            }
 
             output = CreateBumpedFlipperSetPoint(output, robotCommand.FrontFlipperBumpCount(),
                     robotCommand.BackFlipperBumpCount());

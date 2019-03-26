@@ -8,7 +8,7 @@ import frc.robot.constants.ManualManipulatorSetPoint;
 public class HatchGrabber extends ManipulatorRoutineBase
 {
     public static final double ELEV_LIFT = 3;
-    public static final double DRIVE_DIST = 2;
+    public static final double DRIVE_DIST = 5;
 
     public enum HatchGrabberState
     {
@@ -22,14 +22,9 @@ public class HatchGrabber extends ManipulatorRoutineBase
 
     public IManipulatorSetPoint GetPickupSetPoint(ManipulatorSetPoint setPoint)
     {
-        IManipulatorSetPoint output = null;
-        if (setPoint == null)
-        {
-            lastOutput = null;
-            return null;
-        }
+        IManipulatorSetPoint output = setPoint;
 
-        if (hatchGrabberState == HatchGrabberState.Off && !robotState.isSpearsClosed())
+        if (hatchGrabberState == HatchGrabberState.Off && robotState.isSpearsClosed())
         {
             hatchGrabberState = HatchGrabberState.Grabbing;
         }

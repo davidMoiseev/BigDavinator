@@ -22,18 +22,18 @@ public class HatchPlacer extends ManipulatorRoutineBase
     {
         Off, Placing, RetractingArm, RetractingAll, Complete
     }
-    HatchPlacingState hatchPlacingState;
+    HatchPlacingState hatchPlacingState = HatchPlacingState.Off;
 
     private IManipulatorSetPoint lastOutput = null;
 
     public IManipulatorSetPoint GetPlacingSetPoint(final ManipulatorSetPoint setPoint)
     {
         IManipulatorSetPoint scorePosition = GetScorePosition(setPoint);
-        IManipulatorSetPoint output = null;
+        IManipulatorSetPoint output = setPoint;
         if (scorePosition == null)
         {
-            lastOutput = setPoint;
-            return setPoint;
+            lastOutput = output;
+            return output;
         }
 
         if (hatchPlacingState == HatchPlacingState.Off)
@@ -55,7 +55,7 @@ public class HatchPlacer extends ManipulatorRoutineBase
             }
             else
             {
-                output = setPoint;
+                output = scorePosition;
             }
         }
         // Retracting the arm first
@@ -90,8 +90,6 @@ public class HatchPlacer extends ManipulatorRoutineBase
 
     public boolean onTarget()
     {
-        if (lastOutput == null)
-            return true;
         return onTarget(lastOutput);
     }
 

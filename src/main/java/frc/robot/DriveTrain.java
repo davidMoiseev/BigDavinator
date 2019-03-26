@@ -389,8 +389,8 @@ public class DriveTrain implements IPigeonWrapper
     {
         double hDrive = HDriveOutput(command.HDrive());
         double hDriveCorrect = 0.15 * hDrive * 0;
-        boolean slowLeft = robotState.isLeftLimitSwitch();
-        boolean slowRight = robotState.isRightLimitSwitch();
+        boolean slowLeft = robotState.isLeftLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
+        boolean slowRight = robotState.isRightLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
         rightMotor.set((command.RightDrive() - command.TurnDrive()) * (slowRight ? .5 : 1));
         leftMotor.set((command.LeftDrive() + hDriveCorrect + command.TurnDrive()) * (slowLeft ? .5 : 1));
         hDriveMotor.set(HDriveOutput(hDrive));
@@ -404,9 +404,10 @@ public class DriveTrain implements IPigeonWrapper
 
     public void Update(TeleopCommandProvider command)
     {
-        vmotion.useBackCamera(robotState.getCommandedSetPoint().wristAngle() < 0);
-        boolean slowLeft = robotState.isLeftLimitSwitch();
-        boolean slowRight = robotState.isRightLimitSwitch();
+        if (robotState.getCommandedSetPoint() != null)
+            vmotion.useBackCamera(robotState.getCommandedSetPoint().armAngle() < 0);
+        boolean slowLeft = robotState.isLeftLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
+        boolean slowRight = robotState.isRightLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
 
         if (havingTarget && targetCount < 15)
         {
@@ -543,8 +544,8 @@ public class DriveTrain implements IPigeonWrapper
     {
         RobotState state = RobotState.getInstance();
 
-        state.setLeftDriveEncoder(leftEncoderValue);
-        state.setRightDriveEncoder(rightEncoderValue);
+        state.setLeftDriveEncoder(leftMotor.getEncoder().getPosition());
+        state.setRightDriveEncoder(rightMotor.getEncoder().getPosition());
         state.setHeading(-xyz_dps[0]);
     }
 }
