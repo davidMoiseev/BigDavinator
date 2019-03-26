@@ -746,6 +746,11 @@ public class Manipulator
             {
                 setPoint = ManipulatorSetPoint.hatch_low_front;
             }
+            else if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_pickup_back
+                    && !RobotState.getInstance().isSpearsClosed() && !grabHatch)
+            {
+                setPoint = ManipulatorSetPoint.hatch_low_back;
+            }
             else
             {
                 setPoint = robotCommand.ManipulatorSetPoint();
@@ -818,7 +823,6 @@ public class Manipulator
 
     private boolean limitSwitchesFired()
     {
-        boolean score = false;
         DigitalInput leftLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontLeftLimit : backLeftLimit;
         DigitalInput rightLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontRightLimit : backRightLimit;
 

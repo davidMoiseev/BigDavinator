@@ -12,11 +12,13 @@ import frc.robot.constants.ManualManipulatorSetPoint;
 public class HatchPlacer extends ManipulatorRoutineBase
 {
     private static final double ARM_LENGTH = 21;
-    private static final double SCORE_DISTANCE_HIGH = 6.5;
-    private static final double SCORE_DISTANCE_LOW = 3;
+    private static final double SCORE_DISTANCE_HIGH = 8;
+    private static final double SCORE_DISTANCE_MID = 6.5;
+    private static final double SCORE_DISTANCE_LOW = 5;
     static final List<ManipulatorSetPoint> highPlacePoints = new ArrayList<>(
-            Arrays.asList(ManipulatorSetPoint.hatch_high_back, ManipulatorSetPoint.hatch_high_front,
-                    ManipulatorSetPoint.hatch_mid_front, ManipulatorSetPoint.hatch_mid_back));
+            Arrays.asList(ManipulatorSetPoint.hatch_high_back, ManipulatorSetPoint.hatch_high_front));
+    static final List<ManipulatorSetPoint> midPlacePoints = new ArrayList<>(
+            Arrays.asList(ManipulatorSetPoint.hatch_mid_front, ManipulatorSetPoint.hatch_mid_back));
 
     public enum HatchPlacingState
     {
@@ -92,20 +94,21 @@ public class HatchPlacer extends ManipulatorRoutineBase
 
     private static IManipulatorSetPoint GetScorePosition(ManipulatorSetPoint setPoint)
     {
-        IManipulatorSetPoint output = null;
+        IManipulatorSetPoint output = setPoint;
         if (highPlacePoints.contains(setPoint))
         {
-            System.out.println("High Place");
             output = CreatePush(setPoint, true, SCORE_DISTANCE_HIGH);
+        }
+        else if (midPlacePoints.contains(setPoint))
+        {
+            output = CreatePush(setPoint, true, SCORE_DISTANCE_MID);
         }
         else if (setPoint == ManipulatorSetPoint.hatch_low_front)
         {
-            System.out.println("Low Place Front");
             output = CreateLowFrontSetPoint(setPoint);
         }
         else if (setPoint == ManipulatorSetPoint.hatch_low_back)
         {
-            System.out.println("Low Place Back");
             output = CreateLowBackSetPoint(setPoint);
         }
         return output;
