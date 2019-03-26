@@ -705,7 +705,7 @@ public class Manipulator
 
         scoreHatch = robotCommand.ManipulatorScore();
         if (!scoreHatch && robotCommand.LimitSwitchScore())
-            scoreHatch = (limitSwitchScore || hatchGrabber.IsActive());
+            scoreHatch = (limitSwitchScore || hatchPlacer.IsActive());
 
         grabHatch = robotCommand.HatchPickup();
         if (!grabHatch && robotCommand.LimitSwitchPickup())
@@ -739,9 +739,22 @@ public class Manipulator
         if (robotCommand.ManipulatorSetPoint() != null)
         {
             IManipulatorSetPoint output = robotCommand.ManipulatorSetPoint();
+            ManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
+
+            if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_pickup_front
+                    && !RobotState.getInstance().isSpearsClosed() && !grabHatch)
+            {
+                setPoint = ManipulatorSetPoint.hatch_low_front;
+            }
+            else
+            {
+                setPoint = robotCommand.ManipulatorSetPoint();
+            }
+            output = setPoint;
+
             if (scoreHatch)
             {
-                output = hatchPlacer.GetPlacingSetPoint(robotCommand.ManipulatorSetPoint());
+                output = hatchPlacer.GetPlacingSetPoint(setPoint);
 
                 if (hatchPlacer.onTarget() && hatchPlacer.getState() == HatchPlacingState.Placing
                         || hatchPlacer.getState() == HatchPlacingState.RetractingArm
@@ -763,18 +776,6 @@ public class Manipulator
                 {
                     robotCommand.SetSpearsClosed(false);
                     robotCommand.Rumble();
-                }
-            }
-            else
-            {
-                if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_low_front
-                        && RobotState.getInstance().isSpearsClosed())
-                {
-                    output = ManipulatorSetPoint.hatch_pickup_front;
-                }
-                else
-                {
-                    output = robotCommand.ManipulatorSetPoint();
                 }
             }
 

@@ -44,14 +44,7 @@ public class HatchPlacer extends ManipulatorRoutineBase
         {
             if (onTarget(scorePosition) && robotState.isSpearsClosed())
             {
-                if (setPoint != ManipulatorSetPoint.hatch_low_back && setPoint != ManipulatorSetPoint.hatch_low_front)
-                {
-                    hatchPlacingState = HatchPlacingState.RetractingAll;
-                }
-                else
-                {
-                    hatchPlacingState = HatchPlacingState.RetractingArm;
-                }
+                hatchPlacingState = HatchPlacingState.RetractingArm;
             }
             else
             {
@@ -83,9 +76,8 @@ public class HatchPlacer extends ManipulatorRoutineBase
         {
             output = setPoint;
         }
-
         lastOutput = output;
-        return setPoint;
+        return output;
     }
 
     public boolean onTarget()
@@ -103,14 +95,17 @@ public class HatchPlacer extends ManipulatorRoutineBase
         IManipulatorSetPoint output = null;
         if (highPlacePoints.contains(setPoint))
         {
+            System.out.println("High Place");
             output = CreatePush(setPoint, true, SCORE_DISTANCE_HIGH);
         }
         else if (setPoint == ManipulatorSetPoint.hatch_low_front)
         {
+            System.out.println("Low Place Front");
             output = CreateLowFrontSetPoint(setPoint);
         }
         else if (setPoint == ManipulatorSetPoint.hatch_low_back)
         {
+            System.out.println("Low Place Back");
             output = CreateLowBackSetPoint(setPoint);
         }
         return output;
@@ -173,6 +168,7 @@ public class HatchPlacer extends ManipulatorRoutineBase
 
         SmartDashboard.putNumber("New Arm Angle", Math.toDegrees(newArmAngle));
         SmartDashboard.putNumber("New Elevator Height", newElevatorHeight);
+
 
         return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
                 setPoint.frontFlipper(), setPoint.backFlipper());

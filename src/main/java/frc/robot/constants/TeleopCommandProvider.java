@@ -145,7 +145,7 @@ public class TeleopCommandProvider
         {
             if (!operator.getButtonBack())
             {
-                frontTargetPosition = ManipulatorSetPoint.hatch_low_front;
+                frontTargetPosition = ManipulatorSetPoint.hatch_pickup_front;
                 backTargetPosition = ManipulatorSetPoint.hatch_low_back;
             }
             else
