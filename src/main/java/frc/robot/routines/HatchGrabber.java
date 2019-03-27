@@ -12,7 +12,7 @@ public class HatchGrabber extends ManipulatorRoutineBase
 
     public enum HatchGrabberState
     {
-        Off, Grabbing, Driving, Complete
+        Off, Pushing, Grabbing, Driving, Complete
     }
 
     private HatchGrabberState hatchGrabberState = HatchGrabberState.Off;
@@ -56,9 +56,15 @@ public class HatchGrabber extends ManipulatorRoutineBase
         return output;
     }
 
+    private IManipulatorSetPoint getPushSetPoint(IManipulatorSetPoint setPoint)
+    {
+        return new ManualManipulatorSetPoint(setPoint.armAngle() - (10 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
+                setPoint.elevatorHeight(), setPoint.frontFlipper(), setPoint.backFlipper());
+    }
+
     private IManipulatorSetPoint getGrabSetPoint(IManipulatorSetPoint setPoint)
     {
-        return new ManualManipulatorSetPoint(setPoint.armAngle(), setPoint.wristAngle(),
+        return new ManualManipulatorSetPoint(setPoint.armAngle() - (10 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
                 setPoint.elevatorHeight() + ELEV_LIFT, setPoint.frontFlipper(), setPoint.backFlipper());
     }
 

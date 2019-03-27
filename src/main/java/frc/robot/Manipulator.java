@@ -417,6 +417,11 @@ public class Manipulator
     private void setTargets(double elevTarget, double armTarget, double wristTarget, double frontFlipperTarget,
             double backFlipperTarget)
     {
+        if (Math.abs(armTarget) > 165)
+        {
+            armTarget = 165 * Math.signum(armTarget);
+        }
+
         if (frontFlipperTarget < FlipperConstants.CARRY_FRONT)
             frontFlipperTarget = FlipperConstants.CARRY_FRONT;
         else if (backFlipperTarget < FlipperConstants.CARRY_BACK)
@@ -746,11 +751,6 @@ public class Manipulator
             {
                 setPoint = ManipulatorSetPoint.hatch_low_front;
             }
-            else if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_pickup_back
-                    && !RobotState.getInstance().isSpearsClosed() && !grabHatch)
-            {
-                setPoint = ManipulatorSetPoint.hatch_low_back;
-            }
             else
             {
                 setPoint = robotCommand.ManipulatorSetPoint();
@@ -774,10 +774,12 @@ public class Manipulator
                 output = hatchGrabber.GetPickupSetPoint(robotCommand.ManipulatorSetPoint());
                 hatchCenterTimer = 0;
                 hatchCenter = true;
-                robotCommand.SetSpearsClosed(false);
+                if (hatchGrabber.IsActive() && hatchGrabber.getState() != HatchGrabberState.Pushing)
+                {
+                    robotCommand.SetSpearsClosed(false);
+                }
 
-                if (hatchGrabber.onTarget() && hatchGrabber.getState() == HatchGrabberState.Grabbing
-                        || hatchGrabber.getState() == HatchGrabberState.Driving
+                if (hatchGrabber.getState() == HatchGrabberState.Driving
                         || hatchGrabber.getState() == HatchGrabberState.Complete)
                 {
                     robotCommand.Rumble();
