@@ -774,12 +774,12 @@ public class Manipulator
                 output = hatchGrabber.GetPickupSetPoint(robotCommand.ManipulatorSetPoint());
                 hatchCenterTimer = 0;
                 hatchCenter = true;
+                robotCommand.SetSpearsClosed(false);
 
                 if (hatchGrabber.onTarget() && hatchGrabber.getState() == HatchGrabberState.Grabbing
                         || hatchGrabber.getState() == HatchGrabberState.Driving
                         || hatchGrabber.getState() == HatchGrabberState.Complete)
                 {
-                    robotCommand.SetSpearsClosed(false);
                     robotCommand.Rumble();
                 }
             }

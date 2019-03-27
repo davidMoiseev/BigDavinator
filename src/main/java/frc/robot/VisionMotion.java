@@ -19,8 +19,8 @@ import frc.robot.constants.WiringIDs;
 
 public class VisionMotion
 {
-    Vision backCamera = new Vision("limelight-front", Vision.X_BACK, Vision.HEIGHT_BACK);
-    Vision frontCamera = new Vision("limelight-back", Vision.X_FRONT, Vision.HEIGHT_FRONT);
+    Vision backCamera = new Vision("limelight-back", Vision.X_BACK, Vision.HEIGHT_BACK);
+    Vision frontCamera = new Vision("limelight-front", Vision.X_FRONT, Vision.HEIGHT_FRONT);
 
     public double h;
     public double speedH;

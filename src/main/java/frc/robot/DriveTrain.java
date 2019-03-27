@@ -389,8 +389,10 @@ public class DriveTrain implements IPigeonWrapper
     {
         double hDrive = HDriveOutput(command.HDrive());
         double hDriveCorrect = 0.15 * hDrive * 0;
-        boolean slowLeft = robotState.isLeftLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
-        boolean slowRight = robotState.isRightLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
+        boolean slowLeft = robotState.isLeftLimitSwitch()
+                && (command.LimitSwitchPickup() || command.LimitSwitchScore());
+        boolean slowRight = robotState.isRightLimitSwitch()
+                && (command.LimitSwitchPickup() || command.LimitSwitchScore());
         rightMotor.set((command.RightDrive() - command.TurnDrive()) * (slowRight ? .5 : 1));
         leftMotor.set((command.LeftDrive() + hDriveCorrect + command.TurnDrive()) * (slowLeft ? .5 : 1));
         hDriveMotor.set(HDriveOutput(hDrive));
@@ -406,8 +408,10 @@ public class DriveTrain implements IPigeonWrapper
     {
         if (robotState.getCommandedSetPoint() != null)
             vmotion.useBackCamera(robotState.getCommandedSetPoint().armAngle() < 0);
-        boolean slowLeft = robotState.isLeftLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
-        boolean slowRight = robotState.isRightLimitSwitch() && (command.LimitSwitchPickup() || command.LimitSwitchScore());
+        boolean slowLeft = robotState.isLeftLimitSwitch()
+                && (command.LimitSwitchPickup() || command.LimitSwitchScore());
+        boolean slowRight = robotState.isRightLimitSwitch()
+                && (command.LimitSwitchPickup() || command.LimitSwitchScore());
 
         if (havingTarget && targetCount < 15)
         {
@@ -424,15 +428,13 @@ public class DriveTrain implements IPigeonWrapper
         {
             arcadeDrive(command);
             vmotion.resetVision();
-            
-              hasObtainedTarget = false; havingTarget = false;
-             
+
+            hasObtainedTarget = false;
+            havingTarget = false;
+
         }
         else
         {
-
-            if (!autoAssistLast)
-                hasObtainedTarget = false;
             if (!hasObtainedTarget && vmotion.canSeeTarget())
             {
                 havingTarget = true;
@@ -460,8 +462,6 @@ public class DriveTrain implements IPigeonWrapper
         }
         else
             climber.set(false);
-
-        // autoAssistLast = command.steeringAssistActivated();
     }
 
     private int spikeCounter = 0;
@@ -471,7 +471,7 @@ public class DriveTrain implements IPigeonWrapper
 
     public double HDriveOutput(double input)
     {
-        //SmartDashboard.putString("HState", hDriveState.name());
+        // SmartDashboard.putString("HState", hDriveState.name());
         double output = 0;
         if (input == 0)
         {
@@ -501,7 +501,7 @@ public class DriveTrain implements IPigeonWrapper
         }
         if (hDriveState == HDriveState.Ramping)
         {
-            //SmartDashboard.putNumber("ramp", Math.abs(input) - Math.abs(hDrivePrevious));
+            // SmartDashboard.putNumber("ramp", Math.abs(input) - Math.abs(hDrivePrevious));
             if (Math.abs(input) - Math.abs(hDrivePrevious) > H_RAMP)
             {
                 System.out.println("RAMPING");
@@ -517,8 +517,8 @@ public class DriveTrain implements IPigeonWrapper
         }
         hDrivePrevious = output;
         HotLogger.Log("H_DRIVE", output);
-        //SmartDashboard.putNumber("AAA HDRIVE", output);
-        //SmartDashboard.putNumber("AAA HINPUT", input);
+        // SmartDashboard.putNumber("AAA HDRIVE", output);
+        // SmartDashboard.putNumber("AAA HINPUT", input);
         return output;
     }
 
