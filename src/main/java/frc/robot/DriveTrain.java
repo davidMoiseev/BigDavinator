@@ -34,6 +34,9 @@ public class DriveTrain implements IPigeonWrapper
 
     public static final double SECOND_ENCODER_TO_REVS = 4096 * (42.0 / 24.0);
 
+    public static final double MAX_AREA = 20;
+    public static final double DRIVE_AREA_K = .5;
+
     // Recorded max velocity: 3000 units per 100 ms
     // 21,080.986
     public static final double TICKS_PER_METER = 22000;
@@ -447,6 +450,8 @@ public class DriveTrain implements IPigeonWrapper
             }
             {
                 VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
+                double dist = (Math.sqrt(MAX_AREA) / Math.sqrt(robotState.getVisionArea()));
+                SmartDashboard.putNumber("VISION SLOW DIST", dist);
                 rightMotor.set((command.RightDrive() + assist.Right) * (slowRight ? .5 : 1));
                 leftMotor.set((command.LeftDrive() + assist.Left) * (slowLeft ? .5 : 1));
             }
