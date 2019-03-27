@@ -427,7 +427,9 @@ public class DriveTrain implements IPigeonWrapper
             havingTarget = false;
         }
         getYaw();
-        if (!command.steeringAssistActivated())
+        boolean limitSwitchScoring = ((robotState.isLeftLimitSwitch() || robotState.isRightLimitSwitch())
+                && (command.LimitSwitchScore() || command.LimitSwitchPickup()));
+        if (!command.steeringAssistActivated() || limitSwitchScoring)
         {
             arcadeDrive(command);
             vmotion.resetVision();
