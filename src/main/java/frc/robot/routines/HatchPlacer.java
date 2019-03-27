@@ -14,7 +14,7 @@ public class HatchPlacer extends ManipulatorRoutineBase
     private static final double ARM_LENGTH = 21;
     private static final double SCORE_DISTANCE_HIGH = 8;
     private static final double SCORE_DISTANCE_MID = 6.5;
-    private static final double SCORE_DISTANCE_LOW = 5;
+    private static final double SCORE_DISTANCE_LOW = 4;
     static final List<ManipulatorSetPoint> highPlacePoints = new ArrayList<>(
             Arrays.asList(ManipulatorSetPoint.hatch_high_back, ManipulatorSetPoint.hatch_high_front));
     static final List<ManipulatorSetPoint> midPlacePoints = new ArrayList<>(

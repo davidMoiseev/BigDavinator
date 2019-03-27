@@ -26,12 +26,20 @@ public class HatchGrabber extends ManipulatorRoutineBase
 
         if (hatchGrabberState == HatchGrabberState.Off && robotState.isSpearsClosed())
         {
-            hatchGrabberState = HatchGrabberState.Grabbing;
+            hatchGrabberState = HatchGrabberState.Pushing;
+        }
+        if (hatchGrabberState == HatchGrabberState.Pushing)
+        {
+            output = getPushSetPoint(setPoint);
+            if (onTarget(output))
+            {
+                hatchGrabberState = HatchGrabberState.Grabbing;
+            }
         }
         if (hatchGrabberState == HatchGrabberState.Grabbing)
         {
             output = getGrabSetPoint(setPoint);
-            if (onTarget())
+            if (onTarget(output))
             {
                 hatchGrabberState = HatchGrabberState.Driving;
                 startEncoderLeft = robotState.getLeftDriveEncoder();
@@ -58,13 +66,13 @@ public class HatchGrabber extends ManipulatorRoutineBase
 
     private IManipulatorSetPoint getPushSetPoint(IManipulatorSetPoint setPoint)
     {
-        return new ManualManipulatorSetPoint(setPoint.armAngle() - (10 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
+        return new ManualManipulatorSetPoint(setPoint.armAngle() - (8 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
                 setPoint.elevatorHeight(), setPoint.frontFlipper(), setPoint.backFlipper());
     }
 
     private IManipulatorSetPoint getGrabSetPoint(IManipulatorSetPoint setPoint)
     {
-        return new ManualManipulatorSetPoint(setPoint.armAngle() - (10 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
+        return new ManualManipulatorSetPoint(setPoint.armAngle() - (8 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
                 setPoint.elevatorHeight() + ELEV_LIFT, setPoint.frontFlipper(), setPoint.backFlipper());
     }
 
