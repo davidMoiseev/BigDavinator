@@ -19,14 +19,18 @@ public class HatchPlacer extends ManipulatorRoutineBase
             Arrays.asList(ManipulatorSetPoint.hatch_high_back, ManipulatorSetPoint.hatch_high_front));
     static final List<ManipulatorSetPoint> midPlacePoints = new ArrayList<>(
             Arrays.asList(ManipulatorSetPoint.hatch_mid_front, ManipulatorSetPoint.hatch_mid_back));
+    public static final int DRIVE_DIST = 5;
 
     public enum HatchPlacingState
     {
-        Off, Placing, RetractingArm, RetractingAll, Complete
+        Off, Placing, Driving, RetractingArm, RetractingAll, Complete
     }
+
     HatchPlacingState hatchPlacingState = HatchPlacingState.Off;
 
     private IManipulatorSetPoint lastOutput = null;
+    private double leftEncoderStart = 0;
+    private double rightEncoderStart = 0;
 
     public IManipulatorSetPoint GetPlacingSetPoint(final ManipulatorSetPoint setPoint)
     {
@@ -46,7 +50,22 @@ public class HatchPlacer extends ManipulatorRoutineBase
         {
             if (onTarget(scorePosition) && robotState.isSpearsClosed())
             {
-                hatchPlacingState = HatchPlacingState.RetractingArm;
+                hatchPlacingState = HatchPlacingState.Driving;
+                leftEncoderStart = robotState.getLeftDriveEncoder();
+                rightEncoderStart = robotState.getRightDriveEncoder();
+            }
+            else
+            {
+                output = scorePosition;
+            }
+        }
+        if (hatchPlacingState == HatchPlacingState.Driving)
+        {
+            double dist = ((leftEncoderStart - robotState.getLeftDriveEncoder())
+                    + (rightEncoderStart - robotState.getRightDriveEncoder())) / 2;
+            if ((setPoint.armAngle() > 0 && dist > DRIVE_DIST) || (setPoint.armAngle() < 0 && dist < -DRIVE_DIST))
+            {
+                hatchPlacingState = HatchPlacingState.Complete;
             }
             else
             {
@@ -172,7 +191,6 @@ public class HatchPlacer extends ManipulatorRoutineBase
         SmartDashboard.putNumber("New Arm Angle", Math.toDegrees(newArmAngle));
         SmartDashboard.putNumber("New Elevator Height", newElevatorHeight);
 
-
         return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
                 setPoint.frontFlipper(), setPoint.backFlipper());
     }
@@ -185,10 +203,10 @@ public class HatchPlacer extends ManipulatorRoutineBase
     }
 
     @Override
-	public boolean IsActive()
-	{
-		return !(hatchPlacingState == HatchPlacingState.Off || hatchPlacingState == HatchPlacingState.Complete);
-	}
+    public boolean IsActive()
+    {
+        return !(hatchPlacingState == HatchPlacingState.Off || hatchPlacingState == HatchPlacingState.Complete);
+    }
 
     @Override
     public IManipulatorSetPoint GetLastOutput()

@@ -450,8 +450,11 @@ public class DriveTrain implements IPigeonWrapper
             }
             {
                 VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
-                double dist = (Math.sqrt(MAX_AREA) / Math.sqrt(robotState.getVisionArea()));
-                SmartDashboard.putNumber("VISION SLOW DIST", dist);
+                if (robotState.getVisionArea() > 0)
+                {
+                    double dist = (Math.sqrt(MAX_AREA) / Math.sqrt(robotState.getVisionArea()));
+                    SmartDashboard.putNumber("VISION SLOW DIST", dist);
+                }
                 rightMotor.set((command.RightDrive() + assist.Right) * (slowRight ? .5 : 1));
                 leftMotor.set((command.LeftDrive() + assist.Left) * (slowLeft ? .5 : 1));
             }

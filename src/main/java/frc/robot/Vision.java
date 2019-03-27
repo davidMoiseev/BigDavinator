@@ -35,6 +35,7 @@ public class Vision
     networkTable = name;
     limelightX = X;
     limelightHeight = height;
+    NetworkTableInstance.getDefault().getTable(networkTable).getEntry("stream").setDouble(2);
   }
 
   public void getNetworkTables()
