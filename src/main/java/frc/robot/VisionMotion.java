@@ -491,4 +491,14 @@ public class VisionMotion
     {
         return (useBackCamera) ? backCamera : frontCamera;
     }
+
+	public void UpdateRobotState()
+	{
+        getCamera().getNetworkTables();
+        RobotState robotState = RobotState.getInstance();
+
+        robotState.setVisionArea(getCamera().getTA());
+        robotState.setVisionX(getCamera().getHorizontal());
+        robotState.setVisionY(getCamera().getVertical());
+	}
 };

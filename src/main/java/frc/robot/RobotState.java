@@ -27,51 +27,118 @@ public class RobotState
     private boolean rightLimitSwitch = false;
     private ManipulatorSetPoint commandedSetPoint = null;
 
-    public boolean isLeftLimitSwitch() {
+    private double visionX = 0;
+    private double visionY = 0;
+    private double visionArea = 0;
+
+    /**
+     * @return the visionArea
+     */
+    public double getVisionArea()
+    {
+        return visionArea;
+    }
+
+    /**
+     * @param visionArea
+     *                       the visionArea to set
+     */
+    public void setVisionArea(double visionArea)
+    {
+        this.visionArea = visionArea;
+    }
+
+    /**
+     * @return the visionY
+     */
+    public double getVisionY()
+    {
+        return visionY;
+    }
+
+    /**
+     * @param visionY
+     *                    the visionY to set
+     */
+    public void setVisionY(double visionY)
+    {
+        this.visionY = visionY;
+    }
+
+    /**
+     * @return the visionX
+     */
+    public double getVisionX()
+    {
+        return visionX;
+    }
+
+    /**
+     * @param visionX
+     *                    the visionX to set
+     */
+    public void setVisionX(double visionX)
+    {
+        this.visionX = visionX;
+    }
+
+    public boolean isLeftLimitSwitch()
+    {
         return this.leftLimitSwitch;
     }
 
-    public boolean getLeftLimitSwitch() {
+    public boolean getLeftLimitSwitch()
+    {
         return this.leftLimitSwitch;
     }
 
-    public void setLeftLimitSwitch(boolean leftLimitSwitch) {
+    public void setLeftLimitSwitch(boolean leftLimitSwitch)
+    {
         this.leftLimitSwitch = leftLimitSwitch;
     }
 
-    public boolean isRightLimitSwitch() {
+    public boolean isRightLimitSwitch()
+    {
         return this.rightLimitSwitch;
     }
 
-    public boolean getRightLimitSwitch() {
+    public boolean getRightLimitSwitch()
+    {
         return this.rightLimitSwitch;
     }
 
-    public void setRightLimitSwitch(boolean rightLimitSwitch) {
+    public void setRightLimitSwitch(boolean rightLimitSwitch)
+    {
         this.rightLimitSwitch = rightLimitSwitch;
     }
 
-    public ManipulatorSetPoint getCommandedSetPoint() {
+    public ManipulatorSetPoint getCommandedSetPoint()
+    {
         return this.commandedSetPoint;
     }
 
-    public void setCommandedSetPoint(ManipulatorSetPoint commandedSetPoint) {
+    public void setCommandedSetPoint(ManipulatorSetPoint commandedSetPoint)
+    {
         this.commandedSetPoint = commandedSetPoint;
     }
 
-    public double getFrontFlipperPosition() {
+    public double getFrontFlipperPosition()
+    {
         return this.frontFlipperPosition;
     }
 
-    public void setFrontFlipperPosition(double frontFlipperPosition) {
+    public void setFrontFlipperPosition(double frontFlipperPosition)
+    {
         this.frontFlipperPosition = frontFlipperPosition;
     }
 
-    public double getBackFlipperPosition() {
+    public double getBackFlipperPosition()
+    {
         return this.backFlipperPosition;
     }
 
-    public void setBackFlipperPosition(double backFlipperPosition) {
+    public void setBackFlipperPosition(double backFlipperPosition)
+    {
         this.backFlipperPosition = backFlipperPosition;
     }
 

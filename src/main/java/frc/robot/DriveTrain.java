@@ -407,7 +407,10 @@ public class DriveTrain implements IPigeonWrapper
     public void Update(TeleopCommandProvider command)
     {
         if (robotState.getCommandedSetPoint() != null)
+        {
             vmotion.useBackCamera(robotState.getCommandedSetPoint().armAngle() < 0);
+            vmotion.UpdateRobotState();
+        }
         boolean slowLeft = robotState.isLeftLimitSwitch()
                 && (command.LimitSwitchPickup() || command.LimitSwitchScore());
         boolean slowRight = robotState.isRightLimitSwitch()
