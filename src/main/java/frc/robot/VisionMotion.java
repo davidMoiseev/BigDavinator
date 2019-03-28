@@ -57,7 +57,7 @@ public class VisionMotion
     /*
      * Auto-Align Members
      */
-    public static final double TURN_P = .0065;
+    public static final double TURN_P = .007;
     public static final double MIN_REF_COUNT = 0;
     public static final double MAX_TURN = .2;
     public static final double MIN_TURN = .055;
