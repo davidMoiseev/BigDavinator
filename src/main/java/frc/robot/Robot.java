@@ -63,16 +63,12 @@ public class Robot extends TimedRobot
         manipulator = new Manipulator(rightElevator, intake);
         manipulator.InitializeTalons();
         manipulator.RestartInitialization();
-        
-
-        HotLogger.Setup("H_DRIVE", "matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
-                Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
         driver.setDeadBandLY(.1);
         driver.setDeadBandLX(.1);
         driver.setDeadBandRX(.1);
         driver.setDeadBandRY(.1);
-        //driveTrain.initUsbCam();
+        // driveTrain.initUsbCam();
     }
 
     private void Teleop()
@@ -85,7 +81,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-        
+
         driveTrain.zeroSensors();
         driveTrain.zeroMotors();
         profileFinished = false;
@@ -156,7 +152,7 @@ public class Robot extends TimedRobot
         /**
          * Clicked for the first time, the robot is stable so start boot calibrate
          */
-        
+
         if ((SmartDashboard.getBoolean("robotReady", false) && !pigeonInitializing))
         {
             SmartDashboard.putBoolean("pigeonReady", false);
@@ -165,12 +161,17 @@ public class Robot extends TimedRobot
             NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("stream").setDouble(2);
             NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("stream").setDouble(2);
             pigeonInitializing = true;
+
+            HotLogger.Setup("H_DRIVE", "matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags,
+                    HotPathFollower.LoggerValues, Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags,
+                    Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
+
         }
-    
+
         /**
          * Pigeon is done initializing but we have not informed the DashBoard
          */
-        
+
         else if (pigeonInitializing && driveTrain.PigeonReady() && manipulator.isReady())
         {
             pigeonInitializing = false;
@@ -178,7 +179,7 @@ public class Robot extends TimedRobot
             SmartDashboard.putBoolean("pigeonReady", true);
             SmartDashboard.putBoolean("robotReady", false);
         }
-        
+
         manipulator.RunManipulatorInitialization();
     }
 }

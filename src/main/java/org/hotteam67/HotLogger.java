@@ -279,4 +279,9 @@ public class HotLogger
             logQueue.clear();
         }
     }
+
+	public static void Log(String key, boolean b)
+	{
+        Log(key, (b) ? "true" : "false");
+	}
 }

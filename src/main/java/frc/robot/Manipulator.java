@@ -52,7 +52,7 @@ public class Manipulator
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("armTarget", "wristTarget", "elevatorTarget", "frontFlipperTarget", "backFlipperTarget",
+            Arrays.asList("leftLimit", "rightLimit", "armTarget", "wristTarget", "elevatorTarget", "frontFlipperTarget", "backFlipperTarget",
                     "elevator_collision", "flipper_collision", "arm_collision"));
 
     private final Elevator elevator;
@@ -836,6 +836,9 @@ public class Manipulator
         RobotState state = RobotState.getInstance();
         state.setLeftLimitSwitch(leftLimit.get());
         state.setRightLimitSwitch(rightLimit.get());
+
+        HotLogger.Log("leftLimit", leftLimit.get());
+        HotLogger.Log("rightLimit", rightLimit.get());
 
         return leftLimit.get() && rightLimit.get();
     }
