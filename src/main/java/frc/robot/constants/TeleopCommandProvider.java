@@ -62,7 +62,6 @@ public class TeleopCommandProvider
         LeftDriveSteeringAssist = 0;
         RightDriveSteeringAssist = 0;
         HDrive = 0;
-        intakeSolenoid = false;
         score = false;
         intakeOut = false;
         intakeIn = false;
@@ -239,10 +238,12 @@ public class TeleopCommandProvider
         {
             intakeSolenoid = true;
         }
-        else if (driver.getButtonY())
+        /*
+        if (driver.getButtonY())
         {
             intakeSolenoid = false;
         }
+        */
 
         if (driver.getButtonStart())
         {

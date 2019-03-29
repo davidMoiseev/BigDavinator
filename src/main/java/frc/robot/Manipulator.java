@@ -701,6 +701,11 @@ public class Manipulator
         wrist.checkEncoder();
         elevator.checkEncoder();
 
+        if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_back || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_front)
+        {
+            robotCommand.SetSpearsClosed(false);
+        }
+
         RobotState.getInstance().setCommandedSetPoint(robotCommand.ManipulatorSetPoint());
 
         boolean scoreHatch = false;

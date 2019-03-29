@@ -7,9 +7,16 @@ import frc.robot.constants.ManualManipulatorSetPoint;
 
 public class HatchGrabber extends ManipulatorRoutineBase
 {
-    public static final double ELEV_LIFT = 3;
-    public static final double DRIVE_DIST = 5;
+    /**
+     *
+     */
 
+    private static final int ARM_PUSH = 11;
+    public static final double ELEV_LIFT = 3;
+    public static final double DRIVE_DIST = 7;
+    public static final double MIN_RELEASE_TIME = 0;
+
+    private double releaseTimer = 0;
     public enum HatchGrabberState
     {
         Off, Pushing, Grabbing, Driving, Complete
@@ -31,9 +38,13 @@ public class HatchGrabber extends ManipulatorRoutineBase
         if (hatchGrabberState == HatchGrabberState.Pushing)
         {
             output = getPushSetPoint(setPoint);
-            if (onTarget(output))
+            if (onTarget(output) && releaseTimer > MIN_RELEASE_TIME)
             {
                 hatchGrabberState = HatchGrabberState.Grabbing;
+            }
+            else if (onTarget(output))
+            {
+                releaseTimer++;
             }
         }
         if (hatchGrabberState == HatchGrabberState.Grabbing)
@@ -66,13 +77,13 @@ public class HatchGrabber extends ManipulatorRoutineBase
 
     private IManipulatorSetPoint getPushSetPoint(IManipulatorSetPoint setPoint)
     {
-        return new ManualManipulatorSetPoint(setPoint.armAngle() - (8 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
+        return new ManualManipulatorSetPoint(setPoint.armAngle() - (ARM_PUSH * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
                 setPoint.elevatorHeight(), setPoint.frontFlipper(), setPoint.backFlipper());
     }
 
     private IManipulatorSetPoint getGrabSetPoint(IManipulatorSetPoint setPoint)
     {
-        return new ManualManipulatorSetPoint(setPoint.armAngle() - (8 * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
+        return new ManualManipulatorSetPoint(setPoint.armAngle() - (ARM_PUSH * Math.signum(setPoint.armAngle())), setPoint.wristAngle(),
                 setPoint.elevatorHeight() + ELEV_LIFT, setPoint.frontFlipper(), setPoint.backFlipper());
     }
 
@@ -81,6 +92,7 @@ public class HatchGrabber extends ManipulatorRoutineBase
         hatchGrabberState = HatchGrabberState.Off;
         startEncoderLeft = 0;
         startEncoderRight = 0;
+        releaseTimer = 0;
     }
 
     public boolean IsActive()
