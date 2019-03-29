@@ -18,5 +18,5 @@ fi
 
 address="admin@10.$first.$last.2"
 
-scp admin@10.1.18.2:/home/lvuser/logs/* ./Logs/
+scp admin@10.0.67.2:/home/lvuser/logs/* ./Logs/
 read -p "Press any key to continue..." -n1 -s
