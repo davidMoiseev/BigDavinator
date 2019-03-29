@@ -53,6 +53,7 @@ public class Vision
 
   public double getHorizontal()
   {
+    NetworkTableInstance.getDefault().getTable(networkTable).getEntry("stream").setDouble(2);
     double hz = NetworkTableInstance.getDefault().getTable(networkTable).getEntry("ty").getDouble(0);
     return hz;
   }

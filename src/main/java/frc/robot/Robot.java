@@ -13,6 +13,7 @@ import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.Interpolation;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -161,6 +162,8 @@ public class Robot extends TimedRobot
             SmartDashboard.putBoolean("pigeonReady", false);
             driveTrain.CalibratePigeon();
             manipulator.RestartInitialization();
+            NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("stream").setDouble(2);
+            NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("stream").setDouble(2);
             pigeonInitializing = true;
         }
     
