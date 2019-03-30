@@ -131,7 +131,7 @@ public class Wrist extends MotionMagicActuator
 
     public void checkEncoder()
     {
-        checkEncoder(50);
+        checkEncoder((int)(40.0 / WristConstants.TICKS_TO_DEGREES));
     }
 
 }

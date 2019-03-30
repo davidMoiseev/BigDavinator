@@ -120,6 +120,6 @@ public class Elevator extends MotionMagicActuator
 
 	public void checkEncoder()
 	{
-        checkEncoder(0);
+        checkEncoder((int)(12.0 / ElevatorConstants.TICKS_TO_INCHES));
 	}
 }

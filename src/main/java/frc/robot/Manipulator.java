@@ -676,6 +676,8 @@ public class Manipulator
 
     // Whether we are re-zeroing the arm
     boolean zeroingArm = false;
+
+    boolean manualWrist = false;
     // Delay count for how long to center the hatc
     int hatchCenterTimer = 0;
     // Whether we are centering the hatch
@@ -799,6 +801,30 @@ public class Manipulator
 
             output = CreateBumpedFlipperSetPoint(output, robotCommand.FrontFlipperBumpCount(),
                     robotCommand.BackFlipperBumpCount());
+
+
+            // if (robotCommand.ManualWrist() > 0)
+            // {
+            //     double output = robotCommand.ManualWrist();
+            //     if (Math.abs(robotCommand.ManualWrist()) > .2)
+            //     {
+            //         output = Math.signum(robotCommand.ManualWrist()) * .2;
+            //     }
+            //     wrist.manual(output);
+            //     manualWrist = true;
+            // }
+            // else if (robotCommand.ZeroWrist())
+            // {
+            //     wrist.disable();
+            //     wrist.setPosition(135 - arm.getPosition());
+            //     manualWrist = true;
+            // }
+            // else
+            // {
+            // manualWrist = false;
+            // }
+            
+
             Control(output);
         }
         else
@@ -810,24 +836,27 @@ public class Manipulator
             hatchPlacer.Reset();
             hatchGrabber.Reset();
 
-            if (robotCommand.ManualWrist() > 0)
-            {
-                double output = robotCommand.ManualWrist();
-                if (Math.abs(robotCommand.ManualWrist()) > .2)
-                {
-                    output = Math.signum(robotCommand.ManualWrist()) * .2;
-                }
-                wrist.manual(output);
-            }
-            else if (robotCommand.ZeroWrist())
-            {
-                wrist.disable();
-                wrist.setPosition(135 - arm.getPosition());
-            }
-            else
-            {
-                wrist.disable();
-            }
+            
+            // if (robotCommand.ManualWrist() > 0)
+            // {
+            //     double output = robotCommand.ManualWrist();
+            //     if (Math.abs(robotCommand.ManualWrist()) > .2)
+            //     {
+            //         output = Math.signum(robotCommand.ManualWrist()) * .2;
+            //     }
+            //     wrist.manual(output);
+            // }
+            // else if (robotCommand.ZeroWrist())
+            // {
+            //     wrist.disable();
+            //     wrist.setPosition(135 - arm.getPosition());
+            // }
+            // else
+            // {
+            //     wrist.disable();
+            // }
+            
+            wrist.disable();
         }
 
         intakePneumatics.Update(robotCommand);

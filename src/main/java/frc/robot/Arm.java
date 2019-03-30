@@ -131,6 +131,6 @@ public class Arm extends MotionMagicActuator
 
     public void checkEncoder()
     {
-        checkEncoder(50);
+        checkEncoder((int)(25.0 / ArmConstants.TICKS_TO_DEGREES));
     }
 }
