@@ -52,8 +52,8 @@ public class Manipulator
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("leftLimit", "rightLimit", "armTarget", "wristTarget", "elevatorTarget", "frontFlipperTarget", "backFlipperTarget",
-                    "elevator_collision", "flipper_collision", "arm_collision"));
+            Arrays.asList("leftLimit", "rightLimit", "armTarget", "wristTarget", "elevatorTarget", "frontFlipperTarget",
+                    "backFlipperTarget", "elevator_collision", "flipper_collision", "arm_collision"));
 
     private final Elevator elevator;
     private final Intake intake;
@@ -701,7 +701,8 @@ public class Manipulator
         wrist.checkEncoder();
         elevator.checkEncoder();
 
-        if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_back || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_front)
+        if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_back
+                || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_front)
         {
             robotCommand.SetSpearsClosed(false);
         }
@@ -804,11 +805,29 @@ public class Manipulator
         {
             elevator.disable();
             arm.disable();
-            wrist.disable();
             frontFlipper.disable();
             backFlipper.disable();
             hatchPlacer.Reset();
             hatchGrabber.Reset();
+
+            if (robotCommand.ManualWrist() > 0)
+            {
+                double output = robotCommand.ManualWrist();
+                if (Math.abs(robotCommand.ManualWrist()) > .2)
+                {
+                    output = Math.signum(robotCommand.ManualWrist()) * .2;
+                }
+                wrist.manual(output);
+            }
+            else if (robotCommand.ZeroWrist())
+            {
+                wrist.disable();
+                wrist.setPosition(135 - arm.getPosition());
+            }
+            else
+            {
+                wrist.disable();
+            }
         }
 
         intakePneumatics.Update(robotCommand);

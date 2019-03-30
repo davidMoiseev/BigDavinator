@@ -45,6 +45,14 @@ public class TeleopCommandProvider
     boolean commandToBack = true;
     boolean flipButtonPrevious = false;
 
+    int zeroWristTimer = 0;
+    private boolean zeroWrist = false;
+
+    public boolean ZeroWrist()
+    {
+        return zeroWrist;
+    }
+
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
         this.driver = driver;
@@ -55,6 +63,8 @@ public class TeleopCommandProvider
     {
         armReZeroTimer = 0;
         armReZeroCount = 50;
+        zeroWristTimer = 0;
+        zeroWrist = false;
 
         outputSetPoint = null;
         LeftDrive = 0;
@@ -275,6 +285,40 @@ public class TeleopCommandProvider
 
         boolean up = operator.getPOV() == 180;
         boolean down = operator.getPOV() == 0;
+        boolean right = operator.getPOV() == 90;
+        boolean left = operator.getPOV() == 270;
+
+        SmartDashboard.putBoolean("RIGHT", right);
+        SmartDashboard.putBoolean("LEFT", left);
+
+        if (right)
+        {
+            manualWrist = -operator.getStickLY();
+            if (left)
+            {
+                if (zeroWristTimer > 50)
+                {
+                    rumble = true;
+                    zeroWrist = true;
+                }
+                else
+                {
+                    zeroWristTimer++;
+                }
+            }
+            else
+            {
+                zeroWristTimer = 0;
+                zeroWrist = false;
+            }
+        }
+        else
+        {
+            manualWrist = 0;
+            zeroWristTimer = 0;
+            zeroWrist = false;
+        }
+        
 
         if (up && !upPrev)
         {
@@ -396,6 +440,7 @@ public class TeleopCommandProvider
     }
 
     boolean rumble = false;
+    private double manualWrist = 0;
 
     public void Rumble()
     {
@@ -405,5 +450,10 @@ public class TeleopCommandProvider
     public void SetSpearsClosed(boolean b)
     {
         intakeSolenoid = b;
+    }
+
+    public double ManualWrist()
+    {
+        return manualWrist;
     }
 }
