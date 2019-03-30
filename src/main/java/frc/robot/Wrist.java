@@ -98,7 +98,8 @@ public class Wrist extends MotionMagicActuator
 
     public void setPosition(double angle)
     {
-        wristCan.setQuadraturePosition((int) (angle / WristConstants.TICKS_TO_DEGREES), 100);
+        previousEncoderValue = (int) (angle / WristConstants.TICKS_TO_DEGREES);
+        wristCan.setQuadraturePosition(previousEncoderValue, 100);
     }
 
     @Override

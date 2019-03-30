@@ -115,7 +115,8 @@ public class Arm extends MotionMagicActuator
 
     public void setPosition(double angle)
     {
-        armCan.setQuadraturePosition((int) (angle / ArmConstants.TICKS_TO_DEGREES), 100);
+        previousEncoderValue = (int) (angle / ArmConstants.TICKS_TO_DEGREES);
+        armCan.setQuadraturePosition(previousEncoderValue, 100);
     }
 
     public boolean reachedTarget()

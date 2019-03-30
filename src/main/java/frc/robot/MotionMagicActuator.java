@@ -24,8 +24,8 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     private boolean sensorPhase;
     private int timeoutms;
     private double reachedTargetTimer;
-    private int previousEncoderValue;
-    private int currentEncoderValue;
+    protected int previousEncoderValue;
+    protected int currentEncoderValue;
 
     public MotionMagicActuator(int primaryCAN_ID)
     {
@@ -131,6 +131,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
     @Override
     public void zeroSensors()
     {
+        previousEncoderValue = 0;
         primaryTalon.setSelectedSensorPosition(0);
     }
 
@@ -337,6 +338,7 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
             {
                 currentEncoderValue += previousEncoderValue;
                 primaryTalon.setSelectedSensorPosition(currentEncoderValue);
+                HotLogger.Log("ENCODER JUMP HAPPENED", true);
             }
         }
         previousEncoderValue = currentEncoderValue;
