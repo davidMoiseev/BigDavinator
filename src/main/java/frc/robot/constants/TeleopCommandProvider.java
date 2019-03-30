@@ -291,6 +291,7 @@ public class TeleopCommandProvider
         SmartDashboard.putBoolean("RIGHT", right);
         SmartDashboard.putBoolean("LEFT", left);
 
+        /*
         if (right)
         {
             manualWrist = -operator.getStickLY();
@@ -318,6 +319,7 @@ public class TeleopCommandProvider
             zeroWristTimer = 0;
             zeroWrist = false;
         }
+        */
         
 
         if (up && !upPrev)
