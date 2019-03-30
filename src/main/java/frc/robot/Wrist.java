@@ -89,10 +89,11 @@ public class Wrist extends MotionMagicActuator
         Log("Wrist Bus Voltage", primaryTalon.getBusVoltage());
         Log("Wrist Output Voltage", primaryTalon.getMotorOutputVoltage());
         Log("Wrist Current", primaryTalon.getOutputCurrent());
+        Log("Wrist CANifier Voltage", wristCan.getBusVoltage());
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Wirst Position ticks", "A Wirst Position degree", "Wirst Power", "Wirst Error",
+            Arrays.asList("Wrist CANifier Voltage", "Wirst Position ticks", "A Wirst Position degree", "Wirst Power", "Wirst Error",
                     "Wirst target", "Wrist Bus Voltage", "Wrist Output Voltage", "Wrist Current"));
 
     public void setPosition(double angle)

@@ -58,7 +58,7 @@ public class Arm extends MotionMagicActuator
         SRX_PID_0.setFeedbackDevice(ArmConstants.feedbackDevice);
 
     }
-    
+
     @Override
     public void zeroSensors()
     {
@@ -85,7 +85,7 @@ public class Arm extends MotionMagicActuator
     {
         Log("Arm Position ticks", getSensorValue());
         Log("Arm Position degrees", getPosition());
-        SmartDashboard.putNumber("ARM CAN DEGREE", - armCan.getQuadraturePosition() * ArmConstants.TICKS_TO_DEGREES);
+        SmartDashboard.putNumber("ARM CAN DEGREE", -armCan.getQuadraturePosition() * ArmConstants.TICKS_TO_DEGREES);
         Log("Arm Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
@@ -95,11 +95,12 @@ public class Arm extends MotionMagicActuator
         Log("Arm Bus Voltage", primaryTalon.getBusVoltage());
         Log("Arm Output Voltage", primaryTalon.getMotorOutputVoltage());
         Log("Arm Current", primaryTalon.getOutputCurrent());
+        Log("Arm CANifier Voltage", armCan.getBusVoltage());
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Arm Position ticks", "Arm Position degrees", "Arm Power", "Arm Error", "Arm target",
-                    "Arm Bus Voltage", "Arm Output Voltage", "Arm Current"));
+            Arrays.asList("Arm CANifier Voltage", "Arm Position ticks", "Arm Position degrees", "Arm Power",
+                    "Arm Error", "Arm target", "Arm Bus Voltage", "Arm Output Voltage", "Arm Current"));
 
     @Override
     public void setTarget(double target)
