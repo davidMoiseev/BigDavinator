@@ -336,8 +336,8 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
             currentEncoderValue = primaryTalon.getSelectedSensorPosition();
             if (Math.abs(currentEncoderValue - previousEncoderValue) > encoderValueChangeLimit)
             {
-                currentEncoderValue += previousEncoderValue;
-                primaryTalon.setSelectedSensorPosition(currentEncoderValue);
+                //currentEncoderValue += previousEncoderValue;
+                //primaryTalon.setSelectedSensorPosition(currentEncoderValue);
                 HotLogger.Log("ENCODER JUMP HAPPENED", true);
             }
         }
