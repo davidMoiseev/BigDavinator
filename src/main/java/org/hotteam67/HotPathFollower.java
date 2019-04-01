@@ -36,16 +36,27 @@ public class HotPathFollower
     // Current overall state of the HotPathFollower
     State pathState = State.Disabled;
 
-    // Jaci leftFollower will do most calculation and handle the left path
-    private DistanceFollower leftFollower;
-    // Jaci rightFollower will do most calculation and handle the right path
-    private DistanceFollower rightFollower;
+    private int lastPathFollowed = -1;
+
+    private static class Follower
+    {
+        public final DistanceFollower LeftFollower;
+        public final DistanceFollower RightFollower;
+
+        public Follower()
+        {
+            LeftFollower = new DistanceFollower();
+            RightFollower = new DistanceFollower();
+        }
+    }
+
+    private List<Follower> loadedPaths = new ArrayList<>();
 
     // PIDFA constants for the position error. Stored for holding last point only
     private double POS_P = 0, POS_I = 0, POS_D = 0, POS_V = 0, POS_A = 0;
     // PID constants for the angle error. Stored for holding last point only
     private double ANGLE_P = 0;
-    
+
     // Whether we are running in reverse
     private boolean isInverted = false;
 
@@ -97,55 +108,49 @@ public class HotPathFollower
      * @param ticksPerRev
      * @param wheelDiameter
      */
-    public HotPathFollower(double ticksPerRev, double wheelDiameter, String leftPathFile, String rightPathFile)
+    public HotPathFollower(double ticksPerRev, double wheelDiameter, Path[] paths)
     {
         this.ticksPerRev = ticksPerRev;
         this.wheelDiameter = wheelDiameter;
-        LoadPath(leftPathFile, rightPathFile);
+        LoadPaths(paths);
     }
 
-    /**
-     * Load a path from disk, given csv files for left/right side, and create new
-     * followers for it
-     * 
-     * @param leftPathFile
-     *                          the fully qualified path to the left csv file
-     * @param rightPathFile
-     *                          the fully qualified path to the right csv file
-     */
-    public void LoadPath(String leftPathFile, String rightPathFile)
+    public void LoadPaths(Path[] paths)
     {
-        // Try catch for IOExceptions
-        try
-        {
-            leftFollower = new DistanceFollower(Pathfinder.readFromCSV(new File(leftPathFile)));
-        }
-        catch (Exception e)
-        {
-            leftFollower = null;
-            e.printStackTrace();
-            System.out.println("Failed to load left path");
-        }
+        if (loadedPaths == null) loadedPaths = new ArrayList<>();
 
-        // Try catch for IOExceptions
-        try
+        loadedPaths.clear();
+        if (paths == null || paths.length == 0)
+            return;
+
+        for (int i = 0; i < paths.length; ++i)
         {
-            rightFollower = new DistanceFollower(Pathfinder.readFromCSV(new File(rightPathFile)));
+            Follower f = new Follower();
+            try
+            {
+                f.LeftFollower.setTrajectory(Pathfinder.readFromCSV(new File(paths[i].Left)));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            try
+            {
+                f.RightFollower.setTrajectory(Pathfinder.readFromCSV(new File(paths[i].Right)));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            loadedPaths.add(f);
         }
-        catch (Exception e)
-        {
-            rightFollower = null;
-            e.printStackTrace();
-            System.out.println("Failed to load right path");
-        }
-        // Give PIDVA to followers again
-        ConfigPosPIDVA(POS_P, POS_I, POS_D, POS_V, POS_A);
-        // New path so reset everything
-        Reset();
     }
 
     /**
-     * Whether to invert the encoder values, gyro, and output to run the robot backwards
+     * Whether to invert the encoder values, gyro, and output to run the robot
+     * backwards
+     * 
      * @param inverted
      */
     public void SetInverted(boolean inverted)
@@ -156,20 +161,6 @@ public class HotPathFollower
     private int GetPolarity()
     {
         return (isInverted) ? -1 : 1;
-    }
-
-    /**
-     * Configure all of the constants for position, with acceleration constant
-     * defaulting to 0
-     * 
-     * @param p
-     * @param i
-     * @param d
-     * @param v
-     */
-    public void ConfigPosPIDV(double p, double i, double d, double v)
-    {
-        ConfigPosPIDVA(p, i, d, v, 0);
     }
 
     /**
@@ -188,13 +179,22 @@ public class HotPathFollower
         POS_D = d;
         POS_V = v;
         POS_A = a;
+
+        if (loadedPaths != null && loadedPaths.size() > 0)
+        {
+            loadedPaths.forEach(x -> ConfigFollower(x.LeftFollower, x.RightFollower));
+        }
+    }
+
+    private void ConfigFollower(DistanceFollower leftFollower, DistanceFollower rightFollower)
+    {
         if (leftFollower != null)
         {
-            leftFollower.configurePIDVA(p, i, d, v, a);
+            leftFollower.configurePIDVA(POS_P, POS_I, POS_D, POS_V, POS_A);
         }
         if (rightFollower != null)
         {
-            rightFollower.configurePIDVA(p, i, d, v, a);
+            rightFollower.configurePIDVA(POS_P, POS_I, POS_D, POS_V, POS_A);
         }
     }
 
@@ -223,10 +223,21 @@ public class HotPathFollower
      * @return an output object with desired left/right outputs, scaled as a double
      *         from -1 to 1 for -100% output to 100% output
      */
-    public Output FollowNextPoint(double currentPositionLeft, double currentPositionRight, double currentHeading)
+    public Output FollowNextPoint(int pathNumber, double currentPositionLeft, double currentPositionRight, double currentHeading)
     {
+        if (pathNumber != lastPathFollowed)
+        {
+            lastPathFollowed = pathNumber;
+            pathState = State.Enabled;
+        }
         currentPositionLeft = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionLeft * GetPolarity();
         currentPositionRight = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionRight * GetPolarity();
+
+        if (loadedPaths == null || pathNumber >= loadedPaths.size())
+            return new Output(0, 0);
+
+        DistanceFollower leftFollower = loadedPaths.get(pathNumber).LeftFollower;
+        DistanceFollower rightFollower = loadedPaths.get(pathNumber).RightFollower;
 
         if (leftFollower == null || rightFollower == null)
             return new Output(0, 0);
@@ -243,16 +254,22 @@ public class HotPathFollower
         {
             l = leftFollower.calculate(currentPositionLeft) * GetPolarity();
             r = rightFollower.calculate(currentPositionRight) * GetPolarity();
-               
-            if(leftFollower.isFinished()){
+
+            if (leftFollower.isFinished())
+            {
                 segLeft = segLeftPrev;
-            }else {
+            }
+            else
+            {
                 segLeft = leftFollower.getSegment();
             }
 
-            if(rightFollower.isFinished()){
+            if (rightFollower.isFinished())
+            {
                 segRight = segRightPrev;
-            }else {
+            }
+            else
+            {
                 segRight = rightFollower.getSegment();
             }
 
@@ -265,8 +282,8 @@ public class HotPathFollower
             double turn = ANGLE_P * headingError;
             HotLogger.Log("Heading Error", headingError);
             HotLogger.Log("Turn Output", turn);
-            l -= turn * GetPolarity();
-            r += turn * GetPolarity();
+            l -= turn;
+            r += turn;
 
             segLeftPrev = segLeft;
             segRightPrev = segRight;
@@ -275,7 +292,7 @@ public class HotPathFollower
         // We are done
         else
             pathState = State.Complete;
-            SmartDashboard.putNumber("complete", 1);
+        SmartDashboard.putNumber("complete", 1);
 
         // We are there, no output
         if (pathState == State.Complete)
@@ -302,12 +319,22 @@ public class HotPathFollower
      */
     public void Reset()
     {
-        if (leftFollower != null && rightFollower != null)
+        if (loadedPaths != null && loadedPaths.size() > 0)
         {
-            leftFollower.reset();
-            rightFollower.reset();
+            for (int i = 0; i < loadedPaths.size(); ++i)
+            {
+                if (loadedPaths.get(i).LeftFollower != null)
+                    loadedPaths.get(i).LeftFollower.reset();
+                if (loadedPaths.get(i).RightFollower != null)
+                    loadedPaths.get(i).RightFollower.reset();
+            }
         }
         pathState = State.Disabled;
+    }
+
+    public void ClearPaths()
+    {
+        loadedPaths.clear();
     }
 
     /**
