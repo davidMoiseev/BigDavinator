@@ -176,7 +176,7 @@ public class TeleopCommandProvider extends RobotCommandProvider
 
         limitSwitchPlace = driver.getButtonRightStick();
         limitSwitchPickup = driver.getButtonLeftStick();
-        score = driver.getButtonA();
+        manipulatorScore = driver.getButtonA();
 
         if (driver.getButtonBack() && !flipButtonPrevious)
         {

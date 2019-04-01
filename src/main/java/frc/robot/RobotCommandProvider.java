@@ -11,7 +11,7 @@ public abstract class RobotCommandProvider
     protected double HDrive = 0;
     protected double turnDrive = 0;
     protected boolean intakeSolenoid = false;
-    protected boolean score = false;
+    protected boolean manipulatorScore = false;
     protected boolean intakeOut = false;
     protected boolean intakeIn = false;
     protected boolean climb = false;
@@ -47,7 +47,7 @@ public abstract class RobotCommandProvider
         LeftDrive = 0;
         RightDrive = 0;
         HDrive = 0;
-        score = false;
+        manipulatorScore = false;
         intakeOut = false;
         intakeIn = false;
         climb = false;
@@ -68,7 +68,7 @@ public abstract class RobotCommandProvider
 
     public boolean ManipulatorScore()
     {
-        return score;
+        return manipulatorScore;
     }
 
     public double LeftDrive()
