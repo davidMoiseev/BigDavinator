@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
+import org.hotteam67.Path;
 import org.hotteam67.HotPathFollower.State;
 
 import edu.wpi.first.wpilibj.Solenoid;
@@ -162,15 +163,9 @@ public class DriveTrain implements IPigeonWrapper
          * Path controller, can be configured to use different paths after construction.
          * This call loads from disk
          */
-        pathFollower = new HotPathFollower(SECOND_ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.TestPath1.Left,
-                Paths.TestPath1.Right);
+        pathFollower = new HotPathFollower(SECOND_ENCODER_TO_REVS, WHEEL_DIAMETER, new Path[] { Paths.TestPath1 });
         pathFollower.ConfigAngleP(ANGLE_PID.P);
         pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
-    }
-
-    public void loadPath(String leftPathFile, String rightPathFile)
-    {
-        pathFollower.LoadPath(leftPathFile, rightPathFile);
     }
 
     /**
@@ -182,7 +177,7 @@ public class DriveTrain implements IPigeonWrapper
     public boolean FollowPath()
     {
         double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(-leftEncoderValue, -leftEncoderValue, heading);
+        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(0, -leftEncoderValue, -rightEncoderValue, heading);
 
         rightMotor.set(pathOutput.Left);
         leftMotor.set(pathOutput.Right);
