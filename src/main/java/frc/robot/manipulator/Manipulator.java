@@ -30,6 +30,7 @@ import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.ManualManipulatorSetPoint;
+
 /**
  * Add your docs here.
  */
@@ -54,6 +55,9 @@ public class Manipulator
     public static final List<String> LoggerTags = new ArrayList<>(
             Arrays.asList("leftLimit", "rightLimit", "armTarget", "wristTarget", "elevatorTarget", "frontFlipperTarget",
                     "backFlipperTarget", "elevator_collision", "flipper_collision", "arm_collision"));
+
+    private final RobotState robotState;
+    private final RobotState.Actions robotActionsState;
 
     private final Elevator elevator;
     private final Intake intake;
@@ -116,6 +120,9 @@ public class Manipulator
         this.backFlipper = new Flipper(WiringIDs.FLIPPER_BACK, false, true);
         this.hatchPlacer = new HatchPlacer();
         this.hatchGrabber = new HatchGrabber();
+
+        this.robotState = RobotState.getInstance();
+        this.robotActionsState = RobotState.Actions.getInstance();
 
         frontLeftLimit = new DigitalInput(WiringIDs.FLIPPER_FRONT_LEFT_LIMIT_SWITCH);
         frontRightLimit = new DigitalInput(WiringIDs.FLIPPER_FRONT_RIGHT_LIMIT_SWITCH);
@@ -571,6 +578,9 @@ public class Manipulator
         arm.setTarget(armTarget);
         wrist.setTarget(wristTarget);
 
+        RobotState.Actions.getInstance().setCommandedManipulatorSetPoint(new ManualManipulatorSetPoint(armTarget,
+                wristTarget, elevTarget, frontFlipperTarget, backFlipperTarget));
+
         // frontFlipper.control(frontFlipperTarget != 0)
 
         SmartDashboard.putNumber("elevatorTarget", elevTarget);
@@ -709,8 +719,6 @@ public class Manipulator
             robotCommand.SetSpearsClosed(false);
         }
 
-        RobotState.getInstance().setCommandedSetPoint(robotCommand.ManipulatorSetPoint());
-
         boolean scoreHatch = false;
         boolean grabHatch = false;
 
@@ -802,30 +810,29 @@ public class Manipulator
             output = CreateBumpedFlipperSetPoint(output, robotCommand.FrontFlipperBumpCount(),
                     robotCommand.BackFlipperBumpCount());
 
-
             // if (robotCommand.ManualWrist() > 0)
             // {
-            //     double output = robotCommand.ManualWrist();
-            //     if (Math.abs(robotCommand.ManualWrist()) > .2)
-            //     {
-            //         output = Math.signum(robotCommand.ManualWrist()) * .2;
-            //     }
-            //     wrist.manual(output);
-            //     manualWrist = true;
+            // double output = robotCommand.ManualWrist();
+            // if (Math.abs(robotCommand.ManualWrist()) > .2)
+            // {
+            // output = Math.signum(robotCommand.ManualWrist()) * .2;
+            // }
+            // wrist.manual(output);
+            // manualWrist = true;
             // }
             // else if (robotCommand.ZeroWrist())
             // {
-            //     wrist.disable();
-            //     wrist.setPosition(135 - arm.getPosition());
-            //     manualWrist = true;
+            // wrist.disable();
+            // wrist.setPosition(135 - arm.getPosition());
+            // manualWrist = true;
             // }
             // else
             // {
             // manualWrist = false;
             // }
-            
 
             Control(output);
+            robotActionsState.setDesiredManipulatorSetPoint(robotCommand.ManipulatorSetPoint());
         }
         else
         {
@@ -836,26 +843,28 @@ public class Manipulator
             hatchPlacer.Reset();
             hatchGrabber.Reset();
 
-            
+            robotActionsState.setCommandedManipulatorSetPoint(null);
+            robotActionsState.setDesiredManipulatorSetPoint(null);
+
             // if (robotCommand.ManualWrist() > 0)
             // {
-            //     double output = robotCommand.ManualWrist();
-            //     if (Math.abs(robotCommand.ManualWrist()) > .2)
-            //     {
-            //         output = Math.signum(robotCommand.ManualWrist()) * .2;
-            //     }
-            //     wrist.manual(output);
+            // double output = robotCommand.ManualWrist();
+            // if (Math.abs(robotCommand.ManualWrist()) > .2)
+            // {
+            // output = Math.signum(robotCommand.ManualWrist()) * .2;
+            // }
+            // wrist.manual(output);
             // }
             // else if (robotCommand.ZeroWrist())
             // {
-            //     wrist.disable();
-            //     wrist.setPosition(135 - arm.getPosition());
+            // wrist.disable();
+            // wrist.setPosition(135 - arm.getPosition());
             // }
             // else
             // {
-            //     wrist.disable();
+            // wrist.disable();
             // }
-            
+
             wrist.disable();
         }
 
@@ -908,12 +917,11 @@ public class Manipulator
 
     public void UpdateRobotState()
     {
-        RobotState state = RobotState.getInstance();
-        state.setArmPosition(arm.getPosition());
-        state.setElevatorPosition(elevator.getPosition());
-        state.setWristPosition(wrist.getPosition());
-        state.setFrontFlipperPosition(frontFlipper.getPosition());
-        state.setBackFlipperPosition(backFlipper.getPosition());
-        state.setSpearsClosed(intakePneumatics.SpearsClosed());
+        robotState.setArmPosition(arm.getPosition());
+        robotState.setElevatorPosition(elevator.getPosition());
+        robotState.setWristPosition(wrist.getPosition());
+        robotState.setFrontFlipperPosition(frontFlipper.getPosition());
+        robotState.setBackFlipperPosition(backFlipper.getPosition());
+        robotState.setSpearsClosed(intakePneumatics.SpearsClosed());
     }
 }

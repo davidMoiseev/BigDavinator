@@ -63,6 +63,7 @@ public class DriveTrain implements IPigeonWrapper
     private Solenoid climber;
 
     private final RobotState robotState;
+    private final RobotState.Actions robotActionsState;
 
     private boolean climbDeployed = false;
 
@@ -139,6 +140,7 @@ public class DriveTrain implements IPigeonWrapper
         climber = new Solenoid(WiringIDs.SOLENOID_CLIMBER);
 
         robotState = RobotState.getInstance();
+        robotActionsState = RobotState.Actions.getInstance();
 
         this.rightEncoder = rightEncoder;
         this.leftEncoder = leftEncoder;
@@ -408,9 +410,9 @@ public class DriveTrain implements IPigeonWrapper
 
     public void Update(TeleopCommandProvider command)
     {
-        if (robotState.getCommandedSetPoint() != null)
+        if (robotActionsState.getDesiredManipulatorSetPoint() != null)
         {
-            vmotion.useBackCamera(robotState.getCommandedSetPoint().armAngle() < 0);
+            vmotion.useBackCamera(robotActionsState.getDesiredManipulatorSetPoint().armAngle() < 0);
             vmotion.UpdateRobotState();
         }
         boolean slowLeft = robotState.isLeftLimitSwitch()
@@ -465,7 +467,7 @@ public class DriveTrain implements IPigeonWrapper
             leftClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.LeftDrive());
             rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
-        if (command.ClimberDeploy() && robotState.getCommandedSetPoint() == ManipulatorSetPoint.climb_prep
+        if (command.ClimberDeploy() && robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep
                 && robotState.getElevatorPosition()
                         + ElevatorConstants.allowableErrorInches >= ManipulatorSetPoint.climb_prep.elevatorHeight())
         {
@@ -554,10 +556,8 @@ public class DriveTrain implements IPigeonWrapper
 
     public void UpdateRobotState()
     {
-        RobotState state = RobotState.getInstance();
-
-        state.setLeftDriveEncoder(leftMotor.getEncoder().getPosition());
-        state.setRightDriveEncoder(rightMotor.getEncoder().getPosition());
-        state.setHeading(-xyz_dps[0]);
+        robotState.setLeftDriveEncoder(leftMotor.getEncoder().getPosition());
+        robotState.setRightDriveEncoder(rightMotor.getEncoder().getPosition());
+        robotState.setHeading(-xyz_dps[0]);
     }
 }
