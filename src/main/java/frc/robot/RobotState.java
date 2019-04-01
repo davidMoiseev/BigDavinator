@@ -219,23 +219,6 @@ public class RobotState
         }
 
         /**
-         * @return the followingPath
-         */
-        public boolean isFollowingPath()
-        {
-            return followingPath;
-        }
-
-        /**
-         * @param followingPath
-         *                             the drivetrainMoving to set
-         */
-        public void setFollowingPath(boolean followingPath)
-        {
-            this.followingPath = followingPath;
-        }
-
-        /**
          * @return the manipulatorMoving
          */
         public boolean isManipulatorMoving()
@@ -291,6 +274,5 @@ public class RobotState
         private IManipulatorSetPoint commandedManipulatorSetPoint = null;
 
         private boolean manipulatorMoving = false;
-        private boolean followingPath = false;
     }
 }

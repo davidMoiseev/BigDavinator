@@ -20,12 +20,15 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
+import frc.robot.constants.WristConstants;
 import frc.robot.manipulator.routines.HatchGrabber;
 import frc.robot.manipulator.routines.HatchPlacer;
 import frc.robot.manipulator.routines.HatchGrabber.HatchGrabberState;
 import frc.robot.manipulator.routines.HatchPlacer.HatchPlacingState;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
+import frc.robot.constants.ArmConstants;
+import frc.robot.constants.ElevatorConstants;
 import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
@@ -578,8 +581,9 @@ public class Manipulator
         arm.setTarget(armTarget);
         wrist.setTarget(wristTarget);
 
-        RobotState.Actions.getInstance().setCommandedManipulatorSetPoint(new ManualManipulatorSetPoint(armTarget,
-                wristTarget, elevTarget, frontFlipperTarget, backFlipperTarget));
+        IManipulatorSetPoint commandedSetPoint = new ManualManipulatorSetPoint(armTarget,
+                wristTarget, elevTarget, frontFlipperTarget, backFlipperTarget);
+        robotActionsState.setCommandedManipulatorSetPoint(commandedSetPoint);
 
         // frontFlipper.control(frontFlipperTarget != 0)
 
@@ -601,6 +605,17 @@ public class Manipulator
         SmartDashboard.putBoolean("backFlipperOnTarget", flipperOnTarget(backFlipper, backFlipperTarget));
         // frontFlipper.setTarget(frontFlipperTarget);
         // backFlipper.setTarget(backFlipperTarget);
+    }
+
+    public boolean onTarget(IManipulatorSetPoint setPoint)
+    {
+        return (Math.abs(setPoint.armAngle() - robotState.getArmPosition()) <= ArmConstants.allowableErrorDegrees
+                && Math.abs(
+                        setPoint.wristAngle() - robotState.getWristPosition()) <= WristConstants.allowableErrorDegrees
+                && Math.abs(setPoint.elevatorHeight()
+                        - robotState.getElevatorPosition()) <= ElevatorConstants.allowableErrorInches
+                && flipperOnTarget(frontFlipper, setPoint.frontFlipper())
+                && flipperOnTarget(backFlipper, setPoint.backFlipper()));
     }
 
     private void setTargets(IManipulatorSetPoint elevTarget, IManipulatorSetPoint armTarget,
@@ -833,6 +848,7 @@ public class Manipulator
 
             Control(output);
             robotActionsState.setDesiredManipulatorSetPoint(robotCommand.ManipulatorSetPoint());
+            robotActionsState.setManipulatorMoving(!onTarget(robotCommand.ManipulatorSetPoint()));
         }
         else
         {
