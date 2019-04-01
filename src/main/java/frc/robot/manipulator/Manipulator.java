@@ -24,7 +24,7 @@ import frc.robot.constants.WristConstants;
 import frc.robot.manipulator.routines.HatchGrabber;
 import frc.robot.manipulator.routines.HatchPlacer;
 import frc.robot.manipulator.routines.HatchGrabber.HatchGrabberState;
-import frc.robot.manipulator.routines.HatchPlacer.HatchPlacingState;
+import frc.robot.manipulator.routines.HatchPlacer.HatchPlacerState;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
 import frc.robot.constants.ArmConstants;
@@ -792,9 +792,9 @@ public class Manipulator
             {
                 output = hatchPlacer.GetPlacingSetPoint(setPoint);
 
-                if (hatchPlacer.onTarget() && hatchPlacer.getState() == HatchPlacingState.Placing
-                        || hatchPlacer.getState() == HatchPlacingState.RetractingArm
-                        || hatchPlacer.getState() == HatchPlacingState.RetractingAll)
+                if (hatchPlacer.onTarget() && hatchPlacer.getState() == HatchPlacerState.Placing
+                        || hatchPlacer.getState() == HatchPlacerState.RetractingArm
+                        || hatchPlacer.getState() == HatchPlacerState.RetractingAll)
                 {
                     robotCommand.SetSpearsClosed(true);
                     robotCommand.Rumble();
@@ -906,9 +906,8 @@ public class Manipulator
         DigitalInput leftLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontLeftLimit : backLeftLimit;
         DigitalInput rightLimit = (getArmSide(arm.getPosition()) == RobotSide.FRONT) ? frontRightLimit : backRightLimit;
 
-        RobotState state = RobotState.getInstance();
-        state.setLeftLimitSwitch(leftLimit.get());
-        state.setRightLimitSwitch(rightLimit.get());
+        robotState.setLeftLimitSwitch(leftLimit.get());
+        robotState.setRightLimitSwitch(rightLimit.get());
 
         HotLogger.Log("leftLimit", leftLimit.get());
         HotLogger.Log("rightLimit", rightLimit.get());
@@ -939,5 +938,8 @@ public class Manipulator
         robotState.setFrontFlipperPosition(frontFlipper.getPosition());
         robotState.setBackFlipperPosition(backFlipper.getPosition());
         robotState.setSpearsClosed(intakePneumatics.SpearsClosed());
+
+        robotActionsState.setHatchGrabberState(hatchGrabber.getState());
+        robotActionsState.setHatchPlacerState(hatchPlacer.getState());
     }
 }

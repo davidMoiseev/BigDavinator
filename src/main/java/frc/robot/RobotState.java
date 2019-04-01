@@ -2,6 +2,8 @@ package frc.robot;
 
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
+import frc.robot.manipulator.routines.HatchGrabber.HatchGrabberState;
+import frc.robot.manipulator.routines.HatchPlacer.HatchPlacerState;
 
 public class RobotState
 {
@@ -219,6 +221,40 @@ public class RobotState
         }
 
         /**
+         * @return the hatchPlacerState
+         */
+        public HatchPlacerState getHatchPlacerState()
+        {
+            return hatchPlacerState;
+        }
+
+        /**
+         * @param hatchPlacerState
+         *                             the hatchPlacerState to set
+         */
+        public void setHatchPlacerState(HatchPlacerState hatchPlacerState)
+        {
+            this.hatchPlacerState = hatchPlacerState;
+        }
+
+        /**
+         * @return the hatchGrabberState
+         */
+        public HatchGrabberState getHatchGrabberState()
+        {
+            return hatchGrabberState;
+        }
+
+        /**
+         * @param hatchGrabberState
+         *                              the hatchGrabberState to set
+         */
+        public void setHatchGrabberState(HatchGrabberState hatchGrabberState)
+        {
+            this.hatchGrabberState = hatchGrabberState;
+        }
+
+        /**
          * @return the manipulatorMoving
          */
         public boolean isManipulatorMoving()
@@ -274,5 +310,8 @@ public class RobotState
         private IManipulatorSetPoint commandedManipulatorSetPoint = null;
 
         private boolean manipulatorMoving = false;
+
+        private HatchGrabberState hatchGrabberState = HatchGrabberState.Off;
+        private HatchPlacerState hatchPlacerState = HatchPlacerState.Off;
     }
 }
