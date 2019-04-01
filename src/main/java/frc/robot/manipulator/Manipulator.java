@@ -30,8 +30,6 @@ import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.constants.ManualManipulatorSetPoint;
-import frc.robot.constants.TeleopCommandProvider;
-
 /**
  * Add your docs here.
  */

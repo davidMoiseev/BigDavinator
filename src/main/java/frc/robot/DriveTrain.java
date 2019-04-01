@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ElevatorConstants;
 import frc.robot.constants.ManipulatorSetPoint;
-import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
 public class DriveTrain implements IPigeonWrapper

@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,8 +9,9 @@ import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Flipper;
 import frc.robot.RobotCommandProvider;
+import frc.robot.constants.FlipperConstants;
+import frc.robot.constants.ManipulatorSetPoint;
 
 public class TeleopCommandProvider extends RobotCommandProvider
 {
