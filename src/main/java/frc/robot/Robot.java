@@ -24,6 +24,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
+import frc.robot.manipulator.Arm;
+import frc.robot.manipulator.Elevator;
+import frc.robot.manipulator.Manipulator;
+import frc.robot.manipulator.Wrist;
 
 public class Robot extends TimedRobot
 {

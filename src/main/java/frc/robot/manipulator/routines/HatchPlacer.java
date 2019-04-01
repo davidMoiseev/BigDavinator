@@ -1,4 +1,4 @@
-package frc.robot.routines;
+package frc.robot.manipulator.routines;
 
 import java.util.ArrayList;
 import java.util.Arrays;

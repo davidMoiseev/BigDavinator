@@ -1,12 +1,13 @@
 //Made by Nick S. and TJ M.
 //Later Modified by Johnny B.
 
-package frc.robot;
+package frc.robot.manipulator;
 
 import org.hotteam67.HotController;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotCommandProvider;
 import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
@@ -22,7 +23,7 @@ public class IntakePneumatics
 	{
 	}
 
-	public void Update(TeleopCommandProvider command)
+	public void Update(RobotCommandProvider command)
 	{
 		intakeSingle.set(command.SpearsClosed());
 	}

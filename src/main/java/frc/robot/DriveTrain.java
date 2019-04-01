@@ -388,7 +388,7 @@ public class DriveTrain implements IPigeonWrapper
      *                    the hdrive output value
      */
 
-    private void arcadeDrive(TeleopCommandProvider command)
+    private void arcadeDrive(RobotCommandProvider command)
     {
         double hDrive = HDriveOutput(command.HDrive());
         double hDriveCorrect = 0.15 * hDrive * 0;

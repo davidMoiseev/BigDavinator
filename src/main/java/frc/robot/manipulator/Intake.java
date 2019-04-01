@@ -8,7 +8,7 @@
 //         Donovan Porter
 //         TJ Meyer
 //         Johnny Blackburn
-package frc.robot;
+package frc.robot.manipulator;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import org.hotteam67.HotController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotCommandProvider;
 import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
@@ -30,7 +31,7 @@ public class Intake
     {
     }
 
-    public void Update(TeleopCommandProvider command)
+    public void Update(RobotCommandProvider command)
     {
         if (command.IntakeOut())
         {

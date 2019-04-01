@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package frc.robot.manipulator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,10 +20,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.WiringIDs;
-import frc.robot.routines.HatchGrabber;
-import frc.robot.routines.HatchPlacer;
-import frc.robot.routines.HatchGrabber.HatchGrabberState;
-import frc.robot.routines.HatchPlacer.HatchPlacingState;
+import frc.robot.manipulator.routines.HatchGrabber;
+import frc.robot.manipulator.routines.HatchPlacer;
+import frc.robot.manipulator.routines.HatchGrabber.HatchGrabberState;
+import frc.robot.manipulator.routines.HatchPlacer.HatchPlacingState;
+import frc.robot.RobotCommandProvider;
+import frc.robot.RobotState;
 import frc.robot.constants.FlipperConstants;
 import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
@@ -683,7 +685,7 @@ public class Manipulator
     // Whether we are centering the hatch
     boolean hatchCenter = false;
 
-    public void Update(TeleopCommandProvider robotCommand)
+    public void Update(RobotCommandProvider robotCommand)
     {
         armPigeon.CalibratePigeon();
         if (robotCommand.ARMREZERO() && !zeroingArm)
