@@ -28,8 +28,13 @@ public abstract class RobotCommandProvider
     protected boolean armReZero;
 
     public abstract void Update();
+    public Integer ActivePath()
+    {
+        return -1;
+    }
 
     public boolean ZeroWrist()
+
     {
         return zeroWrist;
     }

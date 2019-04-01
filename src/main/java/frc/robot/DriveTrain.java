@@ -86,7 +86,6 @@ public class DriveTrain implements IPigeonWrapper
     private double leftEncoderValue = 0;
     private double rightEncoderValue = 0;
 
-    private final HotPathFollower pathFollower;
     public boolean isHDown;
     public double previousCanSeeTarget;
     public double prevprevCanSeeTarget;
@@ -158,31 +157,6 @@ public class DriveTrain implements IPigeonWrapper
 
         leftFollower.follow(leftMotor);
         rightFollower.follow(rightMotor);
-
-        /**
-         * Path controller, can be configured to use different paths after construction.
-         * This call loads from disk
-         */
-        pathFollower = new HotPathFollower(SECOND_ENCODER_TO_REVS, WHEEL_DIAMETER, new Path[] { Paths.TestPath1 });
-        pathFollower.ConfigAngleP(ANGLE_PID.P);
-        pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
-    }
-
-    /**
-     * Control the path follower, should be called on the same period as the
-     * profile's time step
-     * 
-     * @return whether the path is complete
-     */
-    public boolean FollowPath()
-    {
-        double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(0, -leftEncoderValue, -rightEncoderValue, heading);
-
-        rightMotor.set(pathOutput.Left);
-        leftMotor.set(pathOutput.Right);
-
-        return (pathFollower.GetState() == State.Complete);
     }
 
     public void getYaw()
@@ -269,7 +243,6 @@ public class DriveTrain implements IPigeonWrapper
         rightEncoderValue = 0;
         xyz_dps = new double[]
         { 0, 0, 0 };
-        pathFollower.Reset();
     }
 
     /**
@@ -403,7 +376,7 @@ public class DriveTrain implements IPigeonWrapper
     boolean hasObtainedTarget = false;
     boolean autoAssistLast = false;
 
-    public void Update(TeleopCommandProvider command)
+    public void Update(RobotCommandProvider command)
     {
         if (robotActionsState.getDesiredManipulatorSetPoint() != null)
         {
