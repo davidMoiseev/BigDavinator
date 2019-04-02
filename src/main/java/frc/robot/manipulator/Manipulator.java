@@ -579,10 +579,12 @@ public class Manipulator
 
         elevator.setTarget(elevTarget);
         arm.setTarget(armTarget);
-        wrist.setTarget(wristTarget);
 
-        IManipulatorSetPoint commandedSetPoint = new ManualManipulatorSetPoint(armTarget,
-                wristTarget, elevTarget, frontFlipperTarget, backFlipperTarget);
+        if (!manualWrist)
+            wrist.setTarget(wristTarget);
+
+        IManipulatorSetPoint commandedSetPoint = new ManualManipulatorSetPoint(armTarget, wristTarget, elevTarget,
+                frontFlipperTarget, backFlipperTarget);
         robotActionsState.setCommandedManipulatorSetPoint(commandedSetPoint);
 
         // frontFlipper.control(frontFlipperTarget != 0)
@@ -772,6 +774,30 @@ public class Manipulator
         SmartDashboard.putString("hatchPlacer State", hatchPlacer.getState().name());
         SmartDashboard.putString("hatchGrabber State", hatchGrabber.getState().name());
 
+        SmartDashboard.putBoolean("AAA Manual Wrist", robotCommand.UseManualWrist());
+        SmartDashboard.putNumber("AAA Manual Wrist Value", robotCommand.ManualWrist());
+
+        if (robotCommand.UseManualWrist())
+        {
+            double wristOutput = robotCommand.ManualWrist();
+            if (Math.abs(robotCommand.ManualWrist()) > .2)
+            {
+                wristOutput = Math.signum(robotCommand.ManualWrist()) * .2;
+            }
+            wrist.manual(wristOutput);
+            manualWrist = true;
+        }
+        if (robotCommand.ZeroWrist())
+        {
+            wrist.disable();
+            wrist.setPosition(arm.getPosition() - 134);
+            manualWrist = true;
+        }
+        else if (!robotCommand.UseManualWrist())
+        {
+            manualWrist = false;
+        }
+
         if (robotCommand.ManipulatorSetPoint() != null)
         {
             IManipulatorSetPoint output = robotCommand.ManipulatorSetPoint();
@@ -825,27 +851,6 @@ public class Manipulator
             output = CreateBumpedFlipperSetPoint(output, robotCommand.FrontFlipperBumpCount(),
                     robotCommand.BackFlipperBumpCount());
 
-            // if (robotCommand.ManualWrist() > 0)
-            // {
-            // double output = robotCommand.ManualWrist();
-            // if (Math.abs(robotCommand.ManualWrist()) > .2)
-            // {
-            // output = Math.signum(robotCommand.ManualWrist()) * .2;
-            // }
-            // wrist.manual(output);
-            // manualWrist = true;
-            // }
-            // else if (robotCommand.ZeroWrist())
-            // {
-            // wrist.disable();
-            // wrist.setPosition(135 - arm.getPosition());
-            // manualWrist = true;
-            // }
-            // else
-            // {
-            // manualWrist = false;
-            // }
-
             Control(output);
             robotActionsState.setDesiredManipulatorSetPoint(robotCommand.ManipulatorSetPoint());
             robotActionsState.setManipulatorMoving(!onTarget(robotCommand.ManipulatorSetPoint()));
@@ -862,26 +867,8 @@ public class Manipulator
             robotActionsState.setCommandedManipulatorSetPoint(null);
             robotActionsState.setDesiredManipulatorSetPoint(null);
 
-            // if (robotCommand.ManualWrist() > 0)
-            // {
-            // double output = robotCommand.ManualWrist();
-            // if (Math.abs(robotCommand.ManualWrist()) > .2)
-            // {
-            // output = Math.signum(robotCommand.ManualWrist()) * .2;
-            // }
-            // wrist.manual(output);
-            // }
-            // else if (robotCommand.ZeroWrist())
-            // {
-            // wrist.disable();
-            // wrist.setPosition(135 - arm.getPosition());
-            // }
-            // else
-            // {
-            // wrist.disable();
-            // }
-
-            wrist.disable();
+            if (!manualWrist)
+                wrist.disable();
         }
 
         intakePneumatics.Update(robotCommand);

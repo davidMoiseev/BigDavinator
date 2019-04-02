@@ -5,6 +5,13 @@ import frc.robot.constants.ManipulatorSetPoint;
 
 public abstract class RobotCommandProvider
 {
+
+    protected double manualWrist = 0;
+    public double ManualWrist()
+    {
+        return manualWrist;
+    }
+
     protected ManipulatorSetPoint outputSetPoint = null;
     protected double LeftDrive = 0;
     protected double RightDrive = 0;
@@ -26,6 +33,7 @@ public abstract class RobotCommandProvider
     protected boolean zeroWrist = false;
     protected boolean rumble = false;
     protected boolean armReZero;
+    protected boolean useManualWrist = false;
 
     public abstract void Update();
     public Integer ActivePath()
@@ -34,14 +42,20 @@ public abstract class RobotCommandProvider
     }
 
     public boolean ZeroWrist()
-
     {
         return zeroWrist;
+    }
+
+    public boolean UseManualWrist()
+    {
+        return useManualWrist;
     }
 
     public void Reset()
     {
         zeroWrist = false;
+        manualWrist = 0;
+        useManualWrist = false;
 
         outputSetPoint = null;
         LeftDrive = 0;

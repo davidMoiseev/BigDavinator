@@ -25,6 +25,7 @@ public class TeleopCommandProvider extends RobotCommandProvider
 
     private final HotController driver;
     private final HotController operator;
+    private boolean rumbleOperator = false;
 
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
@@ -44,7 +45,7 @@ public class TeleopCommandProvider extends RobotCommandProvider
         flipButtonPrevious = false;
         super.Reset();
     }
-    
+
     public void Update()
     {
         ManipulatorSetPoint frontTargetPosition = null;
@@ -159,11 +160,8 @@ public class TeleopCommandProvider extends RobotCommandProvider
             intakeSolenoid = true;
         }
         /*
-        if (driver.getButtonY())
-        {
-            intakeSolenoid = false;
-        }
-        */
+         * if (driver.getButtonY()) { intakeSolenoid = false; }
+         */
 
         if (driver.getButtonStart())
         {
@@ -194,41 +192,40 @@ public class TeleopCommandProvider extends RobotCommandProvider
         boolean up = operator.getPOV() == 180;
         boolean down = operator.getPOV() == 0;
         boolean right = operator.getPOV() == 90;
-        boolean left = operator.getPOV() == 270;
+        boolean left = operator.getPOV() == 45;
 
         SmartDashboard.putBoolean("RIGHT", right);
         SmartDashboard.putBoolean("LEFT", left);
 
-        /*
         if (right)
         {
-            manualWrist = -operator.getStickLY();
-            if (left)
-            {
-                if (zeroWristTimer > 50)
-                {
-                    rumble = true;
-                    zeroWrist = true;
-                }
-                else
-                {
-                    zeroWristTimer++;
-                }
-            }
-            else
-            {
-                zeroWristTimer = 0;
-                zeroWrist = false;
-            }
+            useManualWrist = true;
+            manualWrist = -operator.getStickRX();
         }
         else
         {
             manualWrist = 0;
+            useManualWrist = false;
+        }
+
+        if (left)
+        {
+            useManualWrist = true;
+            if (zeroWristTimer > 50)
+            {
+                rumbleOperator = true;
+                zeroWrist = true;
+            }
+            else
+            {
+                zeroWristTimer++;
+            }
+        }
+        else
+        {
             zeroWristTimer = 0;
             zeroWrist = false;
         }
-        */
-        
 
         if (up && !upPrev)
         {
@@ -256,19 +253,29 @@ public class TeleopCommandProvider extends RobotCommandProvider
 
         if (rumble)
         {
-            driver.setRumble(RumbleType.kLeftRumble, .25);
-            driver.setRumble(RumbleType.kRightRumble, .25);
+            driver.setRumble(RumbleType.kLeftRumble, .4);
+            driver.setRumble(RumbleType.kRightRumble, .4);
         }
         else
         {
             driver.setRumble(RumbleType.kLeftRumble, 0);
             driver.setRumble(RumbleType.kRightRumble, 0);
         }
+        if (rumbleOperator)
+        {
+            operator.setRumble(RumbleType.kLeftRumble, .4);
+            operator.setRumble(RumbleType.kRightRumble, .4);
+        }
+        else
+        {
+            operator.setRumble(RumbleType.kLeftRumble, 0);
+            operator.setRumble(RumbleType.kRightRumble, 0);
+        }
 
         rumble = false;
+        rumbleOperator = false;
     }
 
-    
     private void LogValues()
     {
         Log("outputSetPoint", setPointName((ManipulatorSetPoint) outputSetPoint));
