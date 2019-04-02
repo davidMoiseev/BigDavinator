@@ -1,4 +1,4 @@
-package frc.robot;
+package org.hotteam67.motionmagic;
 
 public interface IMotionMagicActuator
 {

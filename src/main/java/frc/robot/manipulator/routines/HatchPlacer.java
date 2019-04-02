@@ -1,4 +1,4 @@
-package frc.robot.routines;
+package frc.robot.manipulator.routines;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,12 +21,12 @@ public class HatchPlacer extends ManipulatorRoutineBase
             Arrays.asList(ManipulatorSetPoint.hatch_mid_front, ManipulatorSetPoint.hatch_mid_back));
     public static final int DRIVE_DIST = 5;
 
-    public enum HatchPlacingState
+    public enum HatchPlacerState
     {
         Off, Placing, Driving, RetractingArm, RetractingAll, Complete
     }
 
-    HatchPlacingState hatchPlacingState = HatchPlacingState.Off;
+    HatchPlacerState hatchPlacingState = HatchPlacerState.Off;
 
     private IManipulatorSetPoint lastOutput = null;
     private double leftEncoderStart = 0;
@@ -42,15 +42,15 @@ public class HatchPlacer extends ManipulatorRoutineBase
             return output;
         }
 
-        if (hatchPlacingState == HatchPlacingState.Off)
+        if (hatchPlacingState == HatchPlacerState.Off)
         {
-            hatchPlacingState = HatchPlacingState.Placing;
+            hatchPlacingState = HatchPlacerState.Placing;
         }
-        if (hatchPlacingState == HatchPlacingState.Placing)
+        if (hatchPlacingState == HatchPlacerState.Placing)
         {
             if (onTarget(scorePosition) && robotState.isSpearsClosed())
             {
-                hatchPlacingState = HatchPlacingState.Driving;
+                hatchPlacingState = HatchPlacerState.Driving;
                 leftEncoderStart = robotState.getLeftDriveEncoder();
                 rightEncoderStart = robotState.getRightDriveEncoder();
             }
@@ -59,13 +59,13 @@ public class HatchPlacer extends ManipulatorRoutineBase
                 output = scorePosition;
             }
         }
-        if (hatchPlacingState == HatchPlacingState.Driving)
+        if (hatchPlacingState == HatchPlacerState.Driving)
         {
             double dist = ((leftEncoderStart - robotState.getLeftDriveEncoder())
                     + (rightEncoderStart - robotState.getRightDriveEncoder())) / 2;
             if ((setPoint.armAngle() > 0 && dist > DRIVE_DIST) || (setPoint.armAngle() < 0 && dist < -DRIVE_DIST))
             {
-                hatchPlacingState = HatchPlacingState.Complete;
+                hatchPlacingState = HatchPlacerState.Complete;
             }
             else
             {
@@ -73,11 +73,11 @@ public class HatchPlacer extends ManipulatorRoutineBase
             }
         }
         // Retracting the arm first
-        if (hatchPlacingState == HatchPlacingState.RetractingArm)
+        if (hatchPlacingState == HatchPlacerState.RetractingArm)
         {
             if (onTarget(setPoint.armAngle(), scorePosition.wristAngle(), scorePosition.elevatorHeight()))
             {
-                hatchPlacingState = HatchPlacingState.RetractingAll;
+                hatchPlacingState = HatchPlacerState.RetractingAll;
             }
             else
             {
@@ -86,14 +86,14 @@ public class HatchPlacer extends ManipulatorRoutineBase
             }
         }
         // Retracting all of it, for high setpoints
-        if (hatchPlacingState == HatchPlacingState.RetractingAll)
+        if (hatchPlacingState == HatchPlacerState.RetractingAll)
         {
             output = setPoint;
             if (onTarget(output))
-                hatchPlacingState = HatchPlacingState.Complete;
+                hatchPlacingState = HatchPlacerState.Complete;
         }
         // Continue holding retract all, but we know we are there
-        if (hatchPlacingState == HatchPlacingState.Complete)
+        if (hatchPlacingState == HatchPlacerState.Complete)
         {
             output = setPoint;
         }
@@ -106,7 +106,7 @@ public class HatchPlacer extends ManipulatorRoutineBase
         return onTarget(lastOutput);
     }
 
-    public HatchPlacingState getState()
+    public HatchPlacerState getState()
     {
         return hatchPlacingState;
     }
@@ -198,14 +198,14 @@ public class HatchPlacer extends ManipulatorRoutineBase
     @Override
     public void Reset()
     {
-        hatchPlacingState = HatchPlacingState.Off;
+        hatchPlacingState = HatchPlacerState.Off;
         lastOutput = null;
     }
 
     @Override
     public boolean IsActive()
     {
-        return !(hatchPlacingState == HatchPlacingState.Off || hatchPlacingState == HatchPlacingState.Complete);
+        return !(hatchPlacingState == HatchPlacerState.Off || hatchPlacingState == HatchPlacerState.Complete);
     }
 
     @Override

@@ -1,11 +1,14 @@
 package frc.robot;
 
+import frc.robot.constants.IManipulatorSetPoint;
 import frc.robot.constants.ManipulatorSetPoint;
+import frc.robot.manipulator.routines.HatchGrabber.HatchGrabberState;
+import frc.robot.manipulator.routines.HatchPlacer.HatchPlacerState;
 
 public class RobotState
 {
     private static RobotState mRobotState;
-
+    
     public static RobotState getInstance()
     {
         if (mRobotState == null)
@@ -25,7 +28,6 @@ public class RobotState
 
     private boolean leftLimitSwitch = false;
     private boolean rightLimitSwitch = false;
-    private ManipulatorSetPoint commandedSetPoint = null;
 
     private double visionX = 0;
     private double visionY = 0;
@@ -110,16 +112,6 @@ public class RobotState
     public void setRightLimitSwitch(boolean rightLimitSwitch)
     {
         this.rightLimitSwitch = rightLimitSwitch;
-    }
-
-    public ManipulatorSetPoint getCommandedSetPoint()
-    {
-        return this.commandedSetPoint;
-    }
-
-    public void setCommandedSetPoint(ManipulatorSetPoint commandedSetPoint)
-    {
-        this.commandedSetPoint = commandedSetPoint;
     }
 
     public double getFrontFlipperPosition()
@@ -214,5 +206,112 @@ public class RobotState
     public void setSpearsClosed(boolean spearsClosed)
     {
         this.spearsClosed = spearsClosed;
+    }
+
+    public static class Actions
+    {
+        private static Actions mInstance = null;
+        public static Actions getInstance()
+        {
+            if (mInstance == null)
+            {
+                mInstance = new Actions();
+            }
+            return mInstance;
+        }
+
+        /**
+         * @return the hatchPlacerState
+         */
+        public HatchPlacerState getHatchPlacerState()
+        {
+            return hatchPlacerState;
+        }
+
+        /**
+         * @param hatchPlacerState
+         *                             the hatchPlacerState to set
+         */
+        public void setHatchPlacerState(HatchPlacerState hatchPlacerState)
+        {
+            this.hatchPlacerState = hatchPlacerState;
+        }
+
+        /**
+         * @return the hatchGrabberState
+         */
+        public HatchGrabberState getHatchGrabberState()
+        {
+            return hatchGrabberState;
+        }
+
+        /**
+         * @param hatchGrabberState
+         *                              the hatchGrabberState to set
+         */
+        public void setHatchGrabberState(HatchGrabberState hatchGrabberState)
+        {
+            this.hatchGrabberState = hatchGrabberState;
+        }
+
+        /**
+         * @return the manipulatorMoving
+         */
+        public boolean isManipulatorMoving()
+        {
+            return manipulatorMoving;
+        }
+
+        /**
+         * @param manipulatorMoving
+         *                              the manipulatorMoving to set
+         */
+        public void setManipulatorMoving(boolean manipulatorMoving)
+        {
+            this.manipulatorMoving = manipulatorMoving;
+        }
+
+        /**
+         * @return the commandedManipulatorSetPoint
+         */
+        public IManipulatorSetPoint getCommandedManipulatorSetPoint()
+        {
+            return commandedManipulatorSetPoint;
+        }
+
+        /**
+         * @param commandedManipulatorSetPoint
+         *                                         the commandedManipulatorSetPoint to
+         *                                         set
+         */
+        public void setCommandedManipulatorSetPoint(IManipulatorSetPoint commandedManipulatorSetPoint)
+        {
+            this.commandedManipulatorSetPoint = commandedManipulatorSetPoint;
+        }
+
+        /**
+         * @return the desiredManipulatorSetPoint
+         */
+        public ManipulatorSetPoint getDesiredManipulatorSetPoint()
+        {
+            return desiredManipulatorSetPoint;
+        }
+
+        /**
+         * @param desiredManipulatorSetPoint
+         *                                       the desiredManipulatorSetPoint to set
+         */
+        public void setDesiredManipulatorSetPoint(ManipulatorSetPoint desiredManipulatorSetPoint)
+        {
+            this.desiredManipulatorSetPoint = desiredManipulatorSetPoint;
+        }
+
+        private ManipulatorSetPoint desiredManipulatorSetPoint = null;
+        private IManipulatorSetPoint commandedManipulatorSetPoint = null;
+
+        private boolean manipulatorMoving = false;
+
+        private HatchGrabberState hatchGrabberState = HatchGrabberState.Off;
+        private HatchPlacerState hatchPlacerState = HatchPlacerState.Off;
     }
 }

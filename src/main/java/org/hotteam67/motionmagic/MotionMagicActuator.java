@@ -1,4 +1,4 @@
-package frc.robot;
+package org.hotteam67.motionmagic;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;

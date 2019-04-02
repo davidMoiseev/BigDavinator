@@ -22,8 +22,13 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.constants.TeleopCommandProvider;
+import frc.robot.auto.AutoRunner;
+import frc.robot.auto.AutoRunner.Auto;
 import frc.robot.constants.WiringIDs;
+import frc.robot.manipulator.Arm;
+import frc.robot.manipulator.Elevator;
+import frc.robot.manipulator.Manipulator;
+import frc.robot.manipulator.Wrist;
 
 public class Robot extends TimedRobot
 {
@@ -42,6 +47,7 @@ public class Robot extends TimedRobot
     HotController operator;
 
     TeleopCommandProvider teleopCommandProvider;
+    AutoRunner autoRunner = new AutoRunner();
 
     public int state = 0;
     boolean profileFinished = false;
@@ -55,7 +61,7 @@ public class Robot extends TimedRobot
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
         this.driver = new HotController(0, false);
-        operator = new HotController(1, false);
+        this.operator = new HotController(1, false);
 
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
 
@@ -74,8 +80,13 @@ public class Robot extends TimedRobot
     private void Teleop()
     {
         teleopCommandProvider.Update();
-        manipulator.Update(teleopCommandProvider);
-        driveTrain.Update(teleopCommandProvider);
+        Run(teleopCommandProvider);
+    }
+
+    private void Run(RobotCommandProvider command)
+    {
+        manipulator.Update(command);
+        driveTrain.Update(command);
     }
 
     @Override
@@ -91,7 +102,15 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         // May have to invert driveturn/drivespeed
-        Teleop();
+        if (!autoRunner.IsComplete() && autoRunner.AutoSelected())
+        {
+            RobotCommandProvider command = autoRunner.Run();
+            Run(command);
+        }
+        else
+        {
+            Teleop();
+        }
     }
 
     @Override
@@ -166,6 +185,8 @@ public class Robot extends TimedRobot
                     HotPathFollower.LoggerValues, Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags,
                     Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
+
+            autoRunner.Select(Auto.DriveStraight);
         }
 
         /**

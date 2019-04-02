@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,49 +9,23 @@ import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Flipper;
+import frc.robot.RobotCommandProvider;
+import frc.robot.constants.FlipperConstants;
+import frc.robot.constants.ManipulatorSetPoint;
 
-public class TeleopCommandProvider
+public class TeleopCommandProvider extends RobotCommandProvider
 {
-    private final HotController driver;
-    private final HotController operator;
-
     private double armReZeroTimer = 0;
     private double armReZeroCount = 50;
-
-    private ManipulatorSetPoint outputSetPoint = null;
-    private double LeftDrive = 0;
-    private double RightDrive = 0;
-    private double LeftDriveSteeringAssist = 0;
-    private double RightDriveSteeringAssist = 0;
-    private double HDrive = 0;
-    private boolean intakeSolenoid = false;
-    private boolean score = false;
-    private boolean intakeOut = false;
-    private boolean intakeIn = false;
-    private boolean climb = false;
-    private boolean hatchPickup = false;
-    private boolean steeringAssist = false;
-
-    boolean upPrev = false;
-    boolean downPrev = false;
-
-    private boolean limitSwitchPickup = false;
-    private boolean limitSwitchPlace = false;
-
-    private int frontFlipperCount = 0;
-    private int backFlipperCount = 0;
-
     boolean commandToBack = true;
     boolean flipButtonPrevious = false;
-
+    boolean upPrev = false;
+    boolean downPrev = false;
     int zeroWristTimer = 0;
-    private boolean zeroWrist = false;
 
-    public boolean ZeroWrist()
-    {
-        return zeroWrist;
-    }
+    private final HotController driver;
+    private final HotController operator;
+    private boolean rumbleOperator = false;
 
     public TeleopCommandProvider(HotController driver, HotController operator)
     {
@@ -59,82 +33,17 @@ public class TeleopCommandProvider
         this.operator = operator;
     }
 
+    @Override
     public void Reset()
     {
         armReZeroTimer = 0;
         armReZeroCount = 50;
         zeroWristTimer = 0;
-        zeroWrist = false;
-
-        outputSetPoint = null;
-        LeftDrive = 0;
-        RightDrive = 0;
-        LeftDriveSteeringAssist = 0;
-        RightDriveSteeringAssist = 0;
-        HDrive = 0;
-        score = false;
-        intakeOut = false;
-        intakeIn = false;
-        climb = false;
-        hatchPickup = false;
-        steeringAssist = false;
-
         upPrev = false;
         downPrev = false;
-
-        limitSwitchPickup = false;
-        limitSwitchPlace = false;
-
-        frontFlipperCount = 0;
-        backFlipperCount = 0;
-
         commandToBack = true;
         flipButtonPrevious = false;
-    }
-
-    public ManipulatorSetPoint ManipulatorSetPoint()
-    {
-        return outputSetPoint;
-    }
-
-    public boolean ManipulatorScore()
-    {
-        return score;
-    }
-
-    public double LeftDrive()
-    {
-        return LeftDrive;
-    }
-
-    public double RightDrive()
-    {
-        return RightDrive;
-    }
-
-    public double LeftDriveSteeringAssist()
-    {
-        return LeftDriveSteeringAssist;
-    }
-
-    public double RightDriveSteeringAssist()
-    {
-        return RightDriveSteeringAssist;
-    }
-
-    public double HDrive()
-    {
-        return HDrive;
-    }
-
-    public boolean SpearsClosed()
-    {
-        return intakeSolenoid;
-    }
-
-    public boolean steeringAssistActivated()
-    {
-        return steeringAssist;
+        super.Reset();
     }
 
     public void Update()
@@ -226,6 +135,8 @@ public class TeleopCommandProvider
         else
             armReZeroTimer = 0;
 
+        armReZero = armReZeroTimer > armReZeroCount;
+
         if (driver.getButtonRightBumper())
         {
             intakeOut = false;
@@ -249,11 +160,8 @@ public class TeleopCommandProvider
             intakeSolenoid = true;
         }
         /*
-        if (driver.getButtonY())
-        {
-            intakeSolenoid = false;
-        }
-        */
+         * if (driver.getButtonY()) { intakeSolenoid = false; }
+         */
 
         if (driver.getButtonStart())
         {
@@ -266,7 +174,7 @@ public class TeleopCommandProvider
 
         limitSwitchPlace = driver.getButtonRightStick();
         limitSwitchPickup = driver.getButtonLeftStick();
-        score = driver.getButtonA();
+        manipulatorScore = driver.getButtonA();
 
         if (driver.getButtonBack() && !flipButtonPrevious)
         {
@@ -279,48 +187,45 @@ public class TeleopCommandProvider
         turnDrive = ((driver.getStickRX() * .5));
         RightDrive = driver.getStickLY();
         LeftDrive = driver.getStickLY();
-        RightDriveSteeringAssist = driver.getStickLY();
-        LeftDriveSteeringAssist = driver.getStickLY();
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
         boolean up = operator.getPOV() == 180;
         boolean down = operator.getPOV() == 0;
         boolean right = operator.getPOV() == 90;
-        boolean left = operator.getPOV() == 270;
+        boolean left = operator.getPOV() == 45;
 
         SmartDashboard.putBoolean("RIGHT", right);
         SmartDashboard.putBoolean("LEFT", left);
 
-        /*
         if (right)
         {
-            manualWrist = -operator.getStickLY();
-            if (left)
-            {
-                if (zeroWristTimer > 50)
-                {
-                    rumble = true;
-                    zeroWrist = true;
-                }
-                else
-                {
-                    zeroWristTimer++;
-                }
-            }
-            else
-            {
-                zeroWristTimer = 0;
-                zeroWrist = false;
-            }
+            useManualWrist = true;
+            manualWrist = -operator.getStickRX();
         }
         else
         {
             manualWrist = 0;
+            useManualWrist = false;
+        }
+
+        if (left)
+        {
+            useManualWrist = true;
+            if (zeroWristTimer > 50)
+            {
+                rumbleOperator = true;
+                zeroWrist = true;
+            }
+            else
+            {
+                zeroWristTimer++;
+            }
+        }
+        else
+        {
             zeroWristTimer = 0;
             zeroWrist = false;
         }
-        */
-        
 
         if (up && !upPrev)
         {
@@ -348,34 +253,27 @@ public class TeleopCommandProvider
 
         if (rumble)
         {
-            driver.setRumble(RumbleType.kLeftRumble, .25);
-            driver.setRumble(RumbleType.kRightRumble, .25);
+            driver.setRumble(RumbleType.kLeftRumble, .4);
+            driver.setRumble(RumbleType.kRightRumble, .4);
         }
         else
         {
             driver.setRumble(RumbleType.kLeftRumble, 0);
             driver.setRumble(RumbleType.kRightRumble, 0);
         }
+        if (rumbleOperator)
+        {
+            operator.setRumble(RumbleType.kLeftRumble, .4);
+            operator.setRumble(RumbleType.kRightRumble, .4);
+        }
+        else
+        {
+            operator.setRumble(RumbleType.kLeftRumble, 0);
+            operator.setRumble(RumbleType.kRightRumble, 0);
+        }
 
         rumble = false;
-    }
-
-    public int FrontFlipperBumpCount()
-    {
-        return frontFlipperCount;
-    }
-
-    public int BackFlipperBumpCount()
-    {
-        return backFlipperCount;
-    }
-
-    private String setPointName(ManipulatorSetPoint setPoint)
-    {
-        if (setPoint != null)
-            return setPoint.name();
-        else
-            return "null";
+        rumbleOperator = false;
     }
 
     private void LogValues()
@@ -399,63 +297,11 @@ public class TeleopCommandProvider
         HotLogger.Log(tag, value);
     }
 
-    public boolean IntakeOut()
+    private String setPointName(ManipulatorSetPoint setPoint)
     {
-        return intakeOut;
-    }
-
-    public boolean IntakeIn()
-    {
-        return intakeIn;
-    }
-
-    public boolean ClimberDeploy()
-    {
-        return climb;
-    }
-
-    public boolean HatchPickup()
-    {
-        return hatchPickup;
-    }
-
-    public boolean ARMREZERO()
-    {
-        return armReZeroTimer >= armReZeroCount;
-    }
-
-    public boolean LimitSwitchScore()
-    {
-        return limitSwitchPlace;
-    }
-
-    public boolean LimitSwitchPickup()
-    {
-        return limitSwitchPickup;
-    }
-
-    private double turnDrive = 0;
-
-    public double TurnDrive()
-    {
-        return turnDrive;
-    }
-
-    boolean rumble = false;
-    private double manualWrist = 0;
-
-    public void Rumble()
-    {
-        rumble = true;
-    }
-
-    public void SetSpearsClosed(boolean b)
-    {
-        intakeSolenoid = b;
-    }
-
-    public double ManualWrist()
-    {
-        return manualWrist;
+        if (setPoint != null)
+            return setPoint.name();
+        else
+            return "null";
     }
 }

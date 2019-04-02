@@ -1,4 +1,4 @@
-package frc.robot.routines;
+package frc.robot.manipulator.routines;
 
 import frc.robot.RobotState;
 import frc.robot.constants.ArmConstants;

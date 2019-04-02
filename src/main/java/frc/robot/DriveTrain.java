@@ -16,13 +16,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
+import org.hotteam67.Path;
 import org.hotteam67.HotPathFollower.State;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ElevatorConstants;
 import frc.robot.constants.ManipulatorSetPoint;
-import frc.robot.constants.TeleopCommandProvider;
 import frc.robot.constants.WiringIDs;
 
 public class DriveTrain implements IPigeonWrapper
@@ -64,6 +64,7 @@ public class DriveTrain implements IPigeonWrapper
     private Solenoid climber;
 
     private final RobotState robotState;
+    private final RobotState.Actions robotActionsState;
 
     private boolean climbDeployed = false;
 
@@ -85,7 +86,6 @@ public class DriveTrain implements IPigeonWrapper
     private double leftEncoderValue = 0;
     private double rightEncoderValue = 0;
 
-    private final HotPathFollower pathFollower;
     public boolean isHDown;
     public double previousCanSeeTarget;
     public double prevprevCanSeeTarget;
@@ -140,6 +140,7 @@ public class DriveTrain implements IPigeonWrapper
         climber = new Solenoid(WiringIDs.SOLENOID_CLIMBER);
 
         robotState = RobotState.getInstance();
+        robotActionsState = RobotState.Actions.getInstance();
 
         this.rightEncoder = rightEncoder;
         this.leftEncoder = leftEncoder;
@@ -156,37 +157,6 @@ public class DriveTrain implements IPigeonWrapper
 
         leftFollower.follow(leftMotor);
         rightFollower.follow(rightMotor);
-
-        /**
-         * Path controller, can be configured to use different paths after construction.
-         * This call loads from disk
-         */
-        pathFollower = new HotPathFollower(SECOND_ENCODER_TO_REVS, WHEEL_DIAMETER, Paths.TestPath1.Left,
-                Paths.TestPath1.Right);
-        pathFollower.ConfigAngleP(ANGLE_PID.P);
-        pathFollower.ConfigPosPIDVA(POS_PIDVA.P, POS_PIDVA.I, POS_PIDVA.D, POS_PIDVA.V, POS_PIDVA.A);
-    }
-
-    public void loadPath(String leftPathFile, String rightPathFile)
-    {
-        pathFollower.LoadPath(leftPathFile, rightPathFile);
-    }
-
-    /**
-     * Control the path follower, should be called on the same period as the
-     * profile's time step
-     * 
-     * @return whether the path is complete
-     */
-    public boolean FollowPath()
-    {
-        double heading = xyz_dps[0];
-        HotPathFollower.Output pathOutput = pathFollower.FollowNextPoint(-leftEncoderValue, -leftEncoderValue, heading);
-
-        rightMotor.set(pathOutput.Left);
-        leftMotor.set(pathOutput.Right);
-
-        return (pathFollower.GetState() == State.Complete);
     }
 
     public void getYaw()
@@ -273,7 +243,6 @@ public class DriveTrain implements IPigeonWrapper
         rightEncoderValue = 0;
         xyz_dps = new double[]
         { 0, 0, 0 };
-        pathFollower.Reset();
     }
 
     /**
@@ -388,7 +357,7 @@ public class DriveTrain implements IPigeonWrapper
      *                    the hdrive output value
      */
 
-    private void arcadeDrive(TeleopCommandProvider command)
+    private void arcadeDrive(RobotCommandProvider command)
     {
         double hDrive = HDriveOutput(command.HDrive());
         double hDriveCorrect = 0.15 * hDrive * 0;
@@ -407,11 +376,11 @@ public class DriveTrain implements IPigeonWrapper
     boolean hasObtainedTarget = false;
     boolean autoAssistLast = false;
 
-    public void Update(TeleopCommandProvider command)
+    public void Update(RobotCommandProvider command)
     {
-        if (robotState.getCommandedSetPoint() != null)
+        if (robotActionsState.getDesiredManipulatorSetPoint() != null)
         {
-            vmotion.useBackCamera(robotState.getCommandedSetPoint().armAngle() < 0);
+            vmotion.useBackCamera(robotActionsState.getDesiredManipulatorSetPoint().armAngle() < 0);
             vmotion.UpdateRobotState();
         }
         boolean slowLeft = robotState.isLeftLimitSwitch()
@@ -466,7 +435,7 @@ public class DriveTrain implements IPigeonWrapper
             leftClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.LeftDrive());
             rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
-        if (command.ClimberDeploy() && robotState.getCommandedSetPoint() == ManipulatorSetPoint.climb_prep
+        if (command.ClimberDeploy() && robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep
                 && robotState.getElevatorPosition()
                         + ElevatorConstants.allowableErrorInches >= ManipulatorSetPoint.climb_prep.elevatorHeight())
         {
@@ -555,10 +524,8 @@ public class DriveTrain implements IPigeonWrapper
 
     public void UpdateRobotState()
     {
-        RobotState state = RobotState.getInstance();
-
-        state.setLeftDriveEncoder(leftMotor.getEncoder().getPosition());
-        state.setRightDriveEncoder(rightMotor.getEncoder().getPosition());
-        state.setHeading(-xyz_dps[0]);
+        robotState.setLeftDriveEncoder(leftMotor.getEncoder().getPosition());
+        robotState.setRightDriveEncoder(rightMotor.getEncoder().getPosition());
+        robotState.setHeading(-xyz_dps[0]);
     }
 }
