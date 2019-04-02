@@ -7,7 +7,6 @@ import org.hotteam67.HotPathFollower.State;
 import frc.robot.Paths;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
-import frc.robot.auto.PathFollowerFactory;
 
 public class DriveStraightAuto extends AutoModeBase
 {

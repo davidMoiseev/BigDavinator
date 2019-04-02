@@ -5,7 +5,6 @@ import org.hotteam67.Path;
 
 import frc.robot.Paths;
 import frc.robot.RobotState;
-import frc.robot.auto.PathFollowerFactory;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.manipulator.Manipulator;
 
