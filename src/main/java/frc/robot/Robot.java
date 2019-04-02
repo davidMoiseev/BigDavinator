@@ -61,7 +61,7 @@ public class Robot extends TimedRobot
         TalonSRX rightElevator = new TalonSRX(WiringIDs.RIGHT_ELEVATOR);
         TalonSRX intake = new TalonSRX(WiringIDs.INTAKE);
         this.driver = new HotController(0, false);
-        operator = new HotController(1, false);
+        this.operator = new HotController(1, false);
 
         teleopCommandProvider = new TeleopCommandProvider(driver, operator);
 
@@ -102,7 +102,7 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         // May have to invert driveturn/drivespeed
-        if (!autoRunner.IsComplete())
+        if (!autoRunner.IsComplete() && autoRunner.AutoSelected())
         {
             RobotCommandProvider command = autoRunner.Run();
             Run(command);

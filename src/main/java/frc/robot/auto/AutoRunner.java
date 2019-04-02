@@ -13,8 +13,8 @@ public class AutoRunner
 {
     public static enum Auto
     {
-        DriveStraight(() -> new DriveStraightAuto()),
-        FrontHatch(() -> new FrontHatchAuto());
+        DriveStraight(DriveStraightAuto::new),
+        FrontHatch(FrontHatchAuto::new);
 
         public final Supplier<AutoModeBase> Initializer;
         private Auto(Supplier<AutoModeBase> initializer)
@@ -47,8 +47,16 @@ public class AutoRunner
         return auton;
     }
 
+    public boolean AutoSelected()
+    {
+        return auton != null;
+    }
+
     public boolean IsComplete()
     {
-        return auton.IsComplete();
+        if (auton != null)
+            return auton.IsComplete();
+        else
+            return false;
     }
 }
