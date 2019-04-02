@@ -117,7 +117,11 @@ public class HotPathFollower
 
     public void LoadPaths(Path[] paths)
     {
-        if (loadedPaths == null) loadedPaths = new ArrayList<>();
+        if (loadedPaths == null)
+        {
+            loadedPaths = new ArrayList<>();
+            return;
+        } 
 
         loadedPaths.clear();
         if (paths == null || paths.length == 0)

@@ -11,14 +11,16 @@ import frc.robot.auto.PathFollowerFactory;
 
 public class DriveStraightAuto extends AutoModeBase
 {
-    private final HotPathFollower follower = PathFollowerFactory.getPathFollower(new Path[] {Paths.TestPath1});
-
+    public DriveStraightAuto()
+    {
+        super(new Path[] {Paths.TestPath1});
+    }
     @Override
     public void Update()
     {
         RobotState robotState = RobotState.getInstance();
         
-        HotPathFollower.Output drive = follower.FollowNextPoint(0, robotState.getLeftDriveEncoder(), robotState.getRightDriveEncoder(), robotState.getHeading());
+        HotPathFollower.Output drive = pathFollower.FollowNextPoint(0, robotState.getLeftDriveEncoder(), robotState.getRightDriveEncoder(), robotState.getHeading());
         LeftDrive = drive.Left;
         RightDrive = drive.Right;
     }
@@ -26,6 +28,6 @@ public class DriveStraightAuto extends AutoModeBase
     @Override
     public boolean IsComplete()
     {
-        return follower.GetState() == State.Complete;
+        return pathFollower.GetState() == State.Complete;
     }
 }

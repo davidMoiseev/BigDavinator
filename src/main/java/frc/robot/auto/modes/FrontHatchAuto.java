@@ -11,9 +11,10 @@ import frc.robot.manipulator.Manipulator;
 
 public class FrontHatchAuto extends AutoModeBase
 {
-    HotPathFollower follower = PathFollowerFactory.getPathFollower(new Path[]
-    { Paths.TestPath1 });
-
+    public FrontHatchAuto()
+    {
+        super(new Path[] {Paths.TestPath1});
+    }
     enum State
     {
         Drive, Place, Complete
@@ -34,13 +35,13 @@ public class FrontHatchAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-            HotPathFollower.Output out = follower.FollowNextPoint(0, state.getLeftDriveEncoder(),
+            HotPathFollower.Output out = pathFollower.FollowNextPoint(0, state.getLeftDriveEncoder(),
                     state.getRightDriveEncoder(), state.getHeading());
             LeftDrive = out.Left;
             RightDrive = out.Right;
             outputSetPoint = ManipulatorSetPoint.hatch_low_back;
 
-            if (follower.GetState() == HotPathFollower.State.Complete)
+            if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 s = State.Place;
             }
