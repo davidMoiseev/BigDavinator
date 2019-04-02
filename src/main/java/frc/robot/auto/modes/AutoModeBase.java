@@ -9,7 +9,7 @@ import frc.robot.RobotCommandProvider;
 public abstract class AutoModeBase extends RobotCommandProvider
 {
     protected final HotPathFollower pathFollower;
-    public AutoModeBase(Path[] paths)
+    protected AutoModeBase(Path[] paths)
     {
         pathFollower = new HotPathFollower(DriveTrain.SECOND_ENCODER_TO_REVS, DriveTrain.WHEEL_DIAMETER);
         pathFollower.ConfigAngleP(DriveTrain.ANGLE_PID.P);
