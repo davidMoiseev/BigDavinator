@@ -19,7 +19,7 @@ public class DriveStraightAuto extends AutoModeBase
     @Override
     public void Update()
     {
-        FollowPath(0);
+        FollowPath(0, false);
         if (IsComplete())
         {
             LeftDrive = 0;

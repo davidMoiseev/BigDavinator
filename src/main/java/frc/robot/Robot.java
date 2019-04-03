@@ -116,12 +116,15 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
-        manipulator.DisplaySensors();
-        driveTrain.readSensors();
-        driveTrain.writeLogs();
+        if (!pigeonInitializing)
+        {
+            manipulator.DisplaySensors();
+            driveTrain.readSensors();
+            driveTrain.writeLogs();
 
-        manipulator.UpdateRobotState();
-        driveTrain.UpdateRobotState();
+            manipulator.UpdateRobotState();
+            driveTrain.UpdateRobotState();
+        }
     }
 
     @Override
@@ -175,7 +178,7 @@ public class Robot extends TimedRobot
         if ((SmartDashboard.getBoolean("robotReady", false) && !pigeonInitializing))
         {
             SmartDashboard.putBoolean("pigeonReady", false);
-            driveTrain.CalibratePigeon();
+            //driveTrain.CalibratePigeon();
             manipulator.RestartInitialization();
             NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("stream").setDouble(2);
             NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("stream").setDouble(2);
@@ -199,7 +202,7 @@ public class Robot extends TimedRobot
             SmartDashboard.putBoolean("pigeonReady", true);
             SmartDashboard.putBoolean("robotReady", false);
         }
-        //driveTrain.zeroSensors();
+        // driveTrain.zeroSensors();
 
         manipulator.RunManipulatorInitialization();
     }

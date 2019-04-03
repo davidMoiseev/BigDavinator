@@ -12,11 +12,11 @@ public class BackHatchAuto extends AutoModeBase
 {
     public BackHatchAuto()
     {
-        super(new Path[] {Paths.LeftHabBackRocket});
+        super(new Path[] {Paths.LHRB1, Paths.LHRB2, Paths.LHRB3});
     }
     enum State
     {
-        Drive, Place, Complete
+        Drive, Place, Drive2, Drive3, Complete
     }
 
     State s = State.Drive;
@@ -34,36 +34,26 @@ public class BackHatchAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-            FollowPath(0);
-            /*
-            outputSetPoint = ManipulatorSetPoint.hatch_low_front;
-
+            FollowPath(1, false);
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
-                s = State.Place;
+                DoOffset();
+                s = State.Drive2;
             }
-            */
         }
-        if (pathFollower.GetState() == HotPathFollower.State.Complete)
+        else if (s == State.Drive2)
         {
-            s = State.Complete;
+            FollowPath(2, true);
+            if (pathFollower.GetState() == HotPathFollower.State.Complete)
+                s = State.Complete;
+        }
+        
+        if (s == State.Complete)
+        {
             LeftDrive = 0;
             RightDrive = 0;
             turnDrive = 0;
         }
-        /*
-        if (s == State.Place)
-        {
-            LeftDrive = 0;
-            RightDrive = 0;
-            manipulatorScore = true;
-
-            
-            if (state.isSpearsClosed())
-            
-                s = State.Complete;
-        }
-        */
     }
 
 }
