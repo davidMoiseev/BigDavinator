@@ -12,16 +12,27 @@ public class DriveStraightAuto extends AutoModeBase
 {
     public DriveStraightAuto()
     {
-        super(new Path[] {Paths.TestPath1});
+        super(new Path[]
+        { Paths.TestPath1 });
     }
+
     @Override
     public void Update()
     {
         RobotState robotState = RobotState.getInstance();
-        
-        HotPathFollower.Output drive = pathFollower.FollowNextPoint(0, robotState.getLeftDriveEncoder(), robotState.getRightDriveEncoder(), robotState.getHeading());
-        LeftDrive = drive.Left;
-        RightDrive = drive.Right;
+
+        HotPathFollower.Output drive = pathFollower.FollowNextPoint(0, robotState.getLeftDriveEncoder(),
+                robotState.getRightDriveEncoder(), -robotState.getHeading());
+        LeftDrive = drive.Right;
+        RightDrive = drive.Left;
+        turnDrive = -drive.Turn;
+
+        if (IsComplete())
+        {
+            LeftDrive = 0;
+            RightDrive = 0;
+            turnDrive = 0;
+        }
     }
 
     @Override

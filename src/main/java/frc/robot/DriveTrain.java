@@ -29,8 +29,8 @@ public class DriveTrain implements IPigeonWrapper
 {
     public static final double WHEEL_DIAMETER = 4.0 * 2.54 / 100;
     public static final int TICKS_PER_REVOLUTION = 1;
-
     public static final double ENCODER_TO_REVS = (50.0 / 12.0) * (42.0 / 24.0);
+    public static final double RPM_MAX_VELOCITY = 4800;
 
     public static final double SECOND_ENCODER_TO_REVS = 4096 * (42.0 / 24.0);
 
@@ -105,7 +105,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class POS_PIDVA
     {
-        public static final double P = .75;
+        public static final double P = .75 * 0;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
@@ -117,7 +117,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class ANGLE_PID
     {
-        public static final double P = .8 * (-1.0 / 80.0);
+        public static final double P = .8 * (-1.0 / 80.0) * 0;
     }
 
     /**
@@ -179,8 +179,8 @@ public class DriveTrain implements IPigeonWrapper
      */
     public void readSensors()
     {
-        rightEncoderValue = rightEncoder.getSelectedSensorPosition();
-        leftEncoderValue = leftEncoder.getSelectedSensorPosition();
+        rightEncoderValue = leftMotor.getEncoder().getPosition();
+        leftEncoderValue = rightMotor.getEncoder().getPosition();
         pigeon.getYawPitchRoll(xyz_dps);
     }
 
@@ -214,8 +214,8 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive leftEncoder", leftEncoderValue);
         SmartDashboard.putNumber("Drive currentYaw", xyz_dps[0]);
         SmartDashboard.putNumber("Drive currentPitch", xyz_dps[1]);
-        SmartDashboard.putNumber("Drive currentVelocityRight", rightEncoder.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Drive currentVelocityLeft", leftEncoder.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Drive currentVelocityRight", rightMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Drive currentVelocityLeft", leftMotor.getEncoder().getVelocity());
 
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
@@ -237,8 +237,8 @@ public class DriveTrain implements IPigeonWrapper
     public void zeroSensors()
     {
         pigeon.setYaw(0);
-        leftEncoder.setSelectedSensorPosition(0);
-        rightEncoder.setSelectedSensorPosition(0);
+        leftMotor.getEncoder().setPosition(0);
+        rightMotor.getEncoder().setPosition(0);
         leftEncoderValue = 0;
         rightEncoderValue = 0;
         xyz_dps = new double[]
@@ -524,8 +524,8 @@ public class DriveTrain implements IPigeonWrapper
 
     public void UpdateRobotState()
     {
-        robotState.setLeftDriveEncoder(leftMotor.getEncoder().getPosition());
-        robotState.setRightDriveEncoder(rightMotor.getEncoder().getPosition());
+        robotState.setLeftDriveEncoder(leftEncoderValue);
+        robotState.setRightDriveEncoder(rightEncoderValue);
         robotState.setHeading(-xyz_dps[0]);
     }
 }

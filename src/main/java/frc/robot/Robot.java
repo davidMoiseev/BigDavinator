@@ -181,10 +181,9 @@ public class Robot extends TimedRobot
             NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("stream").setDouble(2);
             pigeonInitializing = true;
 
-            HotLogger.Setup("ENCODER JUMP HAPPENED", "H_DRIVE", "matchNumber", "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags,
-                    HotPathFollower.LoggerValues, Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags,
-                    Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
-
+            HotLogger.Setup("ENCODER JUMP HAPPENED", "H_DRIVE", "matchNumber", "Has Reset Occured",
+                    "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags,
+                    Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
             autoRunner.Select(Auto.DriveStraight);
         }
@@ -196,10 +195,10 @@ public class Robot extends TimedRobot
         else if (pigeonInitializing && driveTrain.PigeonReady() && manipulator.isReady())
         {
             pigeonInitializing = false;
-            driveTrain.zeroSensors();
             SmartDashboard.putBoolean("pigeonReady", true);
             SmartDashboard.putBoolean("robotReady", false);
         }
+        driveTrain.zeroSensors();
 
         manipulator.RunManipulatorInitialization();
     }

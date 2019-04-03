@@ -82,11 +82,13 @@ public class HotPathFollower
     {
         public final double Left;
         public final double Right;
+        public final double Turn;
 
-        public Output(double l, double r)
+        public Output(double l, double r, double turn)
         {
             this.Left = l;
             this.Right = r;
+            this.Turn = turn;
         }
     }
 
@@ -147,6 +149,7 @@ public class HotPathFollower
             {
                 e.printStackTrace();
             }
+            ConfigFollower(f.RightFollower, f.LeftFollower);
             loadedPaths.add(f);
         }
     }
@@ -229,6 +232,7 @@ public class HotPathFollower
      */
     public Output FollowNextPoint(int pathNumber, double currentPositionLeft, double currentPositionRight, double currentHeading)
     {
+        double turn = 0;
         if (pathNumber != lastPathFollowed)
         {
             lastPathFollowed = pathNumber;
@@ -238,13 +242,13 @@ public class HotPathFollower
         currentPositionRight = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionRight * GetPolarity();
 
         if (loadedPaths == null || pathNumber >= loadedPaths.size())
-            return new Output(0, 0);
+            return new Output(0, 0, 0);
 
         DistanceFollower leftFollower = loadedPaths.get(pathNumber).LeftFollower;
         DistanceFollower rightFollower = loadedPaths.get(pathNumber).RightFollower;
 
         if (leftFollower == null || rightFollower == null)
-            return new Output(0, 0);
+            return new Output(0, 0, 0);
         double l = 0, r = 0;
         Segment segLeft = null;
         Segment segRight = null;
@@ -283,11 +287,9 @@ public class HotPathFollower
             // Add angle error, in degrees
             double targetHeading = -Pathfinder.boundHalfDegrees(Pathfinder.r2d(segLeft.heading));
             double headingError = Pathfinder.boundHalfDegrees(targetHeading - currentHeading);
-            double turn = ANGLE_P * headingError;
+            turn = ANGLE_P * headingError;
             HotLogger.Log("Heading Error", headingError);
             HotLogger.Log("Turn Output", turn);
-            l -= turn;
-            r += turn;
 
             segLeftPrev = segLeft;
             segRightPrev = segRight;
@@ -303,9 +305,10 @@ public class HotPathFollower
         {
             l = 0;
             r = 0;
+            turn = 0;
         }
 
-        return new Output(l, r);
+        return new Output(l, r, turn);
     }
 
     /**
