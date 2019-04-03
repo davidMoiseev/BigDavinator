@@ -8,11 +8,11 @@ import frc.robot.RobotState;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.manipulator.Manipulator;
 
-public class FrontHatchAuto extends AutoModeBase
+public class BackHatchAuto extends AutoModeBase
 {
-    public FrontHatchAuto()
+    public BackHatchAuto()
     {
-        super(new Path[] {Paths.TestPath1});
+        super(new Path[] {Paths.LeftHabBackRocket});
     }
     enum State
     {
@@ -34,26 +34,36 @@ public class FrontHatchAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-            HotPathFollower.Output out = pathFollower.FollowNextPoint(0, state.getLeftDriveEncoder(),
-                    state.getRightDriveEncoder(), state.getHeading());
-            LeftDrive = out.Left;
-            RightDrive = out.Right;
-            outputSetPoint = ManipulatorSetPoint.hatch_low_back;
+            FollowPath(0);
+            /*
+            outputSetPoint = ManipulatorSetPoint.hatch_low_front;
 
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 s = State.Place;
             }
+            */
         }
+        if (pathFollower.GetState() == HotPathFollower.State.Complete)
+        {
+            s = State.Complete;
+            LeftDrive = 0;
+            RightDrive = 0;
+            turnDrive = 0;
+        }
+        /*
         if (s == State.Place)
         {
             LeftDrive = 0;
             RightDrive = 0;
             manipulatorScore = true;
 
+            
             if (state.isSpearsClosed())
+            
                 s = State.Complete;
         }
+        */
     }
 
 }

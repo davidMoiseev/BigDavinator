@@ -101,6 +101,13 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
+        manipulator.DisplaySensors();
+        driveTrain.readSensors();
+        driveTrain.writeLogs();
+
+        manipulator.UpdateRobotState();
+        driveTrain.UpdateRobotState();
+
         // May have to invert driveturn/drivespeed
         if (!autoRunner.IsComplete() && autoRunner.AutoSelected())
         {
@@ -116,12 +123,6 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
-        manipulator.DisplaySensors();
-        driveTrain.readSensors();
-        driveTrain.writeLogs();
-
-        manipulator.UpdateRobotState();
-        driveTrain.UpdateRobotState();
     }
 
     @Override
@@ -134,6 +135,12 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
+        manipulator.DisplaySensors();
+        driveTrain.readSensors();
+        driveTrain.writeLogs();
+
+        manipulator.UpdateRobotState();
+        driveTrain.UpdateRobotState();
         Teleop();
     }
 
@@ -185,7 +192,7 @@ public class Robot extends TimedRobot
                     "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags,
                     Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
-            autoRunner.Select(Auto.DriveStraight);
+            autoRunner.Select(Auto.BackHatch);
         }
 
         /**
@@ -195,10 +202,11 @@ public class Robot extends TimedRobot
         else if (pigeonInitializing && driveTrain.PigeonReady() && manipulator.isReady())
         {
             pigeonInitializing = false;
+            driveTrain.zeroSensors();
             SmartDashboard.putBoolean("pigeonReady", true);
             SmartDashboard.putBoolean("robotReady", false);
         }
-        driveTrain.zeroSensors();
+        //driveTrain.zeroSensors();
 
         manipulator.RunManipulatorInitialization();
     }

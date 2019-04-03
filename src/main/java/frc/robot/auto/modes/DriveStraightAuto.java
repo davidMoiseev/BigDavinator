@@ -19,14 +19,7 @@ public class DriveStraightAuto extends AutoModeBase
     @Override
     public void Update()
     {
-        RobotState robotState = RobotState.getInstance();
-
-        HotPathFollower.Output drive = pathFollower.FollowNextPoint(0, robotState.getLeftDriveEncoder(),
-                robotState.getRightDriveEncoder(), -robotState.getHeading());
-        LeftDrive = drive.Right;
-        RightDrive = drive.Left;
-        turnDrive = -drive.Turn;
-
+        FollowPath(0);
         if (IsComplete())
         {
             LeftDrive = 0;

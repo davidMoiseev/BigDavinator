@@ -45,6 +45,8 @@ public class DriveTrain implements IPigeonWrapper
     // Max velocity in m/s
     public static final double MAX_VELOCITY = (MAX_VELOCITY_TICKS / TICKS_PER_METER) * 10;
 
+    public static final double MAX_V = 4.5;
+
     /**
      * Primary motor controllers
      */
@@ -105,7 +107,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class POS_PIDVA
     {
-        public static final double P = .75 * 0;
+        public static final double P = .75;
         public static final double I = 0;
         public static final double D = 0;
         public static final double V = 1.0 / MAX_VELOCITY; // Velocity feed forward
@@ -117,7 +119,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class ANGLE_PID
     {
-        public static final double P = .8 * (-1.0 / 80.0) * 0;
+        public static final double P = .8 * (-1.0 / 80.0);
     }
 
     /**

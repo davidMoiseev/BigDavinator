@@ -7,14 +7,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotCommandProvider;
 import frc.robot.auto.modes.AutoModeBase;
 import frc.robot.auto.modes.DriveStraightAuto;
-import frc.robot.auto.modes.FrontHatchAuto;
+import frc.robot.auto.modes.BackHatchAuto;
 
 public class AutoRunner
 {
     public static enum Auto
     {
         DriveStraight(DriveStraightAuto::new),
-        FrontHatch(FrontHatchAuto::new);
+        BackHatch(BackHatchAuto::new);
 
         public final Supplier<AutoModeBase> Initializer;
         private Auto(Supplier<AutoModeBase> initializer)
