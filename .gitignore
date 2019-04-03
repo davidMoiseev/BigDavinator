@@ -31,6 +31,8 @@ build/lib/
 *.so
 *.debug
 *.csv
+*.left.pf1.csv
+*.right.pf1.csv
 *.txt
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml

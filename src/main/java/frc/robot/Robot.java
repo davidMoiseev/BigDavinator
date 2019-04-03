@@ -101,13 +101,6 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        manipulator.DisplaySensors();
-        driveTrain.readSensors();
-        driveTrain.writeLogs();
-
-        manipulator.UpdateRobotState();
-        driveTrain.UpdateRobotState();
-
         // May have to invert driveturn/drivespeed
         if (!autoRunner.IsComplete() && autoRunner.AutoSelected())
         {
@@ -123,6 +116,12 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
+        manipulator.DisplaySensors();
+        driveTrain.readSensors();
+        driveTrain.writeLogs();
+
+        manipulator.UpdateRobotState();
+        driveTrain.UpdateRobotState();
     }
 
     @Override
@@ -135,12 +134,6 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        manipulator.DisplaySensors();
-        driveTrain.readSensors();
-        driveTrain.writeLogs();
-
-        manipulator.UpdateRobotState();
-        driveTrain.UpdateRobotState();
         Teleop();
     }
 
