@@ -34,12 +34,14 @@ public class BackHatchAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-            FollowPath(1, false);
+            FollowPath(0, false);
+            
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 DoOffset();
-                s = State.Drive2;
+                s = State.Complete;
             }
+            
         }
         else if (s == State.Drive2)
         {

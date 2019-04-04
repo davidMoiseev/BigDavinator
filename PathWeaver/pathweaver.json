@@ -1,8 +1,8 @@
 {
   "lengthUnit": "Meter",
   "timeStep": 0.02,
-  "maxVelocity": 3.0,
-  "maxAcceleration": 2.0,
+  "maxVelocity": 6.0,
+  "maxAcceleration": 4.5,
   "maxJerk": 20.0,
   "wheelBase": 0.5715,
   "gameName": "Destination: Deep Space",

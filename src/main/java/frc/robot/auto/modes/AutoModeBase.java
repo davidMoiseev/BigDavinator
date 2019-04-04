@@ -26,10 +26,12 @@ public abstract class AutoModeBase extends RobotCommandProvider
     protected void FollowPath(int path, boolean inverted)
     {
         RobotState state = RobotState.getInstance();
-        HotPathFollower.Output drive = pathFollower.FollowNextPoint(path, (inverted ? 1 : -1) * (state.getLeftDriveEncoder() - leftOffset),
-                (inverted ? 1 : -1) * (state.getRightDriveEncoder() - rightOffset), state.getHeading() - headingOffset);
-        LeftDrive = (inverted ? 1 : -1) * drive.Right;
-        RightDrive = (inverted ? 1 : -1) * drive.Left;
+        HotPathFollower.Output drive = pathFollower.FollowNextPoint(path,
+                (inverted ? -1 : 1) * (state.getLeftDriveEncoder() - leftOffset),
+                (inverted ? -1 : 1) * (state.getRightDriveEncoder() - rightOffset),
+                state.getHeading());
+        LeftDrive = (inverted ? -1 : 1) * drive.Right;
+        RightDrive = (inverted ? -1 : 1) * drive.Left;
         turnDrive = drive.Turn;
     }
 
