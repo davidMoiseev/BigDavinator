@@ -47,7 +47,7 @@ public class Manipulator
 
     private enum ManipulatorState
     {
-        initializing, packagePosition, outOfPackagePosition, atTarget;
+        initializing, packagePosition, unPackaging, outOfPackage;
     }
 
     private enum RobotSide
@@ -214,36 +214,28 @@ public class Manipulator
             backFlipper.disable();
             if (targetPosition != null)
             {
-                manipulatorState = ManipulatorState.outOfPackagePosition;
+                manipulatorState = ManipulatorState.unPackaging;
             }
         }
-        else if (manipulatorState == ManipulatorState.outOfPackagePosition)
+        else if (manipulatorState == ManipulatorState.unPackaging)
         {
             double tmpArm = arm.getPosition();
 
-            frontFlipper.control(FlipperConstants.CARRY_FRONT);
-            backFlipper.control(FlipperConstants.CARRY_BACK);
-            if (frontFlipper.reachedTarget() && backFlipper.reachedTarget())
-            // if (backFlipper.reachedTarget());
+            frontFlipper.control(targetPosition.frontFlipper());
+            backFlipper.control(targetPosition.backFlipper());
+            elevator.setTarget(ManipulatorSetPoint.firstPosition);
+            if (elevator.getPosition() > ManipulatorSetPoint.firstPosition.elevatorHeight() - 2)
             {
-                elevator.setTarget(ManipulatorSetPoint.firstPosition);
-                if (elevator.getPosition() > ManipulatorSetPoint.firstPosition.elevatorHeight() - 2)
+                arm.setTarget(tmpArm);
+                wrist.setTarget(ManipulatorSetPoint.firstPosition);
+                if (wrist.getPosition() < ManipulatorSetPoint.limit_front_high.wristAngle())
                 {
-                    arm.setTarget(tmpArm);
-                    wrist.setTarget(ManipulatorSetPoint.firstPosition);
-                    if (wrist.reachedTarget())
-                    {
-                        arm.setTarget(ManipulatorSetPoint.firstPosition);
-                        if (arm.reachedTarget())
-                        {
-                            manipulatorState = ManipulatorState.atTarget;
-                        }
-                    }
+                    manipulatorState = ManipulatorState.outOfPackage;
                 }
             }
         }
 
-        if (manipulatorState == ManipulatorState.atTarget)
+        if (manipulatorState == ManipulatorState.outOfPackage)
         {
             // If it isn't
             // else
