@@ -138,16 +138,16 @@ public class VisionMotion
         if (!canSeeTarget()) return 0;
 
         double k_p = .3;
-        double targetArea = 4.8;
+        double targetArea = 3.8;
         double currentArea = getCamera().getTA();
 
         double error = Math.sqrt(targetArea) - Math.sqrt(currentArea);
 
-        if (error < .2) return 0;
+        if (error < .3) return 0;
 
         double output = error * k_p;
 
-        if (output > .6) output = .6;
+        if (output > .2) output = .2;
         else if (output < .1) output = .1;
         
         if (useBackCamera) output *= -1;

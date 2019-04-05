@@ -59,12 +59,15 @@ public class Elevator extends MotionMagicActuator
     public void initialize()
     {
         super.initialize();
+        /*
         if (WiringIDs.IS_PRACTICE_BOT)
         {
             primaryTalon.setInverted(true);
             secondaryTalon.setInverted(true);
         }
-        else
+        */
+        //if (!WiringIDs.IS_PRACTICE_BOT)
+        
         {
             primaryTalon.setSensorPhase(false);
             secondaryTalon.setSensorPhase(false);
