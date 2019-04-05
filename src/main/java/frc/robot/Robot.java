@@ -98,13 +98,19 @@ public class Robot extends TimedRobot
         profileFinished = false;
     }
 
+    boolean quitAuton = false;
     @Override
     public void autonomousPeriodic()
     {
+        if (driver.getButtonB()) quitAuton = true;
         // May have to invert driveturn/drivespeed
-        if (!autoRunner.IsComplete() && autoRunner.AutoSelected())
+        if (!autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
         {
             RobotCommandProvider command = autoRunner.Run();
+            if (!quitAuton)
+            {
+                teleopCommandProvider.SetSpearsClosed(command.SpearsClosed());
+            }
             Run(command);
         }
         else
