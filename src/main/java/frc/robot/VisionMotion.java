@@ -19,8 +19,8 @@ import frc.robot.constants.WiringIDs;
 
 public class VisionMotion
 {
-    Vision backCamera = new Vision("limelight-back", Vision.X_BACK, Vision.HEIGHT_BACK);
-    Vision frontCamera = new Vision("limelight-front", Vision.X_FRONT, Vision.HEIGHT_FRONT);
+    Vision backCamera = new Vision("limelight-front", Vision.X_BACK, Vision.HEIGHT_BACK);
+    Vision frontCamera = new Vision("limelight-back", Vision.X_FRONT, Vision.HEIGHT_FRONT);
 
     public double h;
     public double speedH;
@@ -142,6 +142,9 @@ public class VisionMotion
         double currentArea = getCamera().getTA();
 
         double error = Math.sqrt(targetArea) - Math.sqrt(currentArea);
+
+        if (error < .2) return 0;
+
         double output = error * k_p;
 
         if (output > .6) output = .6;
