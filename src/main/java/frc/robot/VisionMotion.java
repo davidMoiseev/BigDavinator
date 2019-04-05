@@ -141,7 +141,7 @@ public class VisionMotion
     {
         if (!canSeeTarget()) return 0;
 
-        double k_p = .3;
+        double k_p = .2;
         double targetArea = 3.8;
         double currentArea = getCamera().getTA();
 

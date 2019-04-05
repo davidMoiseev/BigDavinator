@@ -27,11 +27,17 @@ public class BackHatchAuto extends AutoModeBase
         return s == State.Complete;
     }
 
+    private double oopCount = 0;
     @Override
     public void Update()
     {
         RobotState state = RobotState.getInstance();
+        RobotState.Actions actionsState = RobotState.Actions.getInstance();
 
+        if (oopCount < 25)
+            oopCount++;
+        else
+            outputSetPoint = ManipulatorSetPoint.hatch_mid_back;
         if (s == State.Drive)
         {
             FollowPath(0, false);
@@ -43,7 +49,17 @@ public class BackHatchAuto extends AutoModeBase
             }
             
         }
-        else if (s == State.Drive2)
+        if (s == State.Place)
+        {
+            steeringAssist = true;
+            if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
+            {
+                manipulatorScore = true;
+                if (state.isSpearsClosed())
+                    s = State.Complete;
+            }
+        }
+        if (s == State.Drive2)
         {
             FollowPath(2, true);
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
