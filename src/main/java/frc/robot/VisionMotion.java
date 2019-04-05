@@ -133,6 +133,25 @@ public class VisionMotion
         return new Output(0, 0, 0);
     }
 
+    public double autoDrive()
+    {
+        if (!canSeeTarget()) return 0;
+
+        double k_p = .3;
+        double targetArea = 4.8;
+        double currentArea = getCamera().getTA();
+
+        double error = Math.sqrt(targetArea) - Math.sqrt(currentArea);
+        double output = error * k_p;
+
+        if (output > .6) output = .6;
+        else if (output < .1) output = .1;
+        
+        if (useBackCamera) output *= -1;
+
+        return output;
+    }
+
     public double getDist()
     {
         getCamera().setPipeline(1);
