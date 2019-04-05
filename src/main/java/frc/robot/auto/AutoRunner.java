@@ -6,14 +6,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotCommandProvider;
 import frc.robot.auto.modes.AutoModeBase;
-import frc.robot.auto.modes.DriveStraightAuto;
 import frc.robot.auto.modes.BackHatchAuto;
 
 public class AutoRunner
 {
     public static enum Auto
     {
-        DriveStraight(DriveStraightAuto::new),
         BackHatch(BackHatchAuto::new);
 
         public final Supplier<AutoModeBase> Initializer;
@@ -40,7 +38,7 @@ public class AutoRunner
         auton = auto.Initializer.get();
     }
 
-    public RobotCommandProvider Run()
+    public AutoModeBase Run()
     {
         if (auton != null)
             auton.Update();

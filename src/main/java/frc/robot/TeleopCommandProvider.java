@@ -227,20 +227,21 @@ public class TeleopCommandProvider extends RobotCommandProvider
             zeroWrist = false;
         }
 
+        ManipulatorSetPoint currentSetPoint = RobotState.Actions.getInstance().getDesiredManipulatorSetPoint();
         if (up && !upPrev)
         {
-            if (outputSetPoint != null && outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
+            if (currentSetPoint != null && currentSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
                 frontFlipperCount++;
-            else if (outputSetPoint != null && outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
+            else if (currentSetPoint != null && currentSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
             {
                 backFlipperCount++;
             }
         }
         else if (down && !downPrev)
         {
-            if (outputSetPoint != null && outputSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
+            if (currentSetPoint != null && currentSetPoint.frontFlipper() == FlipperConstants.HATCH_FRONT)
                 frontFlipperCount--;
-            else if (outputSetPoint != null && outputSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
+            else if (currentSetPoint != null && currentSetPoint.backFlipper() == FlipperConstants.HATCH_BACK)
             {
                 backFlipperCount--;
             }

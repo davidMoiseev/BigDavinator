@@ -12,7 +12,7 @@ public class BackHatchAuto extends AutoModeBase
 {
     public BackHatchAuto()
     {
-        super(new Path[] {Paths.LHRB1, Paths.LHRB2, Paths.LHRB3});
+        super(new Path[] {Paths.RHRB1, Paths.LHRB2, Paths.LHRB3});
     }
     enum State
     {

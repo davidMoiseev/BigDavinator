@@ -19,6 +19,9 @@ import frc.robot.constants.WiringIDs;
 
 public class VisionMotion
 {
+    public static final double MAXIMUM_AREA_BACK = 3.8;
+    public static final double MAXIMUM_AREA_FRONT = 3.8;
+
     Vision backCamera = new Vision("limelight-front", Vision.X_BACK, Vision.HEIGHT_BACK);
     Vision frontCamera = new Vision("limelight-back", Vision.X_FRONT, Vision.HEIGHT_FRONT);
 
@@ -142,7 +145,7 @@ public class VisionMotion
         if (!canSeeTarget()) return 0;
 
         double k_p = .2;
-        double targetArea = 3.8;
+        double targetArea = (useBackCamera ? MAXIMUM_AREA_BACK : MAXIMUM_AREA_BACK);
         double currentArea = getCamera().getTA();
 
         double error = Math.sqrt(targetArea) - Math.sqrt(currentArea);

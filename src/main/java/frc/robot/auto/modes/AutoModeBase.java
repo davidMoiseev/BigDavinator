@@ -44,4 +44,14 @@ public abstract class AutoModeBase extends RobotCommandProvider
     }
 
     public abstract boolean IsComplete();
+
+    public void setFrontFlipper(int bump)
+    {
+        frontFlipperCount = bump;
+    }
+
+    public void setBackFlipper(int bump)
+    {
+        backFlipperCount = bump;
+    }
 }

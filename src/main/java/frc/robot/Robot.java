@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.auto.AutoRunner;
 import frc.robot.auto.AutoRunner.Auto;
+import frc.robot.auto.modes.AutoModeBase;
 import frc.robot.constants.WiringIDs;
 import frc.robot.manipulator.Arm;
 import frc.robot.manipulator.Elevator;
@@ -102,15 +103,18 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
+        teleopCommandProvider.Update();
         if (driver.getButtonB()) quitAuton = true;
         // May have to invert driveturn/drivespeed
         if (!autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
         {
-            RobotCommandProvider command = autoRunner.Run();
+            AutoModeBase command = autoRunner.Run();
             if (!quitAuton)
             {
                 teleopCommandProvider.SetSpearsClosed(command.SpearsClosed());
             }
+            command.setFrontFlipper(teleopCommandProvider.FrontFlipperBumpCount());
+            command.setBackFlipper(teleopCommandProvider.BackFlipperBumpCount());
             Run(command);
         }
         else
