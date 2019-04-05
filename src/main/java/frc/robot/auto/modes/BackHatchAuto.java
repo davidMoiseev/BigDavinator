@@ -39,7 +39,7 @@ public class BackHatchAuto extends AutoModeBase
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 DoOffset();
-                s = State.Complete;
+                s = State.Place;
             }
             
         }

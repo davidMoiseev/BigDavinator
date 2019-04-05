@@ -129,6 +129,10 @@ public class VisionMotion
             turn_previousOutput = turn;
             return new Output(-turn, turn, 0);
         }
+        else
+        {
+            RobotState.Actions.getInstance().setVisionTurnAtTarget(true);
+        }
         turn_previousOutput = 0;
         return new Output(0, 0, 0);
     }
@@ -143,7 +147,11 @@ public class VisionMotion
 
         double error = Math.sqrt(targetArea) - Math.sqrt(currentArea);
 
-        if (error < .3) return 0;
+        if (error < .3)
+        {
+            RobotState.Actions.getInstance().setVisionDistanceAtTarget(true);
+            return 0;
+        }
 
         double output = error * k_p;
 
@@ -177,6 +185,10 @@ public class VisionMotion
         turn_hasReset = true;
         turn_referenceAngle = null;
         clearPipeline();
+        
+        RobotState.Actions actionsState = RobotState.Actions.getInstance();
+        actionsState.setVisionDistanceAtTarget(false);
+        actionsState.setVisionTurnAtTarget(false);
     }
 
     public double findProportionalSkew(double targetSkew)

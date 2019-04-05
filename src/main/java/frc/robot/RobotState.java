@@ -221,6 +221,40 @@ public class RobotState
         }
 
         /**
+         * @return the visionTurnAtTarget
+         */
+        public boolean isVisionTurnAtTarget()
+        {
+            return visionTurnAtTarget;
+        }
+
+        /**
+         * @param visionTurnAtTarget
+         *                               the visionTurnAtTarget to set
+         */
+        public void setVisionTurnAtTarget(boolean visionTurnAtTarget)
+        {
+            this.visionTurnAtTarget = visionTurnAtTarget;
+        }
+
+        /**
+         * @return the visionAtTarget
+         */
+        public boolean isVisionDistanceAtTarget()
+        {
+            return visionDistanceAtTarget;
+        }
+
+        /**
+         * @param visionAtTarget
+         *                           the visionAtTarget to set
+         */
+        public void setVisionDistanceAtTarget(boolean visionAtTarget)
+        {
+            this.visionDistanceAtTarget = visionAtTarget;
+        }
+
+        /**
          * @return the hatchPlacerState
          */
         public HatchPlacerState getHatchPlacerState()
@@ -313,5 +347,8 @@ public class RobotState
 
         private HatchGrabberState hatchGrabberState = HatchGrabberState.Off;
         private HatchPlacerState hatchPlacerState = HatchPlacerState.Off;
+
+        private boolean visionDistanceAtTarget = false;
+        private boolean visionTurnAtTarget = false;
     }
 }
