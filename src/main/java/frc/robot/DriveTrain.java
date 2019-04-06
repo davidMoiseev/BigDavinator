@@ -191,7 +191,7 @@ public class DriveTrain implements IPigeonWrapper
         return xyz_dps[1];
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Drive leftDrive", "Drive rightDrive",
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Vision Drive", "Drive leftDrive", "Drive rightDrive",
             "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
             "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
@@ -413,6 +413,8 @@ public class DriveTrain implements IPigeonWrapper
                 if (Math.abs(rightDrive) > Math.abs(baseDrive + vmotion.autoDrive()))
                     rightDrive = baseDrive + vmotion.autoDrive();
             }
+
+            HotLogger.Log("Vision Drive", leftDrive);
 
             VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
             if (hasObtainedTarget || vmotion.canSeeTarget())
