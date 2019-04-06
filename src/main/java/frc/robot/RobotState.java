@@ -221,6 +221,23 @@ public class RobotState
         }
 
         /**
+         * @return the visionCanSeeTarget
+         */
+        public boolean isVisionCanSeeTarget()
+        {
+            return visionCanSeeTarget;
+        }
+
+        /**
+         * @param visionCanSeeTarget
+         *                               the visionCanSeeTarget to set
+         */
+        public void setVisionCanSeeTarget(boolean visionCanSeeTarget)
+        {
+            this.visionCanSeeTarget = visionCanSeeTarget;
+        }
+
+        /**
          * @return the visionTurnAtTarget
          */
         public boolean isVisionTurnAtTarget()
@@ -350,5 +367,6 @@ public class RobotState
 
         private boolean visionDistanceAtTarget = false;
         private boolean visionTurnAtTarget = false;
+        private boolean visionCanSeeTarget = false;
     }
 }

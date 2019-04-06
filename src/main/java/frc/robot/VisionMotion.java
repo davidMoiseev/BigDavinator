@@ -168,7 +168,10 @@ public class VisionMotion
 
         double output = error * k_p;
 
-        if (output > .2) output = .2;
+        double max = .2;
+        if (RobotState.getInstance().isSpearsClosed())
+            max = .4;
+        if (output > max) output = max;
         else if (output < .1) output = .1;
         
         if (useBackCamera) output *= -1;

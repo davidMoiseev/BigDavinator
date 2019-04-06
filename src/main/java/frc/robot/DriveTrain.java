@@ -192,7 +192,7 @@ public class DriveTrain implements IPigeonWrapper
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
+            Arrays.asList("Drive leftDrive", "Drive rightDrive", "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
                     "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
     public boolean canseeTarget()
@@ -296,6 +296,7 @@ public class DriveTrain implements IPigeonWrapper
         }
     }
 
+    /*
     public boolean lineUp(double pipeline)
     {
         vmotion.setPipeline(pipeline);
@@ -311,12 +312,14 @@ public class DriveTrain implements IPigeonWrapper
             return false;
         }
     }
+    */
     /*
      * public void updateUsb(int pipeline) { vmotion.usbUpdatePipeline(pipeline); }
      * 
      * public void initUsbCam() { vmotion.usbCamInit(); }
      */
 
+     /*
     public boolean gyroLineUp(double maxOutput, double targetDistanceStop)
     {
         switch (state)
@@ -347,6 +350,7 @@ public class DriveTrain implements IPigeonWrapper
             return false;
         }
     }
+    */
 
     /**
      * Manual control, includes deadband
@@ -403,6 +407,9 @@ public class DriveTrain implements IPigeonWrapper
         getYaw();
         double leftDrive = (command.VisionDrive() ? vmotion.autoDrive() : command.LeftDrive());
         double rightDrive = (command.VisionDrive() ? vmotion.autoDrive() : command.RightDrive());
+
+        HotLogger.Log("Drive leftDrive", leftDrive);
+        HotLogger.Log("Drive rightDrive", rightDrive);
 
         boolean limitSwitchScoring = ((robotState.isLeftLimitSwitch() || robotState.isRightLimitSwitch())
                 && (command.LimitSwitchScore() || command.LimitSwitchPickup()));

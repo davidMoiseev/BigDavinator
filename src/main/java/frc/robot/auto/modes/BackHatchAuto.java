@@ -12,8 +12,10 @@ public class BackHatchAuto extends AutoModeBase
 {
     public BackHatchAuto()
     {
-        super(new Path[] {Paths.RHRB1, Paths.LHRB2, Paths.LHRB3});
+        super(new Path[]
+        { Paths.RHRB1, Paths.RHRB2, Paths.RHRB3 });
     }
+
     enum State
     {
         Drive, Place, Drive2, Drive3, Complete
@@ -28,18 +30,21 @@ public class BackHatchAuto extends AutoModeBase
     }
 
     private double oopCount = 0;
+
     @Override
     public void Update()
     {
         RobotState state = RobotState.getInstance();
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
 
-        if (oopCount < 25)
-            oopCount++;
-        else
-            outputSetPoint = ManipulatorSetPoint.hatch_mid_back;
         if (s == State.Drive)
         {
+            
+            if (oopCount < 25)
+                oopCount++;
+            else
+                outputSetPoint = ManipulatorSetPoint.hatch_mid_back;
+            
             FollowPath(0, false);
             
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
@@ -57,14 +62,33 @@ public class BackHatchAuto extends AutoModeBase
             {
                 manipulatorScore = true;
                 if (state.isSpearsClosed())
+                {
+                    steeringAssist = false;
+                    visionDrive = false;
+                    DoOffset();
                     s = State.Complete;
+                }
             }
         }
         if (s == State.Drive2)
         {
             FollowPath(2, true);
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
+            {
+                s = State.Drive3;
+                DoOffset();
+            }
+        }
+        if (s == State.Drive3)
+        {
+            manipulatorScore = false;
+            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
+            FollowPath(3, false);
+            if (pathFollower.GetState() == HotPathFollower.State.Complete)
+            {
+                DoOffset();
                 s = State.Complete;
+            }
         }
         
         if (s == State.Complete)
