@@ -415,9 +415,16 @@ public class DriveTrain implements IPigeonWrapper
             }
 
             VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
-            rightMotor.set((leftDrive + assist.Right) * (slowRight ? .5 : 1));
-            leftMotor.set((rightDrive + assist.Left) * (slowLeft ? .5 : 1));
-            hDriveMotor.set(command.HDrive());
+            if (hasObtainedTarget || vmotion.canSeeTarget())
+            {
+                rightMotor.set((rightDrive + assist.Right) * (slowRight ? .5 : 1));
+                leftMotor.set((leftDrive + assist.Left) * (slowLeft ? .5 : 1));
+            }
+            else
+            {
+                arcadeDrive(command);
+            }
+            //hDriveMotor.set(command.HDrive());
         }
 
         if (climbDeployed)

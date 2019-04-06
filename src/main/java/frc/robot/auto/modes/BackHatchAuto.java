@@ -47,7 +47,7 @@ public class BackHatchAuto extends AutoModeBase
             if (oopCount < 25)
                 oopCount++;
             else
-                outputSetPoint = ManipulatorSetPoint.hatch_mid_back;
+                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
 
             FollowPath(0, false);
 
