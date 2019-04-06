@@ -34,25 +34,27 @@ public class BackHatchAuto extends AutoModeBase
     @Override
     public void Update()
     {
+        useAutoPipeline = true;
         RobotState state = RobotState.getInstance();
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
 
         if (s == State.Drive)
         {
-            
+
             if (oopCount < 25)
                 oopCount++;
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_mid_back;
-            
+
             FollowPath(0, false);
-            
-            if (pathFollower.GetState() == HotPathFollower.State.Complete)
+
+            if (pathFollower.GetState() == HotPathFollower.State.Complete
+                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 70))
             {
                 DoOffset();
                 s = State.Place;
             }
-            
+
         }
         if (s == State.Place)
         {
@@ -82,9 +84,11 @@ public class BackHatchAuto extends AutoModeBase
         if (s == State.Drive3)
         {
             manipulatorScore = false;
+
             outputSetPoint = ManipulatorSetPoint.hatch_out_back;
             FollowPath(2, true);
-            if (pathFollower.GetState() == HotPathFollower.State.Complete)
+            if (pathFollower.GetState() == HotPathFollower.State.Complete
+                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 70))
             {
                 DoOffset();
                 s = State.Pickup;
@@ -97,7 +101,7 @@ public class BackHatchAuto extends AutoModeBase
             if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
                 s = State.Complete;
         }
-        
+
         if (s == State.Complete)
         {
             LeftDrive = 0;

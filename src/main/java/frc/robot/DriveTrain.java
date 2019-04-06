@@ -410,7 +410,7 @@ public class DriveTrain implements IPigeonWrapper
 
         HotLogger.Log("Drive leftDrive", leftDrive);
         HotLogger.Log("Drive rightDrive", rightDrive);
-
+        vmotion.useAutoPipeline(command.UseAutoPipeLine());
         boolean limitSwitchScoring = ((robotState.isLeftLimitSwitch() || robotState.isRightLimitSwitch())
                 && (command.LimitSwitchScore() || command.LimitSwitchPickup()));
         if (!command.steeringAssistActivated() || limitSwitchScoring)
@@ -544,5 +544,6 @@ public class DriveTrain implements IPigeonWrapper
         robotState.setLeftDriveEncoder(leftEncoderValue);
         robotState.setRightDriveEncoder(rightEncoderValue);
         robotState.setHeading(-xyz_dps[0]);
+        robotActionsState.setVisionCanSeeTarget(vmotion.canSeeTarget());
     }
 }

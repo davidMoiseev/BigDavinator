@@ -178,6 +178,12 @@ public class VisionMotion
         return output;
     }
 
+    public void useAutoPipeline(boolean useAuto)
+    {
+        if (useAuto) getCamera().setPipeline(2);
+        else clearPipeline();
+    }
+
     public double getDist()
     {
         getCamera().setPipeline(1);
@@ -200,7 +206,7 @@ public class VisionMotion
         turn_hasReset = true;
         turn_referenceAngle = null;
         autoDriveLast = 0;
-        clearPipeline();
+        //clearPipeline();
         
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
         actionsState.setVisionDistanceAtTarget(false);

@@ -215,6 +215,11 @@ public class HotPathFollower
         ANGLE_P = p;
     }
 
+    public int getPoints()
+    {
+        return points;
+    }
+
     /**
      * Get the output of the path follower with given inputs for the next point.
      * Should be called at the same frequency as loaded path
@@ -230,14 +235,17 @@ public class HotPathFollower
      * @return an output object with desired left/right outputs, scaled as a double
      *         from -1 to 1 for -100% output to 100% output
      */
+    int points = 0;
     public Output FollowNextPoint(int pathNumber, double currentPositionLeft, double currentPositionRight, double currentHeading)
     {
         double turn = 0;
         if (pathNumber != lastPathFollowed)
         {
+            points = 0;
             lastPathFollowed = pathNumber;
             pathState = State.Enabled;
         }
+        points++;
         currentPositionLeft = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionLeft * GetPolarity();
         currentPositionRight = ((Math.PI * wheelDiameter) / ticksPerRev) * currentPositionRight * GetPolarity();
 

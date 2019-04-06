@@ -25,6 +25,12 @@ public abstract class RobotCommandProvider
     protected boolean hatchPickup = false;
     protected boolean steeringAssist = false;
     protected boolean visionDrive = false;
+    protected boolean useAutoPipeline = false;
+
+    public boolean UseAutoPipeLine()
+    {
+        return useAutoPipeline;
+    }
 
     public boolean VisionDrive()
     {
