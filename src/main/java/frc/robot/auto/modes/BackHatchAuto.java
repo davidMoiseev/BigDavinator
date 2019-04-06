@@ -1,8 +1,10 @@
 package frc.robot.auto.modes;
 
+import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.Path;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Paths;
 import frc.robot.RobotState;
 import frc.robot.constants.ManipulatorSetPoint;
@@ -34,6 +36,8 @@ public class BackHatchAuto extends AutoModeBase
     @Override
     public void Update()
     {
+        HotLogger.Log("Auto State", s.name());
+        SmartDashboard.putString("Auto State", s.name());
         useAutoPipeline = true;
         RobotState state = RobotState.getInstance();
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
