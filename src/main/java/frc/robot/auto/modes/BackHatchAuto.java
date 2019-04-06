@@ -20,7 +20,7 @@ public class BackHatchAuto extends AutoModeBase
 
     enum State
     {
-        Drive, TurnToRocket, Place, BackupFromRocket, Drive3, Pickup, Complete, Shuffle
+        Drive, TurnToRocket, Place, BackupFromRocket, TurnToStation, Pickup, Complete, Shuffle, DriveToStation
     }
 
     State s = State.Drive;
@@ -44,6 +44,7 @@ public class BackHatchAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
+            
             if (oopCount < 25)
                 oopCount++;
             else
@@ -51,8 +52,7 @@ public class BackHatchAuto extends AutoModeBase
 
             FollowPath(0, false);
 
-            if (pathFollower.GetState() == HotPathFollower.State.Complete
-                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 80))
+            if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 DoOffset();
                 s = State.TurnToRocket;
@@ -60,10 +60,11 @@ public class BackHatchAuto extends AutoModeBase
         }
         if (s == State.TurnToRocket)
         {
-            TurnToTarget(-140);
-            if (turnDrive == 0 || actionsState.isVisionCanSeeTarget())
+            TurnToTarget(35);
+            if (TurnOnTarget() || actionsState.isVisionCanSeeTarget())
             {
                 DoOffset();
+                turnDrive = 0;
                 s = State.Place;
             }
         }
@@ -88,7 +89,7 @@ public class BackHatchAuto extends AutoModeBase
             LeftDrive = -.3;
             RightDrive = -.3;
             limitSwitchPlace = true;
-            if ((RobotState.getInstance().getLeftDriveEncoder() - leftOffset) < -15)
+            if ((RobotState.getInstance().getLeftDriveEncoder() - leftOffset) < -20)
             {
                 manipulatorScore = true;
             }
@@ -107,24 +108,40 @@ public class BackHatchAuto extends AutoModeBase
             {
                 DoOffset();
                 limitSwitchPlace = false;
-                s = State.Complete;
+                manipulatorScore = false;
+                s = State.TurnToStation;
             }
 
         }
-        if (s == State.Drive3)
+        if (s == State.TurnToStation)
         {
-            manipulatorScore = false;
-
             outputSetPoint = ManipulatorSetPoint.carry_back;
             TurnToTarget(0);
             if (turnDrive == 0)
             {
                 DoOffset();
-                s = State.Complete;
+                s = State.DriveToStation;
             }
         }
+        
+        if (s == State.DriveToStation)
+        {
+            DriveStraight(-80);
+            if (DriveOnTarget(-80) || (Math.abs(GetDist()) > 50 && actionsState.isVisionCanSeeTarget()))// || (GetDist() < -50 && actionsState.isVisionCanSeeTarget()))
+            {
+                DoOffset();
+                LeftDrive = 0;
+                RightDrive = 0;
+                turnDrive = 0;
+                s = State.Pickup;
+            }
+            if (Math.abs(GetDist()) > 50)
+                outputSetPoint = ManipulatorSetPoint.hatch_out_back;
+        }
+        
         if (s == State.Pickup)
         {
+            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
             visionDrive = true;
             steeringAssist = true;
             if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
@@ -137,6 +154,9 @@ public class BackHatchAuto extends AutoModeBase
             RightDrive = 0;
             turnDrive = 0;
         }
+
+        SmartDashboard.putNumber("AAA LEFTDRIVE2", LeftDrive);
+        SmartDashboard.putNumber("AAA RIGHTDRIVE2", RightDrive);
     }
 
 }

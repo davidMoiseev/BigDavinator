@@ -64,8 +64,16 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
         if (!sweetTurn.IsTurnComplete())
         {
-            sweetTurn.SweetTurnOutput(target, 1.0, .5, currentHeading, currentSpeed);
+            double turn = sweetTurn.SweetTurnOutput(target, 1.0, .5, currentHeading, currentSpeed);
+            turnDrive = turn;
         }
+        else    
+            turnDrive = 0;
+    }
+
+    public boolean TurnOnTarget()
+    {
+        return sweetTurn.IsTurnComplete();
     }
 
     public void DriveStraight(double dist)
@@ -78,20 +86,32 @@ public abstract class AutoModeBase extends RobotCommandProvider
         double out = (RobotState.getInstance().getHeading() - driveStraightHeading) * .05;
         turnDrive = out;
         double error = dist - (RobotState.getInstance().getLeftDriveEncoder() - leftOffset);
-        LeftDrive = error * .05;
-        RightDrive = error * .05;
+        double desiredOut = error * .05;
+        if (Math.abs(desiredOut) - Math.abs(LeftDrive) > .025)
+            desiredOut = LeftDrive + (.025 * Math.signum(LeftDrive));
+        LeftDrive = desiredOut;
+        RightDrive = desiredOut;
 
-        if (error < .5)
+        SmartDashboard.putNumber("AAA DRIVE ERROR", error);
+
+        if (Math.abs(error) < .5)
         {
             LeftDrive = 0;
             RightDrive = 0;
             turnDrive = 0;
         }
+        SmartDashboard.putNumber("AAA DRIVE LEFT", LeftDrive);
+        SmartDashboard.putNumber("AAA DRIVE RIGHT", RightDrive);
+    }
+
+    public double GetDist()
+    {
+        return (RobotState.getInstance().getLeftDriveEncoder() - leftOffset);
     }
 
     public boolean DriveOnTarget(double dist)
     {
-        return (RobotState.getInstance().getLeftDriveEncoder() - leftOffset) > dist;
+        return Math.abs(GetDist()) > Math.abs(dist);
     }
 
     public void setFrontFlipper(int bump)

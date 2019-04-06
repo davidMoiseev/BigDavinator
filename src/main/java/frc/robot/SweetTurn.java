@@ -16,16 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class SweetTurn
 {
-  public static final int TALON_PIGEON = 2;
-
-  WPI_TalonSRX pigeonTalon = new WPI_TalonSRX(TALON_PIGEON);
-  public PigeonIMU pigeon = new PigeonIMU(TALON_PIGEON);
-
   private boolean complete;
   private double sweetTurnDirection;
   private double SWEET_TURN_ITERATE_MAX = 3;
-  private double SWEET_TURN_MAX_EXIT_VELOCITY = 75.0;
-  private double SWEET_TURN_PERCISE_TURN_PCT = 0.175;
+  private double SWEET_TURN_MAX_EXIT_VELOCITY = 55.0;
+  private double SWEET_TURN_PERCISE_TURN_PCT = 0.1;
   private double SWEET_TURN_RAMP_UP_RATE = 0.11;
   private double sweetturnstartdelay = 0;
   private double sweetTurnIterateCounter;
@@ -65,7 +60,7 @@ public class SweetTurn
   public double sweetTurnRampDownRate(double input)
   {
 
-    sweetTurnRampDownRate = (1.536661436 * Math.pow(0.9694835049, input));
+    sweetTurnRampDownRate = (1.536661436 * Math.pow(0.9494835049, input));
     SmartDashboard.putNumber("Ramp Down Rate", sweetTurnRampDownRate);
     return sweetTurnRampDownRate;
   }
