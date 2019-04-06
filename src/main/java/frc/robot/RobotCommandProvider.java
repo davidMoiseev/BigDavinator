@@ -24,6 +24,12 @@ public abstract class RobotCommandProvider
     protected boolean climb = false;
     protected boolean hatchPickup = false;
     protected boolean steeringAssist = false;
+    protected boolean visionDrive = false;
+
+    public boolean VisionDrive()
+    {
+        return visionDrive;
+    }
 
     protected boolean limitSwitchPickup = false;
     protected boolean limitSwitchPlace = false;

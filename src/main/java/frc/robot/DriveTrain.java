@@ -401,6 +401,9 @@ public class DriveTrain implements IPigeonWrapper
             havingTarget = false;
         }
         getYaw();
+        double leftDrive = (command.VisionDrive() ? vmotion.autoDrive() : command.LeftDrive());
+        double rightDrive = (command.VisionDrive() ? vmotion.autoDrive() : command.RightDrive());
+
         boolean limitSwitchScoring = ((robotState.isLeftLimitSwitch() || robotState.isRightLimitSwitch())
                 && (command.LimitSwitchScore() || command.LimitSwitchPickup()));
         if (!command.steeringAssistActivated() || limitSwitchScoring)
@@ -419,11 +422,20 @@ public class DriveTrain implements IPigeonWrapper
                 havingTarget = true;
                 hasObtainedTarget = true;
             }
-            {
-                VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
-                rightMotor.set((vmotion.autoDrive() + assist.Right) * (slowRight ? .5 : 1));
-                leftMotor.set((vmotion.autoDrive() + assist.Left) * (slowLeft ? .5 : 1));
-            }
+
+            double baseDrive = .2 * Math.signum(leftDrive);
+            // No max speed when we can't see target yet
+            if (!hasObtainedTarget)
+                baseDrive = 1;
+
+            if (Math.abs(leftDrive) > Math.abs(baseDrive + vmotion.autoDrive()))
+                leftDrive = baseDrive + vmotion.autoDrive();
+            if (Math.abs(rightDrive) > Math.abs(baseDrive + vmotion.autoDrive()))
+                rightDrive = baseDrive + vmotion.autoDrive();
+
+            VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
+            rightMotor.set((leftDrive + assist.Right) * (slowRight ? .5 : 1));
+            leftMotor.set((rightDrive + assist.Left) * (slowLeft ? .5 : 1));
             hDriveMotor.set(command.HDrive());
         }
 
@@ -432,7 +444,8 @@ public class DriveTrain implements IPigeonWrapper
             leftClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.LeftDrive());
             rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
-        if (command.ClimberDeploy() && robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep
+        if (command.ClimberDeploy()
+                && robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep
                 && robotState.getElevatorPosition()
                         + ElevatorConstants.allowableErrorInches >= ManipulatorSetPoint.climb_prep.elevatorHeight())
         {

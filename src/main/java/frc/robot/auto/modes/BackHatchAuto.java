@@ -52,6 +52,7 @@ public class BackHatchAuto extends AutoModeBase
         if (s == State.Place)
         {
             steeringAssist = true;
+            visionDrive = true;
             if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
             {
                 manipulatorScore = true;

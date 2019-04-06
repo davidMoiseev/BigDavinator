@@ -100,8 +100,8 @@ public class TeleopCommandProvider extends RobotCommandProvider
         }
         if (operator.getButtonLeftBumper())
         {
-            frontTargetPosition = ManipulatorSetPoint.cargo_station_front;
-            backTargetPosition = ManipulatorSetPoint.cargo_station_back;
+            frontTargetPosition = ManipulatorSetPoint.hatch_out_front;
+            backTargetPosition = ManipulatorSetPoint.hatch_out_back;
         }
         if (operator.getButtonRightBumper())
         {

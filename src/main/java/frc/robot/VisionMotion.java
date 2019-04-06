@@ -19,8 +19,11 @@ import frc.robot.constants.WiringIDs;
 
 public class VisionMotion
 {
-    public static final double MAXIMUM_AREA_BACK = 3.8;
-    public static final double MAXIMUM_AREA_FRONT = 3.8;
+    public static final double PLACE_AREA_BACK = 3.8;
+    public static final double PLACE_AREA_FRONT = 7;
+
+    public static final double PICKUP_AREA_BACK = 1.06;
+    public static final double PICKUP_AREA_FRONT = 1.1;
 
     Vision backCamera = new Vision("limelight-front", Vision.X_BACK, Vision.HEIGHT_BACK);
     Vision frontCamera = new Vision("limelight-back", Vision.X_FRONT, Vision.HEIGHT_FRONT);
@@ -84,7 +87,6 @@ public class VisionMotion
             HDrive = hDrive;
         }
     }
-
     public Output autoAlign(double currentYaw)
     {
         getCamera().setPipeline(2);
@@ -140,12 +142,20 @@ public class VisionMotion
         return new Output(0, 0, 0);
     }
 
+    double autoDriveLast = 0;
     public double autoDrive()
     {
-        if (!canSeeTarget()) return 0;
+        if (!canSeeTarget()) 
+            return autoDriveLast;
 
         double k_p = .2;
-        double targetArea = (useBackCamera ? MAXIMUM_AREA_BACK : MAXIMUM_AREA_BACK);
+        double targetArea;
+        if (RobotState.getInstance().isSpearsClosed())
+            targetArea = useBackCamera ? PICKUP_AREA_BACK : PICKUP_AREA_FRONT;
+        else
+            targetArea = useBackCamera ? PLACE_AREA_BACK : PLACE_AREA_FRONT;
+
+
         double currentArea = getCamera().getTA();
 
         double error = Math.sqrt(targetArea) - Math.sqrt(currentArea);
@@ -162,7 +172,6 @@ public class VisionMotion
         else if (output < .1) output = .1;
         
         if (useBackCamera) output *= -1;
-
         return output;
     }
 
@@ -187,6 +196,7 @@ public class VisionMotion
     {
         turn_hasReset = true;
         turn_referenceAngle = null;
+        autoDriveLast = 0;
         clearPipeline();
         
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
