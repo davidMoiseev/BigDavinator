@@ -22,7 +22,7 @@ public class VisionMotion
     public static final double PLACE_AREA_BACK = 3.8;
     public static final double PLACE_AREA_FRONT = 7;
 
-    public static final double PICKUP_AREA_BACK = 1.06;
+    public static final double PICKUP_AREA_BACK = .857;
     public static final double PICKUP_AREA_FRONT = 1.1;
 
     Vision backCamera = new Vision("limelight-front", Vision.X_BACK, Vision.HEIGHT_BACK);

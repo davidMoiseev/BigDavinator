@@ -45,6 +45,14 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
     public abstract boolean IsComplete();
 
+    public void DriveHeading(double heading, double dist)
+    {
+        double out = heading * .05;
+        turnDrive = out;
+        LeftDrive = dist * .05;
+        RightDrive = dist * .05;
+    }
+
     public void setFrontFlipper(int bump)
     {
         frontFlipperCount = bump;
