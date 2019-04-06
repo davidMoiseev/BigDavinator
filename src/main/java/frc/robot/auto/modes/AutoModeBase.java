@@ -3,6 +3,7 @@ package frc.robot.auto.modes;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.Path;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DriveTrain;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
@@ -45,8 +46,24 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
     public abstract boolean IsComplete();
 
-    boolean drivingStraight = false;
-    double driveStraightHeading = 0;
+    protected boolean drivingStraight = false;
+    protected double driveStraightHeading = 0;
+
+    public void TurnToTarget(double heading)
+    {
+        double error = (RobotState.getInstance().getHeading() - heading);
+        SmartDashboard.putNumber("TURN ERROR", error);
+        if (Math.abs(error) > .5)
+        {
+            turnDrive = error * .003;
+            if (Math.abs(turnDrive) < .05)
+                turnDrive = .005 * Math.signum(turnDrive);
+        }
+        else
+        {
+            turnDrive = 0;
+        }
+    }
 
     public void DriveStraight(double dist)
     {

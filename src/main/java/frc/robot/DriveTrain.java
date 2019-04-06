@@ -119,7 +119,7 @@ public class DriveTrain implements IPigeonWrapper
      */
     public static final class ANGLE_PID
     {
-        public static final double P = .8 * (-1.0 / 80.0);
+        public static final double P = .6 * (-1.0 / 80.0);
     }
 
     /**

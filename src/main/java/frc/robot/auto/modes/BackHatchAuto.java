@@ -20,7 +20,7 @@ public class BackHatchAuto extends AutoModeBase
 
     enum State
     {
-        Drive, Place, Drive2, Drive3, Pickup, Complete
+        Drive, TurnToRocket, Place, BackupFromRocket, Drive3, Pickup, Complete, Shuffle
     }
 
     State s = State.Drive;
@@ -49,11 +49,19 @@ public class BackHatchAuto extends AutoModeBase
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_mid_back;
 
-                
             FollowPath(0, false);
 
             if (pathFollower.GetState() == HotPathFollower.State.Complete
-                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 70))
+                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 80))
+            {
+                DoOffset();
+                s = State.TurnToRocket;
+            }
+        }
+        if (s == State.TurnToRocket)
+        {
+            TurnToTarget(-140);
+            if (turnDrive == 0 || actionsState.isVisionCanSeeTarget())
             {
                 DoOffset();
                 s = State.Place;
@@ -66,36 +74,53 @@ public class BackHatchAuto extends AutoModeBase
             if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
             {
                 manipulatorScore = true;
-                if (state.isSpearsClosed())
-                {
-                    steeringAssist = false;
-                    visionDrive = false;
-                    DoOffset();
-                    s = State.Drive2;
-                }
+            }
+            if (state.isSpearsClosed())
+            {
+                steeringAssist = false;
+                visionDrive = false;
+                DoOffset();
+                s = State.Shuffle;
             }
         }
-        if (s == State.Drive2)
+        if (s == State.Shuffle)
         {
-            DriveStraight(25);
-            if (DriveOnTarget(25))
+            LeftDrive = -.3;
+            RightDrive = -.3;
+            limitSwitchPlace = true;
+            if ((RobotState.getInstance().getLeftDriveEncoder() - leftOffset) < -15)
+            {
+                manipulatorScore = true;
+            }
+            if (RobotState.getInstance().isSpearsClosed())
+                {
+                    s = State.BackupFromRocket;
+                    LeftDrive = 0;
+                    RightDrive = 0;
+                }
+
+        }
+        if (s == State.BackupFromRocket)
+        {
+            DriveStraight(20);
+            if (DriveOnTarget(20))
             {
                 DoOffset();
-                s = State.Drive3;
+                limitSwitchPlace = false;
+                s = State.Complete;
             }
-                
+
         }
         if (s == State.Drive3)
         {
             manipulatorScore = false;
 
-            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
-            FollowPath(2, true);
-            if (pathFollower.GetState() == HotPathFollower.State.Complete
-                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 75))
+            outputSetPoint = ManipulatorSetPoint.carry_back;
+            TurnToTarget(0);
+            if (turnDrive == 0)
             {
                 DoOffset();
-                s = State.Pickup;
+                s = State.Complete;
             }
         }
         if (s == State.Pickup)
