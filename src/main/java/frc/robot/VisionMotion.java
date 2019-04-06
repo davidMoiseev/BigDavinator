@@ -169,8 +169,8 @@ public class VisionMotion
         double output = error * k_p;
 
         double max = .2;
-        if (RobotState.getInstance().isSpearsClosed())
-            max = .4;
+        // if (RobotState.getInstance().isSpearsClosed())
+            // max = .4;
         if (output > max) output = max;
         else if (output < .1) output = .1;
         

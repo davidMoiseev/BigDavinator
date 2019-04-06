@@ -18,7 +18,7 @@ public class BackHatchAuto extends AutoModeBase
 
     enum State
     {
-        Drive, Place, Drive2, Drive3, Complete
+        Drive, Place, Drive2, Drive3, Pickup, Complete
     }
 
     State s = State.Drive;
@@ -66,13 +66,13 @@ public class BackHatchAuto extends AutoModeBase
                     steeringAssist = false;
                     visionDrive = false;
                     DoOffset();
-                    s = State.Complete;
+                    s = State.Drive2;
                 }
             }
         }
         if (s == State.Drive2)
         {
-            FollowPath(2, true);
+            FollowPath(1, false);
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 s = State.Drive3;
@@ -83,12 +83,19 @@ public class BackHatchAuto extends AutoModeBase
         {
             manipulatorScore = false;
             outputSetPoint = ManipulatorSetPoint.hatch_out_back;
-            FollowPath(3, false);
+            FollowPath(2, true);
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 DoOffset();
-                s = State.Complete;
+                s = State.Pickup;
             }
+        }
+        if (s == State.Pickup)
+        {
+            visionDrive = true;
+            steeringAssist = true;
+            if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
+                s = State.Complete;
         }
         
         if (s == State.Complete)
