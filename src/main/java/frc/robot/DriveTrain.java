@@ -191,9 +191,9 @@ public class DriveTrain implements IPigeonWrapper
         return xyz_dps[1];
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Drive leftDrive", "Drive rightDrive", "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
-                    "Drive currentVelocityLeft", "Drive currentVelocityRight"));
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Drive leftDrive", "Drive rightDrive",
+            "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
+            "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
     public boolean canseeTarget()
     {
@@ -297,60 +297,31 @@ public class DriveTrain implements IPigeonWrapper
     }
 
     /*
-    public boolean lineUp(double pipeline)
-    {
-        vmotion.setPipeline(pipeline);
-        hDriveMotor.set(vmotion.shuffleVisionPID());
-        leftMotor.set(vmotion.outputL());
-        rightMotor.set(-vmotion.outputR());
-        if (vmotion.targetReached(20.0, 1) == true)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    */
+     * public boolean lineUp(double pipeline) { vmotion.setPipeline(pipeline);
+     * hDriveMotor.set(vmotion.shuffleVisionPID());
+     * leftMotor.set(vmotion.outputL()); rightMotor.set(-vmotion.outputR()); if
+     * (vmotion.targetReached(20.0, 1) == true) { return true; } else { return
+     * false; } }
+     */
     /*
      * public void updateUsb(int pipeline) { vmotion.usbUpdatePipeline(pipeline); }
      * 
      * public void initUsbCam() { vmotion.usbCamInit(); }
      */
 
-     /*
-    public boolean gyroLineUp(double maxOutput, double targetDistanceStop)
-    {
-        switch (state)
-        {
-        case 0:
-            vmotion.setPipeline(1);
-            this.getSingleRotationYaw();
-            vmotion.sendAngle(singleRotationYaw);
-            vmotion.getTargetAngle();
-            vmotion.setGyroLineUpVars(1.0);
-            state++;
-            break;
-        case 1:
-            this.getSingleRotationYaw();
-            vmotion.gyroTargetLineUp(singleRotationYaw, maxOutput);
-            double hOutput = vmotion.outputGyroH(singleRotationYaw, maxOutput);
-            hDriveMotor.set(hOutput);
-            leftMotor.set(vmotion.outputGyroL(singleRotationYaw, maxOutput) + (0.15 * hOutput));
-            rightMotor.set(-vmotion.outputGyroR(singleRotationYaw, maxOutput));
-            break;
-        }
-        if (vmotion.targetReached(targetDistanceStop, 1) == true)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    */
+    /*
+     * public boolean gyroLineUp(double maxOutput, double targetDistanceStop) {
+     * switch (state) { case 0: vmotion.setPipeline(1); this.getSingleRotationYaw();
+     * vmotion.sendAngle(singleRotationYaw); vmotion.getTargetAngle();
+     * vmotion.setGyroLineUpVars(1.0); state++; break; case 1:
+     * this.getSingleRotationYaw(); vmotion.gyroTargetLineUp(singleRotationYaw,
+     * maxOutput); double hOutput = vmotion.outputGyroH(singleRotationYaw,
+     * maxOutput); hDriveMotor.set(hOutput);
+     * leftMotor.set(vmotion.outputGyroL(singleRotationYaw, maxOutput) + (0.15 *
+     * hOutput)); rightMotor.set(-vmotion.outputGyroR(singleRotationYaw,
+     * maxOutput)); break; } if (vmotion.targetReached(targetDistanceStop, 1) ==
+     * true) { return true; } else { return false; } }
+     */
 
     /**
      * Manual control, includes deadband
@@ -435,10 +406,13 @@ public class DriveTrain implements IPigeonWrapper
             if (!hasObtainedTarget)
                 baseDrive = 1;
 
-            if (Math.abs(leftDrive) > Math.abs(baseDrive + vmotion.autoDrive()))
-                leftDrive = baseDrive + vmotion.autoDrive();
-            if (Math.abs(rightDrive) > Math.abs(baseDrive + vmotion.autoDrive()))
-                rightDrive = baseDrive + vmotion.autoDrive();
+            if ((leftDrive < 0 && vmotion.isBackCamera()) || (leftDrive > 0 && !vmotion.isBackCamera()))
+            {
+                if (Math.abs(leftDrive) > Math.abs(baseDrive + vmotion.autoDrive()))
+                    leftDrive = baseDrive + vmotion.autoDrive();
+                if (Math.abs(rightDrive) > Math.abs(baseDrive + vmotion.autoDrive()))
+                    rightDrive = baseDrive + vmotion.autoDrive();
+            }
 
             VisionMotion.Output assist = vmotion.autoAlign(-xyz_dps[0]);
             rightMotor.set((leftDrive + assist.Right) * (slowRight ? .5 : 1));

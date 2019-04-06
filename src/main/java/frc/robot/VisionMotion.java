@@ -87,6 +87,7 @@ public class VisionMotion
             HDrive = hDrive;
         }
     }
+
     public Output autoAlign(double currentYaw)
     {
         getCamera().setPipeline(2);
@@ -107,8 +108,8 @@ public class VisionMotion
         error = turn_referenceAngle - currentYaw;
 
         // Temporary testing things
-        //SmartDashboard.putNumber("currentYaw", currentYaw);
-        //SmartDashboard.putNumber("error", error);
+        // SmartDashboard.putNumber("currentYaw", currentYaw);
+        // SmartDashboard.putNumber("error", error);
 
         if (Math.abs(error) > 2)
         {
@@ -143,9 +144,10 @@ public class VisionMotion
     }
 
     double autoDriveLast = 0;
+
     public double autoDrive()
     {
-        if (!canSeeTarget()) 
+        if (!canSeeTarget())
             return autoDriveLast;
 
         double k_p = .2;
@@ -154,7 +156,6 @@ public class VisionMotion
             targetArea = useBackCamera ? PICKUP_AREA_BACK : PICKUP_AREA_FRONT;
         else
             targetArea = useBackCamera ? PLACE_AREA_BACK : PLACE_AREA_FRONT;
-
 
         double currentArea = getCamera().getTA();
 
@@ -169,19 +170,26 @@ public class VisionMotion
         double output = error * k_p;
 
         double max = .2;
-        // if (RobotState.getInstance().isSpearsClosed())
-            // max = .4;
-        if (output > max) output = max;
-        else if (output < .1) output = .1;
-        
-        if (useBackCamera) output *= -1;
+        if (RobotState.getInstance().isSpearsClosed())
+            max = .5;
+        if (getCamera().getTA() < .2)
+            max = 1;
+        if (output > max)
+            output = max;
+        else if (output < .1)
+            output = .1;
+
+        if (useBackCamera)
+            output *= -1;
         return output;
     }
 
     public void useAutoPipeline(boolean useAuto)
     {
-        if (useAuto) getCamera().setPipeline(2);
-        else clearPipeline();
+        if (useAuto)
+            getCamera().setPipeline(2);
+        else
+            clearPipeline();
     }
 
     public double getDist()
@@ -206,8 +214,8 @@ public class VisionMotion
         turn_hasReset = true;
         turn_referenceAngle = null;
         autoDriveLast = 0;
-        //clearPipeline();
-        
+        // clearPipeline();
+
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
         actionsState.setVisionDistanceAtTarget(false);
         actionsState.setVisionTurnAtTarget(false);
@@ -365,7 +373,7 @@ public class VisionMotion
                 target = 0; // front cargo ship
             }
         }
-        //SmartDashboard.putNumber("referenceAngle", referenceAngle);
+        // SmartDashboard.putNumber("referenceAngle", referenceAngle);
         return target;
     }
 
@@ -530,31 +538,37 @@ public class VisionMotion
     public void writeDashBoardVis()
     {
         /*
-        SmartDashboard.putNumber("AAA DIST FRONT", frontCamera.findDistance());
-        SmartDashboard.putNumber("AAA DIST BACK", backCamera.findDistance());
-        SmartDashboard.putNumber("AAA ANGLE FRONT", frontCamera.angleFromCenter());
-        SmartDashboard.putNumber("AAA ANGLE BACK", backCamera.angleFromCenter());
-        */
+         * SmartDashboard.putNumber("AAA DIST FRONT", frontCamera.findDistance());
+         * SmartDashboard.putNumber("AAA DIST BACK", backCamera.findDistance());
+         * SmartDashboard.putNumber("AAA ANGLE FRONT", frontCamera.angleFromCenter());
+         * SmartDashboard.putNumber("AAA ANGLE BACK", backCamera.angleFromCenter());
+         */
     }
 
-    boolean useBackCamera = false;
-	public void useBackCamera(boolean b)
-	{
+    private boolean useBackCamera = false;
+
+    public boolean isBackCamera()
+    {
+        return useBackCamera;
+    }
+
+    public void useBackCamera(boolean b)
+    {
         useBackCamera = b;
     }
-    
+
     private Vision getCamera()
     {
         return (useBackCamera) ? backCamera : frontCamera;
     }
 
-	public void UpdateRobotState()
-	{
+    public void UpdateRobotState()
+    {
         getCamera().getNetworkTables();
         RobotState robotState = RobotState.getInstance();
 
         robotState.setVisionArea(getCamera().getTA());
         robotState.setVisionX(getCamera().getHorizontal());
         robotState.setVisionY(getCamera().getVertical());
-	}
+    }
 };

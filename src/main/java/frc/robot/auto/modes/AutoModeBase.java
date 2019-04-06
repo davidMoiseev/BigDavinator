@@ -28,8 +28,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         RobotState state = RobotState.getInstance();
         HotPathFollower.Output drive = pathFollower.FollowNextPoint(path,
                 (inverted ? -1 : 1) * (state.getLeftDriveEncoder() - leftOffset),
-                (inverted ? -1 : 1) * (state.getRightDriveEncoder() - rightOffset),
-                state.getHeading());
+                (inverted ? -1 : 1) * (state.getRightDriveEncoder() - rightOffset), state.getHeading());
         LeftDrive = (inverted ? -1 : 1) * drive.Right;
         RightDrive = (inverted ? -1 : 1) * drive.Left;
         turnDrive = drive.Turn;
@@ -41,16 +40,38 @@ public abstract class AutoModeBase extends RobotCommandProvider
         leftOffset = state.getLeftDriveEncoder();
         rightOffset = state.getRightDriveEncoder();
         headingOffset = state.getHeading();
+        drivingStraight = false;
     }
 
     public abstract boolean IsComplete();
 
-    public void DriveHeading(double heading, double dist)
+    boolean drivingStraight = false;
+    double driveStraightHeading = 0;
+
+    public void DriveStraight(double dist)
     {
-        double out = heading * .05;
+        if (!drivingStraight)
+        {
+            driveStraightHeading = RobotState.getInstance().getHeading();
+            drivingStraight = true;
+        }
+        double out = (RobotState.getInstance().getHeading() - driveStraightHeading) * .05;
         turnDrive = out;
-        LeftDrive = dist * .05;
-        RightDrive = dist * .05;
+        double error = dist - (RobotState.getInstance().getLeftDriveEncoder() - leftOffset);
+        LeftDrive = error * .05;
+        RightDrive = error * .05;
+
+        if (error < .5)
+        {
+            LeftDrive = 0;
+            RightDrive = 0;
+            turnDrive = 0;
+        }
+    }
+
+    public boolean DriveOnTarget(double dist)
+    {
+        return (RobotState.getInstance().getLeftDriveEncoder() - leftOffset) > dist;
     }
 
     public void setFrontFlipper(int bump)

@@ -40,12 +40,12 @@ public class BackHatchAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-
             if (oopCount < 25)
                 oopCount++;
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_mid_back;
 
+                
             FollowPath(0, false);
 
             if (pathFollower.GetState() == HotPathFollower.State.Complete
@@ -54,7 +54,6 @@ public class BackHatchAuto extends AutoModeBase
                 DoOffset();
                 s = State.Place;
             }
-
         }
         if (s == State.Place)
         {
@@ -74,12 +73,13 @@ public class BackHatchAuto extends AutoModeBase
         }
         if (s == State.Drive2)
         {
-            FollowPath(1, false);
-            if (pathFollower.GetState() == HotPathFollower.State.Complete)
+            DriveStraight(25);
+            if (DriveOnTarget(25))
             {
-                s = State.Drive3;
                 DoOffset();
+                s = State.Drive3;
             }
+                
         }
         if (s == State.Drive3)
         {
@@ -88,7 +88,7 @@ public class BackHatchAuto extends AutoModeBase
             outputSetPoint = ManipulatorSetPoint.hatch_out_back;
             FollowPath(2, true);
             if (pathFollower.GetState() == HotPathFollower.State.Complete
-                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 70))
+                    || (actionsState.isVisionCanSeeTarget() && pathFollower.getPoints() > 75))
             {
                 DoOffset();
                 s = State.Pickup;
