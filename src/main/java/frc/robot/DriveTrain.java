@@ -527,6 +527,9 @@ public class DriveTrain implements IPigeonWrapper
         robotState.setLeftDriveEncoder(leftEncoderValue);
         robotState.setRightDriveEncoder(rightEncoderValue);
         robotState.setHeading(-xyz_dps[0]);
+        double[] speeds = new double[] { 0, 0, 0};
+        pigeon.getRawGyro(speeds);
+        robotState.setTurnSpeed(speeds[2]);
         robotActionsState.setVisionCanSeeTarget(vmotion.canSeeTarget());
     }
 }

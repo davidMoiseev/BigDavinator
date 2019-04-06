@@ -16,6 +16,23 @@ public class RobotState
         return mRobotState;
     }
 
+    /**
+     * @return the turnSpeed
+     */
+    public double getTurnSpeed()
+    {
+        return turnSpeed;
+    }
+
+    /**
+     * @param turnSpeed
+     *                      the turnSpeed to set
+     */
+    public void setTurnSpeed(double turnSpeed)
+    {
+        this.turnSpeed = turnSpeed;
+    }
+
     private double leftDriveEncoder = 0;
     private double rightDriveEncoder = 0;
 
@@ -135,6 +152,7 @@ public class RobotState
     }
 
     private double heading = 0;
+    private double turnSpeed = 0;
 
     private boolean spearsClosed = false;
 

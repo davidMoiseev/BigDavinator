@@ -174,7 +174,7 @@ public class VisionMotion
 
         double max = .2;
         if (RobotState.getInstance().isSpearsClosed())
-            max = .5;
+            max = .6;
         if (getCamera().getTA() < .2)
             max = 1;
         if (output > max)

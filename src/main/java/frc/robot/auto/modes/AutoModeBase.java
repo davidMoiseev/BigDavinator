@@ -7,10 +7,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DriveTrain;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
+import frc.robot.SweetTurn;
 
 public abstract class AutoModeBase extends RobotCommandProvider
 {
     protected final HotPathFollower pathFollower;
+    protected final SweetTurn sweetTurn;
     protected double leftOffset = 0;
     protected double rightOffset = 0;
     protected double headingOffset = 0;
@@ -22,6 +24,8 @@ public abstract class AutoModeBase extends RobotCommandProvider
         pathFollower.ConfigPosPIDVA(DriveTrain.POS_PIDVA.P, DriveTrain.POS_PIDVA.I, DriveTrain.POS_PIDVA.D,
                 DriveTrain.POS_PIDVA.V, DriveTrain.POS_PIDVA.A);
         pathFollower.LoadPaths(paths);
+
+        sweetTurn = new SweetTurn();
     }
 
     protected void FollowPath(int path, boolean inverted)
@@ -41,6 +45,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         leftOffset = state.getLeftDriveEncoder();
         rightOffset = state.getRightDriveEncoder();
         headingOffset = state.getHeading();
+        sweetTurn.SweetTurnReset();
         drivingStraight = false;
     }
 
@@ -49,19 +54,17 @@ public abstract class AutoModeBase extends RobotCommandProvider
     protected boolean drivingStraight = false;
     protected double driveStraightHeading = 0;
 
-    public void TurnToTarget(double heading)
+    public void TurnToTarget(double target)
     {
-        double error = (RobotState.getInstance().getHeading() - heading);
-        SmartDashboard.putNumber("TURN ERROR", error);
-        if (Math.abs(error) > .5)
+        double currentHeading = RobotState.getInstance().getHeading();
+        double currentSpeed = RobotState.getInstance().getTurnSpeed();
+
+        SmartDashboard.putNumber("currentHeading", currentHeading);
+        SmartDashboard.putNumber("currentSpeed", currentSpeed);
+
+        if (!sweetTurn.IsTurnComplete())
         {
-            turnDrive = error * .003;
-            if (Math.abs(turnDrive) < .05)
-                turnDrive = .005 * Math.signum(turnDrive);
-        }
-        else
-        {
-            turnDrive = 0;
+            sweetTurn.SweetTurnOutput(target, 1.0, .5, currentHeading, currentSpeed);
         }
     }
 

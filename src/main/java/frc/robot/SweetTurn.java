@@ -42,8 +42,6 @@ public class SweetTurn
   private double sweetTurn_RampIn = 1;
   private double sweetTurn_reset = 0;
   private double sweetTurnOutput;
-  private double[] xyz_dps = new double[3];
-  private double[] YawPitchRoll = new double[3];
 
   public double sweetTurnMaxPct(double input)
   {
@@ -82,20 +80,16 @@ public class SweetTurn
     return complete;
   }
 
-  public double SweetTurnOutput(double target, double MinErrorToExit, double maxSpeed, PigeonIMU pigeon)
+  public double SweetTurnOutput(double target, double MinErrorToExit, double maxSpeed, double currentHeading, double currentSpeed)
   {
-
-    pigeon.getRawGyro(xyz_dps);
-    pigeon.getYawPitchRoll(YawPitchRoll);
     complete = false;
-    double absError = Math.abs(target - YawPitchRoll[0]);
+    double absError = Math.abs(target - currentHeading);
     double maxPct;
     double rampDownStart;
     double remainingAngleAtStartRampDown = 0;
     SmartDashboard.putNumber("Error", absError);
     SmartDashboard.putNumber("State", sweetTurnState);
-    SmartDashboard.putNumber("Yaw 2", YawPitchRoll[0]);
-    SmartDashboard.putNumber("Yaw 2@", xyz_dps[1]);
+    SmartDashboard.putNumber("Yaw 2", currentHeading);
 
     if (sweetTurnIterateCounter > SWEET_TURN_ITERATE_MAX)
     {
@@ -104,8 +98,8 @@ public class SweetTurn
       complete = true;
     }
 
-    if (sweetTurnState != sweetTurn_reset && ((sweetTurnDirection == 1 && YawPitchRoll[0] > target)
-        || (sweetTurnDirection == -1 && YawPitchRoll[0] < target)))
+    if (sweetTurnState != sweetTurn_reset && ((sweetTurnDirection == 1 && currentHeading > target)
+        || (sweetTurnDirection == -1 && currentHeading < target)))
     {
       sweetTurnState = sweetTurn_reset;
       sweetTurnIterateCounter++;
@@ -117,7 +111,7 @@ public class SweetTurn
       sweetTurnTimer = 0;
       sweetTurnState = sweetTurn_RampIn;
       sweetTurnTotalAngleTravel = absError;
-      sweetTurnDirection = (target > YawPitchRoll[0] ? 1 : -1);
+      sweetTurnDirection = (target > currentHeading ? 1 : -1);
     }
 
     maxPct = this.sweetTurnMaxPct(sweetTurnTotalAngleTravel);
@@ -129,13 +123,13 @@ public class SweetTurn
 
     SmartDashboard.putNumber("Max Speed", maxSpeed);
 
-    rampDownStart = this.sweetTurnRampDownStart(Math.abs(xyz_dps[2]));
+    rampDownStart = this.sweetTurnRampDownStart(Math.abs(currentSpeed));
 
     if (sweetTurnState == sweetTurn_RampIn)
     {
       sweetTurnRate += SWEET_TURN_RAMP_UP_RATE;
 
-      if (absError <= MinErrorToExit && Math.abs(xyz_dps[2]) <= SWEET_TURN_MAX_EXIT_VELOCITY)
+      if (absError <= MinErrorToExit && Math.abs(currentSpeed) <= SWEET_TURN_MAX_EXIT_VELOCITY)
       {
         sweetTurnRate = 0;
         sweetTurnTimer = 0;
@@ -182,7 +176,7 @@ public class SweetTurn
     {
       sweetTurnRate -= this.sweetTurnRampDownRate(remainingAngleAtStartRampDown);
 
-      if (absError <= MinErrorToExit && Math.abs(xyz_dps[2]) <= SWEET_TURN_MAX_EXIT_VELOCITY)
+      if (absError <= MinErrorToExit && Math.abs(currentSpeed) <= SWEET_TURN_MAX_EXIT_VELOCITY)
       {
         sweetTurnRate = 0;
         sweetTurnTimer = 0;
@@ -200,7 +194,7 @@ public class SweetTurn
     {
       sweetTurnRate = SWEET_TURN_PERCISE_TURN_PCT;
 
-      if (absError <= MinErrorToExit && Math.abs(xyz_dps[2]) <= SWEET_TURN_MAX_EXIT_VELOCITY)
+      if (absError <= MinErrorToExit && Math.abs(currentSpeed) <= SWEET_TURN_MAX_EXIT_VELOCITY)
       {
         sweetTurnRate = 0;
         sweetTurnTimer = 0;
