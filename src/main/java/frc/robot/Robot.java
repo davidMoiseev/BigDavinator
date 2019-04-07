@@ -94,6 +94,9 @@ public class Robot extends TimedRobot
             autonCommandProvider.setFrontFlipper(teleopCommandProvider.FrontFlipperBumpCount());
             autonCommandProvider.setBackFlipper(teleopCommandProvider.BackFlipperBumpCount());
 
+            if (teleopCommandProvider.steeringAssistActivated())
+                autonCommandProvider.AttemptInterrupt();
+
             if (autonCommandProvider.IsWaiting())
             {
                 manipulator.Update(teleopCommandProvider);

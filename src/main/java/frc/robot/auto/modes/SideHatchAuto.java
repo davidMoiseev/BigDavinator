@@ -44,7 +44,7 @@ public class SideHatchAuto extends AutoModeBase
         if (s == State.TurnToFirst)
         {
             TurnToTarget(sideAngle);
-            if (TurnOnTarget())
+            if (TurnOnTarget() || interrupted)
             {
                 DoOffset();
                 s = State.PlaceFirst;
@@ -73,7 +73,7 @@ public class SideHatchAuto extends AutoModeBase
                 limitSwitchScore = false;
                 outputSetPoint = ManipulatorSetPoint.hatch_out_front;
             }
-            if (pathFollower.GetState() == HotPathFollower.State.Complete || (pathFollower.getPoints() > 70 && actionsState.isVisionCanSeeTarget()))
+            if (pathFollower.GetState() == HotPathFollower.State.Complete || (pathFollower.getPoints() > 70 && actionsState.isVisionCanSeeTarget()) || interrupted)
             {
                 DoOffset();
                 s = State.Pickup;
@@ -100,7 +100,7 @@ public class SideHatchAuto extends AutoModeBase
             {
                 outputSetPoint = ManipulatorSetPoint.hatch_low_back;
             }
-            if (pathFollower.GetState() == HotPathFollower.State.Complete)
+            if (pathFollower.GetState() == HotPathFollower.State.Complete || interrupted)
             {
                 DoOffset();
                 s = State.PlaceSecond;

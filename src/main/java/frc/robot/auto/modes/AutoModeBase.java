@@ -15,7 +15,6 @@ public abstract class AutoModeBase extends RobotCommandProvider
     protected final SweetTurn sweetTurn;
     protected double leftOffset = 0;
     protected double rightOffset = 0;
-    protected double headingOffset = 0;
     protected boolean isWaiting = false;
 
     protected AutoModeBase(Path[] paths)
@@ -45,7 +44,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         RobotState state = RobotState.getInstance();
         leftOffset = state.getLeftDriveEncoder();
         rightOffset = state.getRightDriveEncoder();
-        headingOffset = state.getHeading();
+        interrupted = false;
         sweetTurn.SweetTurnReset();
         drivingStraight = false;
         LeftDrive = 0;
@@ -57,6 +56,12 @@ public abstract class AutoModeBase extends RobotCommandProvider
     public boolean IsWaiting()
     {
         return isWaiting;
+    }
+
+    protected boolean interrupted = false;
+    public void AttemptInterrupt()
+    {
+        interrupted = true;
     }
 
     protected boolean drivingStraight = false;

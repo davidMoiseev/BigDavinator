@@ -63,8 +63,9 @@ public class RocketAuto extends AutoModeBase
         if (s == State.TurnToRocket)
         {
             TurnToTarget(rocketAngle);
-            if (TurnOnTarget() || actionsState.isVisionCanSeeTarget())
+            if (TurnOnTarget() || actionsState.isVisionCanSeeTarget() || interrupted)
             {
+                interrupted = false;
                 DoOffset();
                 turnDrive = 0;
                 s = State.Place;
@@ -108,12 +109,9 @@ public class RocketAuto extends AutoModeBase
         if (s == State.DriveToStation)
         {
             DriveStraight(-80);
-            if (DriveOnTarget(-80) || (Math.abs(GetDist()) > 50 && actionsState.isVisionCanSeeTarget()))
+            if (DriveOnTarget(-80) || (Math.abs(GetDist()) > 50 && actionsState.isVisionCanSeeTarget()) || interrupted)
             {
                 DoOffset();
-                LeftDrive = 0;
-                RightDrive = 0;
-                turnDrive = 0;
                 s = State.Complete;
             }
             if (Math.abs(GetDist()) > 50)
