@@ -47,6 +47,9 @@ public abstract class AutoModeBase extends RobotCommandProvider
         headingOffset = state.getHeading();
         sweetTurn.SweetTurnReset();
         drivingStraight = false;
+        LeftDrive = 0;
+        RightDrive = 0;
+        turnDrive = 0;
     }
 
     public abstract boolean IsComplete();

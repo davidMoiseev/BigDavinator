@@ -10,11 +10,11 @@ import frc.robot.RobotState;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.manipulator.Manipulator;
 
-public class BackHatchAuto extends AutoModeBase
+public class RocketAuto extends AutoModeBase
 {
     private final double rocketAngle;
 
-    public BackHatchAuto(double rocketAngle, Path rocketPath)
+    public RocketAuto(double rocketAngle, Path rocketPath)
     {
         super(new Path[]
         { rocketPath });
