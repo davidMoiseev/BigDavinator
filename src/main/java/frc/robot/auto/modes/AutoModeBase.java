@@ -16,6 +16,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
     protected double leftOffset = 0;
     protected double rightOffset = 0;
     protected double headingOffset = 0;
+    protected boolean isWaiting = false;
 
     protected AutoModeBase(Path[] paths)
     {
@@ -53,6 +54,10 @@ public abstract class AutoModeBase extends RobotCommandProvider
     }
 
     public abstract boolean IsComplete();
+    public boolean IsWaiting()
+    {
+        return isWaiting;
+    }
 
     protected boolean drivingStraight = false;
     protected double driveStraightHeading = 0;

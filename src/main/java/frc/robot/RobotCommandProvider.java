@@ -17,7 +17,7 @@ public abstract class RobotCommandProvider
     protected double RightDrive = 0;
     protected double HDrive = 0;
     protected double turnDrive = 0;
-    protected boolean intakeSolenoid = false;
+    protected boolean spearsClosed = false;
     protected boolean manipulatorScore = false;
     protected boolean intakeOut = false;
     protected boolean intakeIn = false;
@@ -38,7 +38,7 @@ public abstract class RobotCommandProvider
     }
 
     protected boolean limitSwitchPickup = false;
-    protected boolean limitSwitchPlace = false;
+    protected boolean limitSwitchScore = false;
 
     protected int frontFlipperCount = 0;
     protected int backFlipperCount = 0;
@@ -81,7 +81,7 @@ public abstract class RobotCommandProvider
         steeringAssist = false;
 
         limitSwitchPickup = false;
-        limitSwitchPlace = false;
+        limitSwitchScore = false;
 
         frontFlipperCount = 0;
         backFlipperCount = 0;
@@ -114,7 +114,7 @@ public abstract class RobotCommandProvider
 
     public boolean SpearsClosed()
     {
-        return intakeSolenoid;
+        return spearsClosed;
     }
 
     public boolean steeringAssistActivated()
@@ -159,7 +159,7 @@ public abstract class RobotCommandProvider
 
     public boolean LimitSwitchScore()
     {
-        return limitSwitchPlace;
+        return limitSwitchScore;
     }
 
     public boolean LimitSwitchPickup()
@@ -179,6 +179,6 @@ public abstract class RobotCommandProvider
 
     public void SetSpearsClosed(boolean b)
     {
-        intakeSolenoid = b;
+        spearsClosed = b;
     }
 }

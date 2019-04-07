@@ -157,7 +157,7 @@ public class TeleopCommandProvider extends RobotCommandProvider
         hatchPickup = driver.getButtonY();
         if (driver.getButtonX())
         {
-            intakeSolenoid = true;
+            spearsClosed = true;
         }
         /*
          * if (driver.getButtonY()) { intakeSolenoid = false; }
@@ -172,7 +172,7 @@ public class TeleopCommandProvider extends RobotCommandProvider
             steeringAssist = false;
         }
 
-        limitSwitchPlace = driver.getButtonRightStick();
+        limitSwitchScore = driver.getButtonRightStick();
         limitSwitchPickup = driver.getButtonLeftStick();
         manipulatorScore = driver.getButtonA();
 

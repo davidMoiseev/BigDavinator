@@ -41,34 +41,28 @@ public class SideHatchAuto extends AutoModeBase
             if (TurnOnTarget())
             {
                 DoOffset();
-                if (!actionsState.isVisionCanSeeTarget()) s = State.Complete;
-                else s = State.PlaceFirst;
+                s = State.PlaceFirst;
             }
         }
         if (s == State.PlaceFirst)
         {
-            visionDrive = true;
-            steeringAssist = true;
-            limitSwitchPlace = true;
-            if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
-            {
-                manipulatorScore = true;
-            }
+            isWaiting = true;
+            // Should be true once auton takes over again
+            spearsClosed = true;
             if (state.isSpearsClosed())
             {
                 DoOffset();
-                visionDrive = false;
-                steeringAssist = false;
-                s = State.DriveToSecond;
+                isWaiting = false;
+                s = State.DrivetoPickup;
             }
         }
-        if (s == State.DriveToSecond)
+        if (s == State.DrivetoPickup)
         {
             FollowPath(0, true);
             if (pathFollower.getPoints() > 30)
             {
                 manipulatorScore = false;
-                limitSwitchPlace = false;
+                limitSwitchScore = false;
             }
             if (pathFollower.GetState() == HotPathFollower.State.Complete || (pathFollower.getPoints() > 70 && actionsState.isVisionCanSeeTarget()))
             {
@@ -78,7 +72,17 @@ public class SideHatchAuto extends AutoModeBase
         }
         if (s == State.Pickup)
         {
-            s = State.Complete;
+            isWaiting = true;
+
+            // Should be false when auton takes over again
+            spearsClosed = false;
+
+            if (!state.isSpearsClosed())
+            {
+                DoOffset();
+                isWaiting = false;
+                s = State.DriveToSecond;
+            }
         }
         if (s == State.DriveToSecond)
         {
@@ -91,18 +95,14 @@ public class SideHatchAuto extends AutoModeBase
         }
         if (s == State.PlaceSecond)
         {
-            visionDrive = true;
-            steeringAssist = true;
-            limitSwitchPlace = true;
-            if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
-            {
-                manipulatorScore = true;
-            }
-            if (state.isSpearsClosed())
+            isWaiting = true;
+
+            // Should be true when auton takes over again
+            spearsClosed = true;
+            if (!state.isSpearsClosed())
             {
                 DoOffset();
-                visionDrive = false;
-                steeringAssist = false;
+                isWaiting = false;
                 s = State.Complete;
             }
         }

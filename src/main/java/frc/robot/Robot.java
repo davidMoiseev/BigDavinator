@@ -78,49 +78,56 @@ public class Robot extends TimedRobot
         // driveTrain.initUsbCam();
     }
 
-    private void Teleop()
+    private void Control()
     {
         teleopCommandProvider.Update();
-        Run(teleopCommandProvider);
-    }
 
-    private void Run(RobotCommandProvider command)
-    {
-        manipulator.Update(command);
-        driveTrain.Update(command);
+        if (driver.getButtonB())
+            quitAuton = true;
+        // May have to invert driveturn/drivespeed
+        if (!autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
+        {
+            AutoModeBase autonCommandProvider = autoRunner.Run();
+
+            teleopCommandProvider.SetSpearsClosed(autonCommandProvider.SpearsClosed());
+
+            autonCommandProvider.setFrontFlipper(teleopCommandProvider.FrontFlipperBumpCount());
+            autonCommandProvider.setBackFlipper(teleopCommandProvider.BackFlipperBumpCount());
+
+            if (autonCommandProvider.IsWaiting())
+            {
+                manipulator.Update(teleopCommandProvider);
+                driveTrain.Update(teleopCommandProvider);
+            }
+            else
+            {
+                manipulator.Update(autonCommandProvider);
+                driveTrain.Update(autonCommandProvider);
+            }
+        }
+        else
+        {
+            quitAuton = true;
+            manipulator.Update(teleopCommandProvider);
+            driveTrain.Update(teleopCommandProvider);
+        }
     }
 
     @Override
     public void autonomousInit()
     {
-
+        quitAuton = false;
         driveTrain.zeroSensors();
         driveTrain.zeroMotors();
         profileFinished = false;
     }
 
-    boolean quitAuton = false;
+    boolean quitAuton = true;
+
     @Override
     public void autonomousPeriodic()
     {
-        teleopCommandProvider.Update();
-        if (driver.getButtonB()) quitAuton = true;
-        // May have to invert driveturn/drivespeed
-        if (!autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
-        {
-            AutoModeBase command = autoRunner.Run();
-            if (!quitAuton)
-            {
-                teleopCommandProvider.SetSpearsClosed(command.SpearsClosed());
-            }
-            command.setFrontFlipper(teleopCommandProvider.FrontFlipperBumpCount());
-            command.setBackFlipper(teleopCommandProvider.BackFlipperBumpCount());
-            Run(command);
-        }
-        else
-        {
-            Teleop();
-        }
+        Control();
     }
 
     @Override
@@ -142,24 +149,10 @@ public class Robot extends TimedRobot
     {
     }
 
-    boolean rumble = false;
-
     @Override
     public void teleopPeriodic()
     {
-        Teleop();
-    }
-
-    /**
-     * LETS GET READY TO RUMBBLEEE
-     * 
-     * @param joy
-     */
-    public static void rumble(HotController joy)
-    {
-        double rum = Math.abs(joy.getY(Hand.kLeft)) + Math.abs(joy.getX(Hand.kRight));
-        joy.setRumble(RumbleType.kLeftRumble, rum);
-        joy.setRumble(RumbleType.kRightRumble, rum);
+        Control();
     }
 
     @Override
@@ -188,7 +181,7 @@ public class Robot extends TimedRobot
         if ((SmartDashboard.getBoolean("robotReady", false) && !pigeonInitializing))
         {
             SmartDashboard.putBoolean("pigeonReady", false);
-            //driveTrain.CalibratePigeon();
+            // driveTrain.CalibratePigeon();
             manipulator.RestartInitialization();
             NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("stream").setDouble(2);
             NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("stream").setDouble(2);

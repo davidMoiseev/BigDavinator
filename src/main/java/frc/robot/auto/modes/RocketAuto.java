@@ -47,7 +47,6 @@ public class RocketAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-
             if (oopCount < 25)
                 oopCount++;
             else
@@ -73,36 +72,14 @@ public class RocketAuto extends AutoModeBase
         }
         if (s == State.Place)
         {
-            steeringAssist = true;
-            visionDrive = true;
-            if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
-            {
-                manipulatorScore = true;
-            }
+            isWaiting = true;
+            spearsClosed = true;
+
             if (state.isSpearsClosed())
             {
-                steeringAssist = false;
-                visionDrive = false;
+                isWaiting = false;
                 DoOffset();
-                s = State.Shuffle;
             }
-        }
-        if (s == State.Shuffle)
-        {
-            LeftDrive = -.3;
-            RightDrive = -.3;
-            limitSwitchPlace = true;
-            if ((RobotState.getInstance().getLeftDriveEncoder() - leftOffset) < -20)
-            {
-                manipulatorScore = true;
-            }
-            if (RobotState.getInstance().isSpearsClosed())
-            {
-                s = State.BackupFromRocket;
-                LeftDrive = 0;
-                RightDrive = 0;
-            }
-
         }
         if (s == State.BackupFromRocket)
         {
@@ -110,7 +87,7 @@ public class RocketAuto extends AutoModeBase
             if (DriveOnTarget(25))
             {
                 DoOffset();
-                limitSwitchPlace = false;
+                limitSwitchScore = false;
                 manipulatorScore = false;
                 s = State.TurnToStation;
             }
@@ -144,17 +121,13 @@ public class RocketAuto extends AutoModeBase
 
         if (s == State.Pickup)
         {
-            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
-            LeftDrive = -.2;
-            RightDrive = -.2;
-            steeringAssist = true;
-            if (Math.abs(GetDist()) > 60)
+            isWaiting = true;
+            spearsClosed = false;
+
+            if (!state.isSpearsClosed())
             {
-                hatchPickup = true;
-                LeftDrive = 0;
-                RightDrive = 0;
-                if (!state.isSpearsClosed())
-                    s = State.Complete;
+                isWaiting = false;
+                s = State.Complete;
             }
         }
 
