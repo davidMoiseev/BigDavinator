@@ -4,6 +4,7 @@ import org.hotteam67.Path;
 import org.hotteam67.HotPathFollower;
 
 import frc.robot.RobotState;
+import frc.robot.constants.ManipulatorSetPoint;
 
 public class SideHatchAuto extends AutoModeBase
 {
@@ -20,6 +21,7 @@ public class SideHatchAuto extends AutoModeBase
     }
     State s = State.DriveToFirst;
 
+    int oopCount = 0;
     @Override
     public void Update()
     {
@@ -28,6 +30,10 @@ public class SideHatchAuto extends AutoModeBase
 
         if (s == State.DriveToFirst)
         {
+            if (oopCount < 25)
+                oopCount++;
+            else
+                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
             DriveStraight(60);
             if (DriveOnTarget(60))
             {
@@ -65,6 +71,7 @@ public class SideHatchAuto extends AutoModeBase
             {
                 manipulatorScore = false;
                 limitSwitchScore = false;
+                outputSetPoint = ManipulatorSetPoint.hatch_out_front;
             }
             if (pathFollower.GetState() == HotPathFollower.State.Complete || (pathFollower.getPoints() > 70 && actionsState.isVisionCanSeeTarget()))
             {
@@ -89,6 +96,10 @@ public class SideHatchAuto extends AutoModeBase
         if (s == State.DriveToSecond)
         {
             FollowPath(1, false);
+            if (pathFollower.getPoints() > 30)
+            {
+                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
+            }
             if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 DoOffset();
