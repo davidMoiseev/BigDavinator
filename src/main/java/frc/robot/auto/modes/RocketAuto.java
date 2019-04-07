@@ -74,6 +74,7 @@ public class RocketAuto extends AutoModeBase
         {
             isWaiting = true;
             spearsClosed = true;
+            manipulatorScore = true;
 
             if (state.isSpearsClosed())
             {

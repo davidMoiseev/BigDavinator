@@ -49,6 +49,8 @@ public class SideHatchAuto extends AutoModeBase
             isWaiting = true;
             // Should be true once auton takes over again
             spearsClosed = true;
+            manipulatorScore = true;
+            
             if (state.isSpearsClosed())
             {
                 DoOffset();
