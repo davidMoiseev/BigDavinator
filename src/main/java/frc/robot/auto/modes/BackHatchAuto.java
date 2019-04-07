@@ -12,10 +12,13 @@ import frc.robot.manipulator.Manipulator;
 
 public class BackHatchAuto extends AutoModeBase
 {
-    public BackHatchAuto()
+    private final double rocketAngle;
+
+    public BackHatchAuto(double rocketAngle, Path rocketPath)
     {
         super(new Path[]
-        { Paths.RHRB1, Paths.RHRB2, Paths.RHRB3 });
+        { rocketPath });
+        this.rocketAngle = rocketAngle;
     }
 
     enum State
@@ -44,7 +47,7 @@ public class BackHatchAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-            
+
             if (oopCount < 25)
                 oopCount++;
             else
@@ -60,7 +63,7 @@ public class BackHatchAuto extends AutoModeBase
         }
         if (s == State.TurnToRocket)
         {
-            TurnToTarget(35);
+            TurnToTarget(rocketAngle);
             if (TurnOnTarget() || actionsState.isVisionCanSeeTarget())
             {
                 DoOffset();
@@ -94,11 +97,11 @@ public class BackHatchAuto extends AutoModeBase
                 manipulatorScore = true;
             }
             if (RobotState.getInstance().isSpearsClosed())
-                {
-                    s = State.BackupFromRocket;
-                    LeftDrive = 0;
-                    RightDrive = 0;
-                }
+            {
+                s = State.BackupFromRocket;
+                LeftDrive = 0;
+                RightDrive = 0;
+            }
 
         }
         if (s == State.BackupFromRocket)
@@ -123,22 +126,22 @@ public class BackHatchAuto extends AutoModeBase
                 s = State.DriveToStation;
             }
         }
-        
+
         if (s == State.DriveToStation)
         {
             DriveStraight(-80);
-            if (DriveOnTarget(-80) || (Math.abs(GetDist()) > 50 && actionsState.isVisionCanSeeTarget()))// || (GetDist() < -50 && actionsState.isVisionCanSeeTarget()))
+            if (DriveOnTarget(-80) || (Math.abs(GetDist()) > 50 && actionsState.isVisionCanSeeTarget()))
             {
                 DoOffset();
                 LeftDrive = 0;
                 RightDrive = 0;
                 turnDrive = 0;
-                s = State.Pickup;
+                s = State.Complete;
             }
             if (Math.abs(GetDist()) > 50)
                 outputSetPoint = ManipulatorSetPoint.hatch_out_back;
         }
-        
+
         if (s == State.Pickup)
         {
             outputSetPoint = ManipulatorSetPoint.hatch_out_back;
