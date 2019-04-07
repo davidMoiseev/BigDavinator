@@ -401,7 +401,7 @@ public class DriveTrain implements IPigeonWrapper
                 hasObtainedTarget = true;
             }
 
-            double baseDrive = .2 * Math.signum(leftDrive);
+            double baseDrive = .35 * Math.signum(leftDrive);
             // No max speed when we can't see target yet
             if (!hasObtainedTarget)
                 baseDrive = 1;

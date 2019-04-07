@@ -64,7 +64,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
         if (!sweetTurn.IsTurnComplete())
         {
-            double turn = sweetTurn.SweetTurnOutput(target, 1.0, .5, currentHeading, currentSpeed);
+            double turn = sweetTurn.SweetTurnOutput(target, 5.0, .5, currentHeading, currentSpeed);
             turnDrive = turn;
         }
         else    
@@ -84,11 +84,14 @@ public abstract class AutoModeBase extends RobotCommandProvider
             drivingStraight = true;
         }
         double out = (RobotState.getInstance().getHeading() - driveStraightHeading) * .05;
+        if (Math.abs(out) > .1) out = .1 * Math.signum(out);
         turnDrive = out;
         double error = dist - (RobotState.getInstance().getLeftDriveEncoder() - leftOffset);
         double desiredOut = error * .05;
+
         if (Math.abs(desiredOut) - Math.abs(LeftDrive) > .025)
-            desiredOut = LeftDrive + (.025 * Math.signum(LeftDrive));
+            desiredOut = LeftDrive + (.025 * Math.signum(desiredOut));
+
         LeftDrive = desiredOut;
         RightDrive = desiredOut;
 

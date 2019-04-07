@@ -103,8 +103,8 @@ public class BackHatchAuto extends AutoModeBase
         }
         if (s == State.BackupFromRocket)
         {
-            DriveStraight(20);
-            if (DriveOnTarget(20))
+            DriveStraight(25);
+            if (DriveOnTarget(25))
             {
                 DoOffset();
                 limitSwitchPlace = false;
@@ -142,10 +142,17 @@ public class BackHatchAuto extends AutoModeBase
         if (s == State.Pickup)
         {
             outputSetPoint = ManipulatorSetPoint.hatch_out_back;
-            visionDrive = true;
+            LeftDrive = -.2;
+            RightDrive = -.2;
             steeringAssist = true;
-            if (actionsState.isVisionDistanceAtTarget() && actionsState.isVisionTurnAtTarget())
-                s = State.Complete;
+            if (Math.abs(GetDist()) > 60)
+            {
+                hatchPickup = true;
+                LeftDrive = 0;
+                RightDrive = 0;
+                if (!state.isSpearsClosed())
+                    s = State.Complete;
+            }
         }
 
         if (s == State.Complete)
