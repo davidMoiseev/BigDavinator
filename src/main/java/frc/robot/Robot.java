@@ -100,7 +100,8 @@ public class Robot extends TimedRobot
             if (autonCommandProvider.IsWaiting())
             {
                 teleopCommandProvider.Rumble();
-                manipulator.Update(teleopCommandProvider);
+                // Override operator setpoint
+                manipulator.Update(teleopCommandProvider, autonCommandProvider.ManipulatorSetPoint());
                 driveTrain.Update(teleopCommandProvider);
             }
             else

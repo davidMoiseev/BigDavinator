@@ -704,6 +704,11 @@ public class Manipulator
 
     public void Update(RobotCommandProvider robotCommand)
     {
+        Update(robotCommand, robotCommand.ManipulatorSetPoint());
+    }
+
+    public void Update(RobotCommandProvider robotCommand, ManipulatorSetPoint setPoint)
+    {
         armPigeon.CalibratePigeon();
         if (robotCommand.ARMREZERO() && !zeroingArm)
         {
@@ -722,8 +727,8 @@ public class Manipulator
         wrist.checkEncoder();
         elevator.checkEncoder();
 
-        if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_back
-                || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_pickup_front)
+        if (setPoint == ManipulatorSetPoint.cargo_pickup_back
+                || setPoint == ManipulatorSetPoint.cargo_pickup_front)
         {
             robotCommand.SetSpearsClosed(false);
         }
@@ -790,21 +795,14 @@ public class Manipulator
             manualWrist = false;
         }
 
-        if (robotCommand.ManipulatorSetPoint() != null)
+        if (setPoint != null)
         {
-            IManipulatorSetPoint output = robotCommand.ManipulatorSetPoint();
-            ManipulatorSetPoint setPoint = robotCommand.ManipulatorSetPoint();
-
-            if (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_pickup_front
+            if (setPoint == ManipulatorSetPoint.hatch_pickup_front
                     && !RobotState.getInstance().isSpearsClosed() && !grabHatch)
             {
                 setPoint = ManipulatorSetPoint.hatch_low_front;
             }
-            else
-            {
-                setPoint = robotCommand.ManipulatorSetPoint();
-            }
-            output = setPoint;
+            IManipulatorSetPoint output = setPoint;
 
             if (scoreHatch)
             {
@@ -820,7 +818,7 @@ public class Manipulator
             }
             else if (grabHatch)
             {
-                output = hatchGrabber.GetPickupSetPoint(robotCommand.ManipulatorSetPoint());
+                output = hatchGrabber.GetPickupSetPoint(setPoint);
                 hatchCenterTimer = 0;
                 hatchCenter = true;
                 if (hatchGrabber.IsActive() && hatchGrabber.getState() != HatchGrabberState.Pushing)
@@ -844,8 +842,8 @@ public class Manipulator
                     robotCommand.BackFlipperBumpCount());
 
             Control(output);
-            robotActionsState.setDesiredManipulatorSetPoint(robotCommand.ManipulatorSetPoint());
-            robotActionsState.setManipulatorMoving(!onTarget(robotCommand.ManipulatorSetPoint()));
+            robotActionsState.setDesiredManipulatorSetPoint(setPoint);
+            robotActionsState.setManipulatorMoving(!onTarget(setPoint));
         }
         else
         {
