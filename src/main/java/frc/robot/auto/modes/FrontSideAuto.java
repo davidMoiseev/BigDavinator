@@ -35,8 +35,8 @@ public class FrontSideAuto extends AutoModeBase
         if (s == State.DriveToFront)
         {
             outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            DriveStraight(-35);
-            if (DriveOnTarget(-35) || interrupted)
+            DriveStraight(-45);
+            if (DriveOnTarget(-45) || interrupted)
             {
                 DoOffset();
                 s = State.PlaceFront;
@@ -59,7 +59,7 @@ public class FrontSideAuto extends AutoModeBase
             {
                 outputSetPoint = ManipulatorSetPoint.hatch_out_front;
             }
-            if (pathFollower.GetState() == HotPathFollower.State.Complete || interrupted)
+            if (pathFollower.GetState() == HotPathFollower.State.Complete)
             {
                 DoOffset();
                 s = State.Pickup;

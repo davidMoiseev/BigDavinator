@@ -96,7 +96,6 @@ public class RocketAuto extends AutoModeBase
         }
         if (s == State.TurnToStation)
         {
-            outputSetPoint = ManipulatorSetPoint.carry_back;
             TurnToTarget(0);
             if (turnDrive == 0)
             {
