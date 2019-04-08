@@ -135,7 +135,7 @@ public class Constants
 	/*
 	 * SWEET_TURN_ITERATE_MAX number of corrections allowed if an overshoot occurs.
 	 */
-	public static final double SWEET_TURN_ITERATE_MAX = 3;
+	public static final double SWEET_TURN_ITERATE_MAX = 2;
 
 	public static final Point2D SweetTurnMaxPct[] =
 	{ new Point2D(SWEET_TURN_MAX_PCT_TOTAL_CHANGE_0, SWEET_TURN_MAX_PCT_0),

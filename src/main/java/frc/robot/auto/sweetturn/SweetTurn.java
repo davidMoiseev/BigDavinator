@@ -1,5 +1,7 @@
 package frc.robot.auto.sweetturn;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class SweetTurn
 {
     private enum sweetTurnSt
@@ -11,7 +13,7 @@ public class SweetTurn
 	private ThreePointInterpolation sweetTurnRampDownStart;
 	private ThreePointInterpolation sweetTurnRampDownRate;
 
-	private sweetTurnSt sweetTurnState;
+	private sweetTurnSt sweetTurnState = sweetTurnSt.sweetTurn_reset;
 	private double sweetTurnTimer = 0;
 	private double sweetTurnRate;
 	private double sweetTurnTotalAngleTravel;
@@ -149,6 +151,10 @@ public class SweetTurn
 				sweetTurnState = sweetTurnSt.sweetTurn_reset;
 			}
 		}
+
+		SmartDashboard.putString("AAA Sweet Turn State", sweetTurnState.name());
+		SmartDashboard.putNumber("AAA Sweet Heading", currentHeading);
+		SmartDashboard.putNumber("AAA Target", target);
 
 		return -sweetTurnDirection *sweetTurnRate;
 	}

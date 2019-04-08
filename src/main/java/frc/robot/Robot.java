@@ -103,6 +103,7 @@ public class Robot extends TimedRobot
                 // Override operator setpoint
                 manipulator.Update(teleopCommandProvider, autonCommandProvider.ManipulatorSetPoint());
                 driveTrain.Update(teleopCommandProvider);
+                autonCommandProvider.SetSpearsClosed(teleopCommandProvider.SpearsClosed());
             }
             else
             {

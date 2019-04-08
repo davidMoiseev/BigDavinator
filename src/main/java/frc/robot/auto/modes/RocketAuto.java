@@ -47,7 +47,6 @@ public class RocketAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
-            /*
             if (oopCount < 25)
                 oopCount++;
             else
@@ -55,25 +54,17 @@ public class RocketAuto extends AutoModeBase
 
             FollowPath(0, false);
 
-            if (pathFollower.GetState() == HotPathFollower.State.Complete)
+            if (pathFollower.GetState() == HotPathFollower.State.Complete || pathFollower.getPoints() > 110)
             {
                 DoOffset();
                 s = State.TurnToRocket;
-            }
-            */
-            TurnToTarget(rocketAngle);
-            if (TurnOnTarget())
-            {
-                DoOffset();
-                s = State.Complete;
             }
         }
         if (s == State.TurnToRocket)
         {
             TurnToTarget(rocketAngle);
-            if (TurnOnTarget() || actionsState.isVisionCanSeeTarget() || interrupted)
+            if (TurnOnTarget())
             {
-                interrupted = false;
                 DoOffset();
                 turnDrive = 0;
                 s = State.Place;
@@ -82,19 +73,19 @@ public class RocketAuto extends AutoModeBase
         if (s == State.Place)
         {
             isWaiting = true;
-            spearsClosed = true;
-            manipulatorScore = true;
 
             if (state.isSpearsClosed())
             {
-                isWaiting = false;
+                manipulatorScore = true;
+                limitSwitchScore = true;
                 DoOffset();
+                s = State.BackupFromRocket;
             }
         }
         if (s == State.BackupFromRocket)
         {
-            DriveStraight(25);
-            if (DriveOnTarget(25))
+            DriveStraight(35);
+            if (DriveOnTarget(35))
             {
                 DoOffset();
                 limitSwitchScore = false;
@@ -116,8 +107,8 @@ public class RocketAuto extends AutoModeBase
 
         if (s == State.DriveToStation)
         {
-            DriveStraight(-80);
-            if (DriveOnTarget(-80) || (Math.abs(GetDist()) > 50 && actionsState.isVisionCanSeeTarget()) || interrupted)
+            DriveStraight(-100);
+            if (DriveOnTarget(-100))
             {
                 DoOffset();
                 s = State.Complete;
@@ -129,11 +120,10 @@ public class RocketAuto extends AutoModeBase
         if (s == State.Pickup)
         {
             isWaiting = true;
-            spearsClosed = false;
 
             if (!state.isSpearsClosed())
             {
-                isWaiting = false;
+                DoOffset();
                 s = State.Complete;
             }
         }
