@@ -19,6 +19,13 @@ public class SweetTurn
 	private double sweetTurnIterateCounter = 0;
 	private boolean complete = false;
 
+	public SweetTurn()
+	{
+		sweetTurnMaxPct = new ThreePointInterpolation(Constants.SweetTurnMaxPct);
+		sweetTurnRampDownStart = new ThreePointInterpolation(Constants.SweetTurnRampDownStartOffSet);
+		sweetTurnRampDownRate = new ThreePointInterpolation(Constants.SweetTurnRampDownRate);
+	}
+
 	// SWEET PROFILES
 	public void SweetTurnRestart()
 	{

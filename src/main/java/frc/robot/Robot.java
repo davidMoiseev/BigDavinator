@@ -197,6 +197,7 @@ public class Robot extends TimedRobot
                     Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
             autoRunner.Select(Auto.RocketHatchRight);
+            quitAuton = true;
         }
 
         /**

@@ -47,6 +47,7 @@ public class RocketAuto extends AutoModeBase
 
         if (s == State.Drive)
         {
+            /*
             if (oopCount < 25)
                 oopCount++;
             else
@@ -58,6 +59,13 @@ public class RocketAuto extends AutoModeBase
             {
                 DoOffset();
                 s = State.TurnToRocket;
+            }
+            */
+            TurnToTarget(rocketAngle);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.Complete;
             }
         }
         if (s == State.TurnToRocket)

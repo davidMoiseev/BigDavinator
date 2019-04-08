@@ -83,6 +83,8 @@ public abstract class AutoModeBase extends RobotCommandProvider
         }
         else    
             turnDrive = 0;
+
+        SmartDashboard.putNumber("AAA AUTO TURN", turnDrive);
     }
 
     public boolean TurnOnTarget()
