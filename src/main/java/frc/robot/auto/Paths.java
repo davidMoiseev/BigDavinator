@@ -1,8 +1,6 @@
-package frc.robot;
+package frc.robot.auto;
 
 import org.hotteam67.Path;
-
-import edu.wpi.first.wpilibj.Filesystem;
 
 public final class Paths
 {

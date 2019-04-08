@@ -9,7 +9,7 @@ import frc.robot.auto.modes.AutoModeBase;
 import frc.robot.auto.modes.RocketAuto;
 import frc.robot.auto.modes.DoubleSideAuto;
 import frc.robot.auto.modes.FrontSideAuto;
-import frc.robot.Paths;
+import frc.robot.auto.Paths;
 
 public class AutoRunner
 {

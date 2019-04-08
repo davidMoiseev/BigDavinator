@@ -5,7 +5,7 @@ import org.hotteam67.HotPathFollower;
 import org.hotteam67.Path;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Paths;
+import frc.robot.auto.Paths;
 import frc.robot.RobotState;
 import frc.robot.constants.ManipulatorSetPoint;
 import frc.robot.manipulator.Manipulator;

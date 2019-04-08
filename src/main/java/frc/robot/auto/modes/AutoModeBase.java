@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DriveTrain;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
-import frc.robot.SweetTurn;
+import frc.robot.auto.SweetTurn;
 
 public abstract class AutoModeBase extends RobotCommandProvider
 {
