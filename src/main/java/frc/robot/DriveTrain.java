@@ -191,7 +191,7 @@ public class DriveTrain implements IPigeonWrapper
         return xyz_dps[1];
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Vision Drive", "Drive leftDrive", "Drive rightDrive",
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Drive turn", "Vision Drive", "Drive leftDrive", "Drive rightDrive",
             "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
             "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
@@ -381,6 +381,7 @@ public class DriveTrain implements IPigeonWrapper
 
         HotLogger.Log("Drive leftDrive", leftDrive);
         HotLogger.Log("Drive rightDrive", rightDrive);
+        HotLogger.Log("Drive turn", command.TurnDrive());
         vmotion.useAutoPipeline(command.UseAutoPipeLine());
         boolean limitSwitchScoring = ((robotState.isLeftLimitSwitch() || robotState.isRightLimitSwitch())
                 && (command.LimitSwitchScore() || command.LimitSwitchPickup()));
