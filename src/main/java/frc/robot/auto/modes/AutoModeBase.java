@@ -45,6 +45,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         leftOffset = state.getLeftDriveEncoder();
         rightOffset = state.getRightDriveEncoder();
         interrupted = false;
+        isWaiting = false;
         sweetTurn.SweetTurnReset();
         drivingStraight = false;
         LeftDrive = 0;

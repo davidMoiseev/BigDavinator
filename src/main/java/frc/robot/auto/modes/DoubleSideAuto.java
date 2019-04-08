@@ -6,10 +6,10 @@ import org.hotteam67.HotPathFollower;
 import frc.robot.RobotState;
 import frc.robot.constants.ManipulatorSetPoint;
 
-public class SideHatchAuto extends AutoModeBase
+public class DoubleSideAuto extends AutoModeBase
 {
     private final double sideAngle;
-    public SideHatchAuto(double sideAngle, Path pathToStation, Path pathToSecondHatch)
+    public DoubleSideAuto(double sideAngle, Path pathToStation, Path pathToSecondHatch)
     {
         super(new Path[] {pathToStation, pathToSecondHatch});
         this.sideAngle = sideAngle;
@@ -53,14 +53,11 @@ public class SideHatchAuto extends AutoModeBase
         if (s == State.PlaceFirst)
         {
             isWaiting = true;
-            // Should be true once auton takes over again
-            spearsClosed = true;
-            manipulatorScore = true;
             
             if (state.isSpearsClosed())
             {
                 DoOffset();
-                isWaiting = false;
+                spearsClosed = true;
                 s = State.DrivetoPickup;
             }
         }
@@ -69,8 +66,6 @@ public class SideHatchAuto extends AutoModeBase
             FollowPath(0, true);
             if (pathFollower.getPoints() > 30)
             {
-                manipulatorScore = false;
-                limitSwitchScore = false;
                 outputSetPoint = ManipulatorSetPoint.hatch_out_front;
             }
             if (pathFollower.GetState() == HotPathFollower.State.Complete || (pathFollower.getPoints() > 70 && actionsState.isVisionCanSeeTarget()) || interrupted)
@@ -83,13 +78,10 @@ public class SideHatchAuto extends AutoModeBase
         {
             isWaiting = true;
 
-            // Should be false when auton takes over again
-            spearsClosed = false;
-
             if (!state.isSpearsClosed())
             {
                 DoOffset();
-                isWaiting = false;
+                spearsClosed = false;
                 s = State.DriveToSecond;
             }
         }
@@ -110,11 +102,10 @@ public class SideHatchAuto extends AutoModeBase
         {
             isWaiting = true;
 
-            // Should be true when auton takes over again
-            spearsClosed = true;
-            if (!state.isSpearsClosed())
+            if (state.isSpearsClosed())
             {
                 DoOffset();
+                spearsClosed = true;
                 isWaiting = false;
                 s = State.Complete;
             }

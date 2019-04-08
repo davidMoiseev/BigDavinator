@@ -99,6 +99,7 @@ public class Robot extends TimedRobot
 
             if (autonCommandProvider.IsWaiting())
             {
+                teleopCommandProvider.Rumble();
                 manipulator.Update(teleopCommandProvider);
                 driveTrain.Update(teleopCommandProvider);
             }
