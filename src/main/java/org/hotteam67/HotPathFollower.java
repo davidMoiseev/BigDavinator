@@ -119,13 +119,8 @@ public class HotPathFollower
 
     public void LoadPaths(Path[] paths)
     {
-        if (loadedPaths == null)
-        {
-            loadedPaths = new ArrayList<>();
-            return;
-        } 
-
-        loadedPaths.clear();
+        System.out.println("Start Path Load");
+        loadedPaths = new ArrayList<>();
         if (paths == null || paths.length == 0)
             return;
 
@@ -134,20 +129,28 @@ public class HotPathFollower
             Follower f = new Follower();
             try
             {
-                f.LeftFollower.setTrajectory(Pathfinder.readFromCSV(new File(paths[i].Left)));
+                if (new File(paths[i].Left).exists())
+                    f.LeftFollower.setTrajectory(Pathfinder.readFromCSV(new File(paths[i].Left)));
+                else
+                    return;
             }
             catch (Exception e)
             {
                 e.printStackTrace();
+                return;
             }
 
             try
             {
-                f.RightFollower.setTrajectory(Pathfinder.readFromCSV(new File(paths[i].Right)));
+                if (new File(paths[i].Right).exists())
+                    f.RightFollower.setTrajectory(Pathfinder.readFromCSV(new File(paths[i].Right)));
+                else
+                    return;
             }
             catch (Exception e)
             {
                 e.printStackTrace();
+                return;
             }
             ConfigFollower(f.RightFollower, f.LeftFollower);
             loadedPaths.add(f);
@@ -236,7 +239,9 @@ public class HotPathFollower
      *         from -1 to 1 for -100% output to 100% output
      */
     int points = 0;
-    public Output FollowNextPoint(int pathNumber, double currentPositionLeft, double currentPositionRight, double currentHeading)
+
+    public Output FollowNextPoint(int pathNumber, double currentPositionLeft, double currentPositionRight,
+            double currentHeading)
     {
         double turn = 0;
         if (pathNumber != lastPathFollowed)
