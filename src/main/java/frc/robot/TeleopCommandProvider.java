@@ -185,8 +185,16 @@ public class TeleopCommandProvider extends RobotCommandProvider
         outputSetPoint = (commandToBack) ? backTargetPosition : frontTargetPosition;
 
         turnDrive = ((driver.getStickRX() * .5));
+
         RightDrive = driver.getStickLY();
         LeftDrive = driver.getStickLY();
+
+        if (!RobotState.Actions.getInstance().isArmIsBack())
+        {
+            RightDrive *= -1;
+            LeftDrive *= -1;
+        }
+
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
         boolean up = operator.getPOV() == 180;

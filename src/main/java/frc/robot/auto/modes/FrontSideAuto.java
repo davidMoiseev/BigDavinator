@@ -35,8 +35,8 @@ public class FrontSideAuto extends AutoModeBase
         if (s == State.DriveToFront)
         {
             outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            DriveStraight(35);
-            if (DriveOnTarget(35) || interrupted)
+            DriveStraight(-35);
+            if (DriveOnTarget(-35) || interrupted)
             {
                 DoOffset();
                 s = State.PlaceFront;

@@ -709,6 +709,9 @@ public class Manipulator
 
     public void Update(RobotCommandProvider robotCommand, ManipulatorSetPoint setPoint)
     {
+        if (setPoint != null)
+            RobotState.Actions.getInstance().setArmIsBack(getArmSide(setPoint.armAngle()) == RobotSide.BACK);
+
         armPigeon.CalibratePigeon();
         if (robotCommand.ARMREZERO() && !zeroingArm)
         {

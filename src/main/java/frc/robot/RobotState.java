@@ -239,6 +239,23 @@ public class RobotState
         }
 
         /**
+         * @return the armIsBack
+         */
+        public boolean isArmIsBack()
+        {
+            return armIsBack;
+        }
+
+        /**
+         * @param armIsBack
+         *                      the armIsBack to set
+         */
+        public void setArmIsBack(boolean armIsBack)
+        {
+            this.armIsBack = armIsBack;
+        }
+
+        /**
          * @return the visionCanSeeTarget
          */
         public boolean isVisionCanSeeTarget()
@@ -386,5 +403,6 @@ public class RobotState
         private boolean visionDistanceAtTarget = false;
         private boolean visionTurnAtTarget = false;
         private boolean visionCanSeeTarget = false;
+        private boolean armIsBack = true;
     }
 }
