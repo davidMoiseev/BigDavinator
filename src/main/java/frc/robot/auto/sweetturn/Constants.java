@@ -2,32 +2,56 @@ package frc.robot.auto.sweetturn;
 
 public class Constants
 {
+
 	// SWEET PROFILES
 
-	/*
-	 * Instructions for calibrating Sweet turn. Goal: to calibrate turn before any
-	 * profile uses it. Tuning autonomous profile should be angles only. Steps: 1.)
-	 * Create turn only autonomous profile. 2.) Start with 90 Degree turn. 3.) Now
-	 * test 5, 15, 45, 60,360 degree turns 4.) test more if desired. Goal is to see
-	 * a various of ranges. 5.) I would also test if overshoot correction works. To
-	 * do this cal the "SWEET_TURN_RAMP_DOWN_START_OFFSET_X" artificially low. This
-	 * will force overshoot.
-	 */
 
-	/*
-	 * ******************************************** SWEET TURN PROFILE
-	 * ****************************************************************** |<
-	 * RAMP_DOWN_START_OFFSET(YawRate) >|
-	 *
-	 * | | _______MAX_PCT(TotalTravel)________ P / \ | C / \ T / \ | / T E U | T R A
-	 * N | R \ / D | P O U W | / N N \ | R R U A | T T / E | / \ Precise Turn speed
-	 * should be the lowest pct / \___PERCISE_TURN____| command that will allow the
-	 * robot to turn from / | stop / | X X Starting Podouble target Podouble Target
-	 * Podouble can only be reached when Yaw rate is less than
-	 * SWEET_TURN_MAX_EXIT_VELOCITY ANGLE
-	 *
-	 *
-	 */
+	/* Instructions for calibrating Sweet turn.
+	* Goal: to calibrate turn before any profile uses it. Tuning autonomous profile should be angles only.
+	*  Steps:
+	* 1.)  Create turn only autonomous profile.
+	* 2.)  Start with 90 Degree turn.
+	* 3.)  Now test 5, 15, 45, 60,360 degree turns
+	* 4.) test more if desired. Goal is to see a various of ranges.
+	* 5.) I would also test if overshoot correction works. To do this cal the "SWEET_TURN_RAMP_DOWN_START_OFFSET_X" artificially low. This will force overshoot.
+	*/
+
+
+	/* ******************************************** SWEET TURN PROFILE ******************************************************************
+	*                                                                    |<   RAMP_DOWN_START_OFFSET(YawRate) >|
+	*
+	*                                                                    |                                     |
+	*                                 _______MAX_PCT(TotalTravel)________
+	*  P                              /                                  \                                     |
+	*  C                             /                                    \
+	*  T                            /                                      \                                   |
+	*                              /                                        T
+	*                             E                                          U                                 |
+	*                            T                                            R
+	*                           A                                              N                               |
+	*                          R                                                \
+	*                         /                                                  D                             |
+	*                        P                                                    O
+	*                       U                                                      W                           |
+	*                      /                                                        N
+	*                     N                                                          \                         |
+	*                    R                                                            R
+	*                   U                                                              A                       |
+	*                  T                                                                T
+	*                 /                                                                  E                     |
+	*                /                                                                    \                         Precise Turn speed should be the lowest pct
+	*               /                                                                      \___PERCISE_TURN____|    command that will allow the robot to turn from
+	*              /                                                                                           |    stop
+	*             /                                                                                            |
+	*            X                                                                                             X
+	*    Starting Point                                                                                   target Point
+	*                                                                                          Target Point can only be reached when
+	*                                                                                     Yaw rate is less than SWEET_TURN_MAX_EXIT_VELOCITY
+	*                         ANGLE
+	*
+	*
+	*/
+
 
 	/*
 	 * SWEET_TURN_RAMP_UP_RATE is setup to reduce initial jerk when starting turn.
@@ -48,9 +72,9 @@ public class Constants
 	public static final double SWEET_TURN_MAX_PCT_TOTAL_CHANGE_0 = 5; // Degree
 	public static final double SWEET_TURN_MAX_PCT_TOTAL_CHANGE_1 = 45; // Degree
 	public static final double SWEET_TURN_MAX_PCT_TOTAL_CHANGE_2 = 90; // Degree
-	public static final double SWEET_TURN_MAX_PCT_0 = 0.3f; // pct
-	public static final double SWEET_TURN_MAX_PCT_1 = 0.8f; // pct
-	public static final double SWEET_TURN_MAX_PCT_2 = 1.0f; // pct
+	public static final double SWEET_TURN_MAX_PCT_0 = 0.3; // pct
+	public static final double SWEET_TURN_MAX_PCT_1 = 0.8; // pct
+	public static final double SWEET_TURN_MAX_PCT_2 = 1.0; // pct
 
 	/*
 	 * SWEET_TURN_RAMP_DOWN_START_OFFSET_YAW_RATE_X and
@@ -87,9 +111,9 @@ public class Constants
 	public static final double SWEET_TURN_RAMP_DOWN_RATE_ANGLEREMAINING_0 = 10; // Degree
 	public static final double SWEET_TURN_RAMP_DOWN_RATE_ANGLEREMAINING_1 = 40; // Degree
 	public static final double SWEET_TURN_RAMP_DOWN_RATE_ANGLEREMAINING_2 = 60; // Degree
-	public static final double SWEET_TURN_RAMP_DOWN_RATE_0 = 1.0f; // pct/loop(20ms)
-	public static final double SWEET_TURN_RAMP_DOWN_RATE_1 = 0.6f; // pct/loop(20ms)
-	public static final double SWEET_TURN_RAMP_DOWN_RATE_2 = 0.2f; // pct/loop(20ms)
+	public static final double SWEET_TURN_RAMP_DOWN_RATE_0 = 1.0; // pct/loop(20ms)
+	public static final double SWEET_TURN_RAMP_DOWN_RATE_1 = 0.6; // pct/loop(20ms)
+	public static final double SWEET_TURN_RAMP_DOWN_RATE_2 = 0.2; // pct/loop(20ms)
 
 	/*
 	 * SWEET_TURN_PERCISE_TURN_PCT is the minimum pct output to the motors that will
@@ -97,7 +121,7 @@ public class Constants
 	 * SWEET_TURN_PERCISE_TURN_PCT the robot will stop at the same location or
 	 * within the target.
 	 */
-	public static final double SWEET_TURN_PERCISE_TURN_PCT = 0.175f;
+	public static final double SWEET_TURN_PERCISE_TURN_PCT = 0.055;
 
 	/*
 	 * SWEET_TURN_MAX_EXIT_VELOCITY is the maximum yaw rate in degrees per second
@@ -106,20 +130,12 @@ public class Constants
 	 * Originally set to 75 degrees per second. If too low unneeded corrections will
 	 * occur and sweet turn can get stuck in a loop
 	 */
-	public static final double SWEET_TURN_MAX_EXIT_VELOCITY = 75.0f; // degrees/Second
+	public static final double SWEET_TURN_MAX_EXIT_VELOCITY = 55.0; // degrees/Second
 
 	/*
 	 * SWEET_TURN_ITERATE_MAX number of corrections allowed if an overshoot occurs.
 	 */
 	public static final double SWEET_TURN_ITERATE_MAX = 3;
-
-	// -----------------------------------------------------
-	// ULTRASONICSSS VAR
-	// -----------------------------------------------------
-	public static final int ULTRA_LEFT = 0;
-	public static final int ULTRA_RIGHT = 1;
-	public static final int ULTRA_REAR = 2;
-	public static final double ULTRA_VOLTS_TO_INCHES = 41.667f;
 
 	public static final Point2D SweetTurnMaxPct[] =
 	{ new Point2D(SWEET_TURN_MAX_PCT_TOTAL_CHANGE_0, SWEET_TURN_MAX_PCT_0),

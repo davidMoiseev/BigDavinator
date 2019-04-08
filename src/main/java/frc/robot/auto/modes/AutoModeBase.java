@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DriveTrain;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
-import frc.robot.auto.SweetTurn;
+import frc.robot.auto.sweetturn.SweetTurn;
 import frc.robot.auto.Turn;
 
 public abstract class AutoModeBase extends RobotCommandProvider
@@ -49,7 +49,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         rightOffset = state.getRightDriveEncoder();
         interrupted = false;
         isWaiting = false;
-        sweetTurn.SweetTurnReset();
+        sweetTurn.SweetTurnRestart();
         turn.Reset();
         drivingStraight = false;
         LeftDrive = 0;
@@ -80,7 +80,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         SmartDashboard.putNumber("currentHeading", currentHeading);
         SmartDashboard.putNumber("currentSpeed", currentSpeed);
 
-        if (!sweetTurn.IsTurnComplete())
+        if (!sweetTurn.TurnComplete())
         {
             double turn = sweetTurn.SweetTurnOutput(target, 5.0, .5, currentHeading, currentSpeed);
             turnDrive = turn;
@@ -91,7 +91,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
     public boolean TurnOnTarget()
     {
-        return sweetTurn.IsTurnComplete();
+        return sweetTurn.TurnComplete();
     }
 
     public void DriveStraight(double dist)

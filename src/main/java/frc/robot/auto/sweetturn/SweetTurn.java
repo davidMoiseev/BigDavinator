@@ -1,6 +1,6 @@
 package frc.robot.auto.sweetturn;
 
-public class SweetTurnNew
+public class SweetTurn
 {
     private enum sweetTurnSt
 	{
@@ -31,7 +31,7 @@ public class SweetTurnNew
 		complete = false;
 	}
 
-	public double DoSweetTurn(double target, double MinErrorToExit, double maxSpeed, double currentHeading, double currentTurnSpeed)
+	public double SweetTurnOutput(double target, double MinErrorToExit, double maxSpeed, double currentHeading, double currentTurnSpeed)
 	{
 		double absError = Math.abs(target - currentHeading);
 		double maxPct;
