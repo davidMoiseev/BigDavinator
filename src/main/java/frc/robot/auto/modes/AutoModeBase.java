@@ -8,11 +8,13 @@ import frc.robot.DriveTrain;
 import frc.robot.RobotCommandProvider;
 import frc.robot.RobotState;
 import frc.robot.auto.SweetTurn;
+import frc.robot.auto.Turn;
 
 public abstract class AutoModeBase extends RobotCommandProvider
 {
     protected final HotPathFollower pathFollower;
     protected final SweetTurn sweetTurn;
+    protected final Turn turn;
     protected double leftOffset = 0;
     protected double rightOffset = 0;
     protected boolean isWaiting = false;
@@ -26,6 +28,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         pathFollower.LoadPaths(paths);
 
         sweetTurn = new SweetTurn();
+        turn = new Turn();
     }
 
     protected void FollowPath(int path, boolean inverted)
@@ -47,6 +50,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         interrupted = false;
         isWaiting = false;
         sweetTurn.SweetTurnReset();
+        turn.Reset();
         drivingStraight = false;
         LeftDrive = 0;
         RightDrive = 0;
