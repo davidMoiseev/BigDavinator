@@ -17,7 +17,7 @@ public class AutoRunner
     {
         RocketHatchLeft(() -> new RocketAuto(20, -35, -90, -10)),
         RocketHatchRight(() -> new RocketAuto(-20, 35, 90, 10)),
-        RightFrontSideCargoShip(() -> new FrontSideAuto(Paths.RightFrontStation, Paths.RightStationNearSide));
+        RightFrontSideCargoShip(() -> new FrontSideAuto(45));
 
         public final Supplier<AutoModeBase> Initializer;
         private Auto(Supplier<AutoModeBase> initializer)

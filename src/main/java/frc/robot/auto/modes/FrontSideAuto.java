@@ -16,11 +16,13 @@ public class FrontSideAuto extends AutoModeBase
     }
 
     State s = State.DriveToFront;
+    private final double stationAngle;
 
-    public FrontSideAuto(Path stationPath, Path sidePath)
+    public FrontSideAuto(double stationAngle)
     {
         super(new Path[]
         {});
+        this.stationAngle = stationAngle;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class FrontSideAuto extends AutoModeBase
         if (s == State.TurnToStation)
         {
             outputSetPoint = ManipulatorSetPoint.hatch_out_back;
-            TurnToTarget(45);
+            TurnToTarget(stationAngle);
             if (TurnOnTarget())
             {
                 DoOffset();
