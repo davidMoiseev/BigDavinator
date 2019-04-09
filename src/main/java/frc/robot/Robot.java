@@ -52,6 +52,7 @@ public class Robot extends TimedRobot
 
     public int state = 0;
     boolean profileFinished = false;
+    int quitAutonTimer = 0;
 
     @Override
     public void robotInit()
@@ -83,13 +84,24 @@ public class Robot extends TimedRobot
         teleopCommandProvider.Update();
 
         if (driver.getButtonB())
-            quitAuton = true;
+        {
+            if (quitAutonTimer < 25)
+                quitAutonTimer++;
+            else
+                quitAuton = true;
+        }
+        else
+            quitAutonTimer = 0;
         // May have to invert driveturn/drivespeed
         if (!autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
         {
             AutoModeBase autonCommandProvider = autoRunner.Run();
 
             teleopCommandProvider.SetSpearsClosed(autonCommandProvider.SpearsClosed());
+            if (autonCommandProvider.ManipulatorSetPoint() != null)
+            {
+                teleopCommandProvider.SetUseBack((autonCommandProvider.ManipulatorSetPoint().armAngle() < 0));
+            }
 
             autonCommandProvider.setFrontFlipper(teleopCommandProvider.FrontFlipperBumpCount());
             autonCommandProvider.setBackFlipper(teleopCommandProvider.BackFlipperBumpCount());
@@ -126,6 +138,7 @@ public class Robot extends TimedRobot
         driveTrain.zeroSensors();
         driveTrain.zeroMotors();
         profileFinished = false;
+        quitAutonTimer = 0;
     }
 
     boolean quitAuton = true;
@@ -139,15 +152,13 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
-        if (!pigeonInitializing)
-        {
-            manipulator.DisplaySensors();
-            driveTrain.readSensors();
-            driveTrain.writeLogs();
+        manipulator.DisplaySensors();
+        driveTrain.readSensors();
+        driveTrain.writeLogs();
 
-            manipulator.UpdateRobotState();
-            driveTrain.UpdateRobotState();
-        }
+        manipulator.UpdateRobotState();
+        driveTrain.UpdateRobotState();
+
     }
 
     @Override

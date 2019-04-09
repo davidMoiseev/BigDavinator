@@ -46,6 +46,11 @@ public class TeleopCommandProvider extends RobotCommandProvider
         super.Reset();
     }
 
+    public void SetUseBack(boolean useBack)
+    {
+        commandToBack = useBack;
+    }
+
     public void Update()
     {
         ManipulatorSetPoint frontTargetPosition = null;
