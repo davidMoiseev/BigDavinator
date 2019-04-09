@@ -111,8 +111,8 @@ public abstract class AutoModeBase extends RobotCommandProvider
         double error = target - GetDist();
         double desiredDrive = error * .5;
 
-        if (Math.abs(desiredDrive) - Math.abs(LeftDrive) > .02)
-            desiredDrive = LeftDrive + (.02 * Math.signum(desiredDrive));
+        if (Math.abs(desiredDrive) - Math.abs(LeftDrive) > .03)
+            desiredDrive = LeftDrive + (.03 * Math.signum(desiredDrive));
         if (Math.abs(desiredDrive) < .12)
             desiredDrive = .12 * Math.signum(desiredDrive);
 

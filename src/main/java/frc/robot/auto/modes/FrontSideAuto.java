@@ -20,7 +20,7 @@ public class FrontSideAuto extends AutoModeBase
     public FrontSideAuto(Path stationPath, Path sidePath)
     {
         super(new Path[]
-        { stationPath, sidePath });
+        {});
     }
 
     @Override
@@ -105,38 +105,6 @@ public class FrontSideAuto extends AutoModeBase
             {
                 DoOffset();
                 spearsClosed = false;
-                s = State.Complete;
-            }
-        }
-        if (s == State.DriveToSide)
-        {
-            FollowPath(1, true);
-            if (pathFollower.getPoints() > 15)
-            {
-                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            }
-            if (pathFollower.getPoints() > 75)
-            {
-                DoOffset();
-                s = State.TurnToSide;
-            }
-        }
-        if (s == State.TurnToSide)
-        {
-            TurnToTarget(90);
-            if (TurnOnTarget())
-            {
-                DoOffset();
-                s = State.PlaceSide;
-            }
-        }
-        if (s == State.PlaceSide)
-        {
-            isWaiting = true;
-            if (state.isSpearsClosed())
-            {
-                DoOffset();
-                spearsClosed = true;
                 s = State.Complete;
             }
         }

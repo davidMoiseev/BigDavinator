@@ -52,30 +52,17 @@ public class RocketAuto extends AutoModeBase
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
 
         if (s == State.DriveOffHab)
-        {
-            /*
-            if (oopCount < 25)
-                oopCount++;
-            else
-                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            
+        {   
             DriveStraight(1.5);
             if (DriveOnTarget(1.5))
             {
                 DoOffset();
                 s = State.TurnToRocketFirst;
             }
-            */
-
-            TurnToTarget(180);
-            if (TurnOnTarget())
-            {
-                DoOffset();
-                s = State.Complete;
-            }
         }
         if (s == State.TurnToRocketFirst)
         {
+            outputSetPoint = ManipulatorSetPoint.hatch_low_back;
             TurnToTarget(rocketAngleFirst);
             if (TurnOnTarget())
             {
@@ -85,8 +72,8 @@ public class RocketAuto extends AutoModeBase
         }
         if (s == State.DriveToRocket)
         {
-            DriveStraight(4.5);
-            if (DriveOnTarget(4.5))
+            DriveStraight(4.3);
+            if (DriveOnTarget(4.3))
             {
                 DoOffset();
                 s = State.TurnToRocketSecond;
