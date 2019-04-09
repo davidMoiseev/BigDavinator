@@ -54,12 +54,14 @@ public abstract class AutoModeBase extends RobotCommandProvider
     }
 
     public abstract boolean IsComplete();
+
     public boolean IsWaiting()
     {
         return isWaiting;
     }
 
     protected boolean interrupted = false;
+
     public void AttemptInterrupt()
     {
         interrupted = true;
@@ -81,7 +83,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
             double turn = sweetTurn.SweetTurnOutput(target, 5.0, .5, currentHeading, currentSpeed);
             turnDrive = turn;
         }
-        else    
+        else
             turnDrive = 0;
 
         SmartDashboard.putNumber("AAA AUTO TURN", turnDrive);
@@ -92,24 +94,27 @@ public abstract class AutoModeBase extends RobotCommandProvider
         return sweetTurn.TurnComplete();
     }
 
-    public void DriveStraight(double dist)
+    public void DriveStraight(double target)
     {
         if (!drivingStraight)
         {
             driveStraightHeading = RobotState.getInstance().getHeading();
             drivingStraight = true;
         }
-        double out = (RobotState.getInstance().getHeading() - driveStraightHeading) * .05;
-        if (Math.abs(out) > .1) out = .1 * Math.signum(out);
-        turnDrive = out;
-        double error = dist - (RobotState.getInstance().getLeftDriveEncoder() - leftOffset);
-        double desiredOut = error * .05;
+        double desiredTurn = (RobotState.getInstance().getHeading() - driveStraightHeading) * .05;
 
-        if (Math.abs(desiredOut) - Math.abs(LeftDrive) > .025)
-            desiredOut = LeftDrive + (.025 * Math.signum(desiredOut));
+        if (Math.abs(desiredTurn) > .1)
+            desiredTurn = .1 * Math.signum(desiredTurn);
 
-        LeftDrive = desiredOut;
-        RightDrive = desiredOut;
+        double error = target - GetDist();
+        double desiredDrive = error * .025;
+
+        if (Math.abs(desiredDrive) - Math.abs(LeftDrive) > .015)
+            desiredDrive = LeftDrive + (.015 * Math.signum(desiredDrive));
+
+        LeftDrive = desiredDrive;
+        RightDrive = desiredDrive;
+        turnDrive = desiredTurn;
 
         SmartDashboard.putNumber("AAA DRIVE ERROR", error);
 
@@ -125,12 +130,12 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
     public double GetDist()
     {
-        return (RobotState.getInstance().getLeftDriveEncoder() - leftOffset);
+        return (RobotState.getInstance().getLeftDriveEncoder() - leftOffset) * (DriveTrain.WHEEL_DIAMETER * Math.PI);
     }
 
     public boolean DriveOnTarget(double dist)
     {
-        return Math.abs(GetDist()) > Math.abs(dist);
+        return Math.abs(dist - GetDist()) < 1;
     }
 
     public void setFrontFlipper(int bump)

@@ -44,8 +44,8 @@ public class FrontSideAuto extends AutoModeBase
                 oopCount++;
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            DriveStraight(-50);
-            if (DriveOnTarget(-50))
+            DriveStraight(-2);
+            if (DriveOnTarget(-2))
             {
                 DoOffset();
                 s = State.PlaceFront;
@@ -82,7 +82,7 @@ public class FrontSideAuto extends AutoModeBase
             {
                 DoOffset();
                 spearsClosed = false;
-                s = State.DriveToSide;
+                s = State.Complete;
             }
         }
         if (s == State.DriveToSide)

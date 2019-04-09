@@ -84,8 +84,8 @@ public class RocketAuto extends AutoModeBase
         }
         if (s == State.BackupFromRocket)
         {
-            DriveStraight(35);
-            if (DriveOnTarget(35))
+            DriveStraight(1);
+            if (DriveOnTarget(1))
             {
                 DoOffset();
                 limitSwitchScore = false;
@@ -106,14 +106,13 @@ public class RocketAuto extends AutoModeBase
 
         if (s == State.DriveToStation)
         {
-            DriveStraight(-100);
-            if (DriveOnTarget(-100))
+            DriveStraight(4);
+            if (DriveOnTarget(4))
             {
                 DoOffset();
                 s = State.Complete;
             }
-            if (Math.abs(GetDist()) > 50)
-                outputSetPoint = ManipulatorSetPoint.hatch_out_back;
+            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
         }
 
         if (s == State.Pickup)
