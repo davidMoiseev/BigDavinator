@@ -40,9 +40,12 @@ public class FrontSideAuto extends AutoModeBase
 
         if (s == State.DriveToFront)
         {
-            outputSetPoint = ManipulatorSetPoint.hatch_low_back;
+            if (oopCount < 15)
+                oopCount++;
+            else
+                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
             DriveStraight(-50);
-            if (DriveOnTarget(-50) || interrupted)
+            if (DriveOnTarget(-50))
             {
                 DoOffset();
                 s = State.PlaceFront;
@@ -89,7 +92,7 @@ public class FrontSideAuto extends AutoModeBase
             {
                 outputSetPoint = ManipulatorSetPoint.hatch_low_back;
             }
-            if (pathFollower.getPoints() > 80)
+            if (pathFollower.getPoints() > 75)
             {
                 DoOffset();
                 s = State.TurnToSide;

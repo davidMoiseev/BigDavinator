@@ -208,7 +208,7 @@ public class Robot extends TimedRobot
                     "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags,
                     Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
-            autoRunner.Select(Auto.RightFrontSideCargoShip);
+            autoRunner.Select(Auto.RocketHatchRight);
             quitAuton = true;
         }
 

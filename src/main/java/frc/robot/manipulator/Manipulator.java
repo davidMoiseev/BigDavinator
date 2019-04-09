@@ -228,7 +228,7 @@ public class Manipulator
             {
                 arm.setTarget(tmpArm);
                 wrist.setTarget(ManipulatorSetPoint.firstPosition);
-                if (wrist.getPosition() < ManipulatorSetPoint.limit_front_high.wristAngle())
+                if (wrist.getPosition() < 90)
                 {
                     manipulatorState = ManipulatorState.outOfPackage;
                 }
