@@ -92,7 +92,7 @@ public class Constants
 	public static final double SWEET_TURN_RAMP_DOWN_START_OFFSET_YAW_RATE_0 = 50; // degrees/Second
 	public static final double SWEET_TURN_RAMP_DOWN_START_OFFSET_YAW_RATE_1 = 180; // degrees/Second
 	public static final double SWEET_TURN_RAMP_DOWN_START_OFFSET_YAW_RATE_2 = 220; // degrees/Second
-	public static final double SWEET_TURN_RAMP_DOWN_START_OFFSET_0 = 15; // Degree
+	public static final double SWEET_TURN_RAMP_DOWN_START_OFFSET_0 = 5; // Degree
 	public static final double SWEET_TURN_RAMP_DOWN_START_OFFSET_1 = 35; // Degree
 	public static final double SWEET_TURN_RAMP_DOWN_START_OFFSET_2 = 75; // Degree
 
@@ -108,11 +108,11 @@ public class Constants
 	 * doubleerpolation is used to take the output = Func(Angle Remaining at start
 	 * of ramp down)
 	 */
-	public static final double SWEET_TURN_RAMP_DOWN_RATE_ANGLEREMAINING_0 = 10; // Degree
+	public static final double SWEET_TURN_RAMP_DOWN_RATE_ANGLEREMAINING_0 = 5; // Degree
 	public static final double SWEET_TURN_RAMP_DOWN_RATE_ANGLEREMAINING_1 = 40; // Degree
 	public static final double SWEET_TURN_RAMP_DOWN_RATE_ANGLEREMAINING_2 = 60; // Degree
 	public static final double SWEET_TURN_RAMP_DOWN_RATE_0 = 1.0; // pct/loop(20ms)
-	public static final double SWEET_TURN_RAMP_DOWN_RATE_1 = 0.6; // pct/loop(20ms)
+	public static final double SWEET_TURN_RAMP_DOWN_RATE_1 = 0.02; // pct/loop(20ms)
 	public static final double SWEET_TURN_RAMP_DOWN_RATE_2 = 0.2; // pct/loop(20ms)
 
 	/*

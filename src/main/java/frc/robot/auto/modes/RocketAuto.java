@@ -67,7 +67,7 @@ public class RocketAuto extends AutoModeBase
             }
             */
 
-            TurnToTarget(90);
+            TurnToTarget(180);
             if (TurnOnTarget())
             {
                 DoOffset();

@@ -1,5 +1,6 @@
 package frc.robot.auto.modes;
 
+import org.hotteam67.HotLogger;
 import org.hotteam67.HotPathFollower;
 import org.hotteam67.Path;
 
@@ -87,6 +88,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
             turnDrive = 0;
 
         SmartDashboard.putNumber("AAA AUTO TURN", turnDrive);
+        HotLogger.Log("Turn Rate", currentSpeed);
     }
 
     public boolean TurnOnTarget()

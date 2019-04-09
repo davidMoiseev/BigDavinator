@@ -1,10 +1,16 @@
 package frc.robot.auto.sweetturn;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.hotteam67.HotLogger;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SweetTurn
 {
-    private enum sweetTurnSt
+	private enum sweetTurnSt
 	{
 		sweetTurn_reset, sweetTurn_RampIn, sweetTurn_Max, sweetTurn_RampDown, sweetTurn_Precision
 	};
@@ -40,7 +46,8 @@ public class SweetTurn
 		complete = false;
 	}
 
-	public double SweetTurnOutput(double target, double MinErrorToExit, double maxSpeed, double currentHeading, double currentTurnSpeed)
+	public double SweetTurnOutput(double target, double MinErrorToExit, double maxSpeed, double currentHeading,
+			double currentTurnSpeed)
 	{
 		double absError = Math.abs(target - currentHeading);
 		double maxPct;
@@ -78,6 +85,7 @@ public class SweetTurn
 
 		rampDownStart = sweetTurnRampDownStart.GetMappedValue(Math.abs(currentTurnSpeed));
 
+		HotLogger.Log("rampDownStart", rampDownStart);
 		if (sweetTurnState == sweetTurnSt.sweetTurn_RampIn)
 		{
 			sweetTurnRate += Constants.SWEET_TURN_RAMP_UP_RATE;
@@ -89,11 +97,13 @@ public class SweetTurn
 				sweetTurnIterateCounter = 0;
 				complete = true;
 				sweetTurnState = sweetTurnSt.sweetTurn_reset;
-			} else if (absError <= rampDownStart)
+			}
+			else if (absError <= rampDownStart)
 			{
 				sweetTurnState = sweetTurnSt.sweetTurn_RampDown;
 				remainingAngleAtStartRampDown = absError;
-			} else if (sweetTurnRate >= maxPct)
+			}
+			else if (sweetTurnRate >= maxPct)
 			{
 				sweetTurnState = sweetTurnSt.sweetTurn_Max;
 			}
@@ -111,11 +121,13 @@ public class SweetTurn
 				sweetTurnIterateCounter = 0;
 				complete = true;
 				sweetTurnState = sweetTurnSt.sweetTurn_reset;
-			} else if (absError <= rampDownStart)
+			}
+			else if (absError <= rampDownStart)
 			{
 				sweetTurnState = sweetTurnSt.sweetTurn_RampDown;
 				remainingAngleAtStartRampDown = absError;
-			} else if (sweetTurnRate >= maxPct)
+			}
+			else if (sweetTurnRate >= maxPct)
 			{
 				sweetTurnState = sweetTurnSt.sweetTurn_Max;
 			}
@@ -124,6 +136,7 @@ public class SweetTurn
 		if (sweetTurnState == sweetTurnSt.sweetTurn_RampDown)
 		{
 			sweetTurnRate -= sweetTurnRampDownRate.GetMappedValue(remainingAngleAtStartRampDown);
+			HotLogger.Log("sweetTurnRampDown", sweetTurnRampDownRate.GetMappedValue(remainingAngleAtStartRampDown));
 
 			if (absError <= MinErrorToExit && Math.abs(currentTurnSpeed) <= Constants.SWEET_TURN_MAX_EXIT_VELOCITY)
 			{
@@ -132,7 +145,8 @@ public class SweetTurn
 				sweetTurnIterateCounter = 0;
 				complete = true;
 				sweetTurnState = sweetTurnSt.sweetTurn_reset;
-			} else if (sweetTurnRate <= Constants.SWEET_TURN_PERCISE_TURN_PCT)
+			}
+			else if (sweetTurnRate <= Constants.SWEET_TURN_PERCISE_TURN_PCT)
 			{
 				sweetTurnState = sweetTurnSt.sweetTurn_Precision;
 			}
@@ -156,11 +170,13 @@ public class SweetTurn
 		SmartDashboard.putNumber("AAA Sweet Heading", currentHeading);
 		SmartDashboard.putNumber("AAA Target", target);
 
-		return -sweetTurnDirection *sweetTurnRate;
+		return -sweetTurnDirection * sweetTurnRate;
 	}
 
 	public boolean TurnComplete()
 	{
 		return complete;
 	}
+
+	public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("rampDownStart", "sweetTurnRampDown"));
 }

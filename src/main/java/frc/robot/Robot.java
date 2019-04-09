@@ -207,7 +207,7 @@ public class Robot extends TimedRobot
             NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("stream").setDouble(2);
             pigeonInitializing = true;
 
-            HotLogger.Setup("Auto State", "ENCODER JUMP HAPPENED", "H_DRIVE", "matchNumber", "Has Reset Occured",
+            HotLogger.Setup("Auto State", "Turn Rate", "ENCODER JUMP HAPPENED", "H_DRIVE", "matchNumber", "Has Reset Occured",
                     "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags,
                     Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
 
