@@ -116,11 +116,13 @@ public class Robot extends TimedRobot
                 manipulator.Update(teleopCommandProvider, autonCommandProvider.ManipulatorSetPoint());
                 driveTrain.Update(teleopCommandProvider);
                 autonCommandProvider.SetSpearsClosed(teleopCommandProvider.SpearsClosed());
+                //driveTrain.SetBrakeMode(false);
             }
             else
             {
                 manipulator.Update(autonCommandProvider);
                 driveTrain.Update(autonCommandProvider);
+                //driveTrain.SetBrakeMode(true);
             }
         }
         else
@@ -128,6 +130,7 @@ public class Robot extends TimedRobot
             quitAuton = true;
             manipulator.Update(teleopCommandProvider);
             driveTrain.Update(teleopCommandProvider);
+            //driveTrain.SetBrakeMode(false);
         }
     }
 

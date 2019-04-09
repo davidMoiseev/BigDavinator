@@ -12,21 +12,27 @@ import frc.robot.manipulator.Manipulator;
 
 public class RocketAuto extends AutoModeBase
 {
-    private final double rocketAngle;
+    private final double rocketAngleFirst;
+    private final double rocketAngleSecond;
+    private final double angleFromRocket;
+    private final double angleToStation;
 
-    public RocketAuto(double rocketAngle, Path rocketPath)
+    public RocketAuto(double rocketAngleFirst, double rocketAngleSecond, double angleFromRocket, double angleToStation)
     {
         super(new Path[]
-        { rocketPath });
-        this.rocketAngle = rocketAngle;
+        { });
+        this.rocketAngleFirst = rocketAngleFirst;
+        this.rocketAngleSecond = rocketAngleSecond;
+        this.angleFromRocket = angleFromRocket;
+        this.angleToStation = angleToStation;
     }
 
     enum State
     {
-        Drive, TurnToRocket, Place, BackupFromRocket, TurnToStation, Pickup, Complete, Shuffle, DriveToStation
+        DriveOffHab, TurnToRocketFirst, Place, BackupFromRocket, TurnToStation, Pickup, Complete, Shuffle, DriveToStation, DriveToRocket, TurnToRocketSecond, TurnFromRocket, DriveFromRocket
     }
 
-    State s = State.Drive;
+    State s = State.DriveOffHab;
 
     @Override
     public boolean IsComplete()
@@ -45,28 +51,53 @@ public class RocketAuto extends AutoModeBase
         RobotState state = RobotState.getInstance();
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
 
-        if (s == State.Drive)
+        if (s == State.DriveOffHab)
         {
+            /*
             if (oopCount < 25)
                 oopCount++;
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-
-            FollowPath(0, false);
-
-            if (pathFollower.GetState() == HotPathFollower.State.Complete || pathFollower.getPoints() > 110)
+            
+            DriveStraight(1.5);
+            if (DriveOnTarget(1.5))
             {
                 DoOffset();
-                s = State.TurnToRocket;
+                s = State.TurnToRocketFirst;
             }
-        }
-        if (s == State.TurnToRocket)
-        {
-            TurnToTarget(rocketAngle);
+            */
+
+            TurnToTarget(90);
             if (TurnOnTarget())
             {
                 DoOffset();
-                turnDrive = 0;
+                s = State.Complete;
+            }
+        }
+        if (s == State.TurnToRocketFirst)
+        {
+            TurnToTarget(rocketAngleFirst);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.DriveToRocket;
+            }
+        }
+        if (s == State.DriveToRocket)
+        {
+            DriveStraight(4.5);
+            if (DriveOnTarget(4.5))
+            {
+                DoOffset();
+                s = State.TurnToRocketSecond;
+            }
+        }
+        if (s == State.TurnToRocketSecond)
+        {
+            TurnToTarget(rocketAngleSecond);
+            if (TurnOnTarget())
+            {
+                DoOffset();
                 s = State.Place;
             }
         }
@@ -84,35 +115,54 @@ public class RocketAuto extends AutoModeBase
         }
         if (s == State.BackupFromRocket)
         {
-            DriveStraight(1);
-            if (DriveOnTarget(1))
+            DriveStraight(.25);
+            if (DriveOnTarget(.25))
             {
                 DoOffset();
                 limitSwitchScore = false;
                 manipulatorScore = false;
-                s = State.TurnToStation;
+                s = State.TurnFromRocket;
             }
 
         }
+        if (s == State.TurnFromRocket)
+        {
+            TurnToTarget(angleFromRocket);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.DriveFromRocket;
+            }
+        }
+        if (s == State.DriveFromRocket)
+        {
+            DriveStraight(1);
+            if (DriveOnTarget(1))
+            {
+                DoOffset();
+                s = State.TurnToStation;
+            }
+        }
+
         if (s == State.TurnToStation)
         {
-            TurnToTarget(0);
-            if (turnDrive == 0)
+            TurnToTarget(angleToStation);
+            if (TurnOnTarget())
             {
                 DoOffset();
                 s = State.DriveToStation;
             }
+            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
         }
 
         if (s == State.DriveToStation)
         {
-            DriveStraight(4);
-            if (DriveOnTarget(4))
+            DriveStraight(-4);
+            if (DriveOnTarget(-4))
             {
                 DoOffset();
-                s = State.Complete;
+                s = State.Pickup;
             }
-            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
         }
 
         if (s == State.Pickup)

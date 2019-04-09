@@ -80,7 +80,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
         if (!sweetTurn.TurnComplete())
         {
-            double turn = sweetTurn.SweetTurnOutput(target, 5.0, .5, currentHeading, currentSpeed);
+            double turn = sweetTurn.SweetTurnOutput(target, 5.0, .3, currentHeading, currentSpeed);
             turnDrive = turn;
         }
         else
@@ -101,16 +101,18 @@ public abstract class AutoModeBase extends RobotCommandProvider
             driveStraightHeading = RobotState.getInstance().getHeading();
             drivingStraight = true;
         }
-        double desiredTurn = (RobotState.getInstance().getHeading() - driveStraightHeading) * .05;
+        double desiredTurn = (RobotState.getInstance().getHeading() - driveStraightHeading) * .01;
 
         if (Math.abs(desiredTurn) > .1)
             desiredTurn = .1 * Math.signum(desiredTurn);
 
         double error = target - GetDist();
-        double desiredDrive = error * .025;
+        double desiredDrive = error * .5;
 
-        if (Math.abs(desiredDrive) - Math.abs(LeftDrive) > .015)
-            desiredDrive = LeftDrive + (.015 * Math.signum(desiredDrive));
+        if (Math.abs(desiredDrive) - Math.abs(LeftDrive) > .02)
+            desiredDrive = LeftDrive + (.02 * Math.signum(desiredDrive));
+        if (Math.abs(desiredDrive) < .12)
+            desiredDrive = .12 * Math.signum(desiredDrive);
 
         LeftDrive = desiredDrive;
         RightDrive = desiredDrive;
@@ -118,7 +120,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
         SmartDashboard.putNumber("AAA DRIVE ERROR", error);
 
-        if (Math.abs(error) < .5)
+        if (DriveOnTarget(target))
         {
             LeftDrive = 0;
             RightDrive = 0;
@@ -130,12 +132,12 @@ public abstract class AutoModeBase extends RobotCommandProvider
 
     public double GetDist()
     {
-        return (RobotState.getInstance().getLeftDriveEncoder() - leftOffset) * (DriveTrain.WHEEL_DIAMETER * Math.PI);
+        return ((RobotState.getInstance().getLeftDriveEncoder() - leftOffset) / DriveTrain.ENCODER_TO_REVS) * (DriveTrain.WHEEL_DIAMETER * Math.PI);
     }
 
     public boolean DriveOnTarget(double dist)
     {
-        return Math.abs(dist - GetDist()) < 1;
+        return Math.abs(dist - GetDist()) < .05;
     }
 
     public void setFrontFlipper(int bump)

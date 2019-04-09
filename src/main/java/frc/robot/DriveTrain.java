@@ -12,6 +12,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.hotteam67.HotLogger;
@@ -120,6 +121,15 @@ public class DriveTrain implements IPigeonWrapper
     public static final class ANGLE_PID
     {
         public static final double P = .6 * (-1.0 / 80.0);
+    }
+
+    public void SetBrakeMode(boolean brakeMode)
+    {
+        IdleMode mode = (brakeMode) ? IdleMode.kBrake : IdleMode.kCoast;
+        rightMotor.setIdleMode(mode);
+        leftMotor.setIdleMode(mode);
+        rightFollower.setIdleMode(mode);
+        leftFollower.setIdleMode(mode);
     }
 
     /**

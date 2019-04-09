@@ -12,7 +12,7 @@ public class FrontSideAuto extends AutoModeBase
 {
     enum State
     {
-        DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide
+        DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide, BackupFromStation, TurnToStation, TurnToStation2
     }
 
     State s = State.DriveToFront;
@@ -43,9 +43,9 @@ public class FrontSideAuto extends AutoModeBase
             if (oopCount < 15)
                 oopCount++;
             else
-                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            DriveStraight(-2);
-            if (DriveOnTarget(-2))
+                outputSetPoint = ManipulatorSetPoint.hatch_low_front;
+            DriveStraight(3);
+            if (DriveOnTarget(3))
             {
                 DoOffset();
                 s = State.PlaceFront;
@@ -58,18 +58,41 @@ public class FrontSideAuto extends AutoModeBase
             {
                 DoOffset();
                 spearsClosed = true;
+                s = State.BackupFromStation;
+            }
+        }
+        if (s == State.BackupFromStation)
+        {
+            DriveStraight(-.5);
+            if (DriveOnTarget(-.5))
+            {
+                DoOffset();
+                s = State.TurnToStation;
+            }
+        }
+        if (s == State.TurnToStation)
+        {
+            outputSetPoint = ManipulatorSetPoint.hatch_out_back;
+            TurnToTarget(45);
+            if (TurnOnTarget())
+            {
+                DoOffset();
                 s = State.DriveToStation;
             }
         }
         if (s == State.DriveToStation)
         {
-            FollowPath(0, false);
-            if (pathFollower.getPoints() > 15)
+            DriveStraight(-4);
+            if (DriveOnTarget(-4))
             {
-                outputSetPoint = ManipulatorSetPoint.hatch_out_front;
+                DoOffset();
+                s = State.TurnToStation2;
             }
-            if (pathFollower.GetState() == HotPathFollower.State.Complete
-                    || (RobotState.Actions.getInstance().isVisionCanSeeTarget() && pathFollower.getPoints() > 80))
+        }
+        if (s == State.TurnToStation2)
+        {
+            TurnToTarget(0);
+            if (TurnOnTarget())
             {
                 DoOffset();
                 s = State.Pickup;

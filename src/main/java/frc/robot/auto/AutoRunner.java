@@ -15,8 +15,8 @@ public class AutoRunner
 {
     public static enum Auto
     {
-        RocketHatchLeft(() -> new RocketAuto(-35, Paths.LeftRocket)),
-        RocketHatchRight(() -> new RocketAuto(35, Paths.RightRocket)),
+        RocketHatchLeft(() -> new RocketAuto(20, -35, -90, -5)),
+        RocketHatchRight(() -> new RocketAuto(-20, 35, 90, 5)),
         RightSideCargoShip(() -> new DoubleSideAuto(90, Paths.RightSideStation, Paths.RightStationFarSide)),
         RightFrontSideCargoShip(() -> new FrontSideAuto(Paths.RightFrontStation, Paths.RightStationNearSide));
 
