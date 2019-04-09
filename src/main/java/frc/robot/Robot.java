@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.auto.AutoRunner;
 import frc.robot.auto.AutoRunner.Auto;
 import frc.robot.auto.modes.AutoModeBase;
+import frc.robot.auto.sweetturn.SweetTurn;
 import frc.robot.constants.WiringIDs;
 import frc.robot.manipulator.Arm;
 import frc.robot.manipulator.Elevator;
@@ -209,7 +210,7 @@ public class Robot extends TimedRobot
 
             HotLogger.Setup("Auto State", "Turn Rate", "ENCODER JUMP HAPPENED", "H_DRIVE", "matchNumber", "Has Reset Occured",
                     "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags,
-                    Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags);
+                    Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags, SweetTurn.LoggerTags);
 
             autoRunner.Select(Auto.RocketHatchRight);
             quitAuton = true;
