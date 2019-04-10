@@ -12,21 +12,26 @@ public class FrontSideAuto extends AutoModeBase
 {
     enum State
     {
-        DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide, BackupFromStation, TurnToStation, TurnToStation2, TurnToFront, DriveOffHab, TurnToFront2, DriveToRocket, PlaceRocket
+        DriveToFrontHeadOn, DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide, BackupFromStation, TurnToStation, TurnToStation2, TurnToFront, Angled, TurnToFront2, DriveToRocket, PlaceRocket
     }
 
-    State s = State.DriveOffHab;
+    State s = State.Angled;
+
+    
     private final double stationAngle;
     private final double cargoAngle;
 
-    public FrontSideAuto(double cargoAngle, double stationAngle)
+    public FrontSideAuto(boolean isHeadOn, double cargoAngle, double stationAngle)
     {
         super(new Path[]
         {});
         this.stationAngle = stationAngle;
         this.cargoAngle = cargoAngle;
+
+        if (isHeadOn) s = State.DriveToFrontHeadOn;
     }
 
+    int oopCount = 0;
     @Override
     public boolean IsComplete()
     {
@@ -40,7 +45,20 @@ public class FrontSideAuto extends AutoModeBase
 
         useAutoPipeline = true;
 
-        if (s == State.DriveOffHab)
+        if (s == State.DriveToFrontHeadOn)
+        {
+            if (oopCount < 25)
+                oopCount++;
+            else
+                outputSetPoint = ManipulatorSetPoint.hatch_low_front;
+            DriveStraight(4.3);
+            if (DriveOnTarget(4.3))
+            {
+                DoOffset();
+                s = State.PlaceFront;
+            }
+        }
+        if (s == State.Angled)
         {
             DriveStraight(1.5);
             if (DriveOnTarget(1.5))

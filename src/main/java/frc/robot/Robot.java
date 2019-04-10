@@ -246,7 +246,7 @@ public class Robot extends TimedRobot
                 auton = (isLeft) ? Auto.RightSideCargo : Auto.LeftSideCargo;
                 break;
             case 2:
-                auton = (isLeft) ? Auto.LeftFrontCargo : Auto.RightFrontCargo;
+                auton = (isLeft) ? Auto.LeftFrontCargoOuter : Auto.RightFrontCargoOuter;
                 break;
             case 4:
                 auton = null;

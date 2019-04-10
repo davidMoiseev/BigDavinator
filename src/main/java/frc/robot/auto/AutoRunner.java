@@ -17,8 +17,10 @@ public class AutoRunner
     {
         RocketLeft(() -> new RocketAuto(20, -35, -90, -10)),
         RocketRight(() -> new RocketAuto(-20, 35, 90, 10)),
-        RightFrontCargo(() -> new FrontSideAuto(32, 45)),
-        LeftFrontCargo(() -> new FrontSideAuto(-32, -45)),
+        RightFrontCargoOuter(() -> new FrontSideAuto(false, 32, 45)),
+        LeftFrontCargoOuter(() -> new FrontSideAuto(false, -32, -45)),
+        RightFrontCargoHeadOn(() -> new FrontSideAuto(true, 32, 45)),
+        LeftFrontCargoHeadOn(() -> new FrontSideAuto(true, -32, -45)),
         LeftSideCargo(() -> new DoubleSideAuto(90, 20, 45)),
         RightSideCargo(() -> new DoubleSideAuto(-90, -55, -5));
 
