@@ -148,7 +148,7 @@ public class RocketAuto extends AutoModeBase
             if (DriveOnTarget(-4))
             {
                 DoOffset();
-                s = State.Pickup;
+                s = State.Complete;
             }
         }
 
