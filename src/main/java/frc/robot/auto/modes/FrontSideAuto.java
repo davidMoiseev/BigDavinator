@@ -12,21 +12,24 @@ public class FrontSideAuto extends AutoModeBase
 {
     enum State
     {
-        DriveToFrontHeadOn, DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide, BackupFromStation, TurnToStation, TurnToStation2, TurnToFront, Angled, TurnToFront2, DriveToRocket, PlaceRocket
+        DriveToFrontHeadOn, DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide, BackupFromStation, TurnToStation, TurnToStation2, TurnToFront, Angled, TurnToFront2, DriveToRocket, PlaceRocket, TurnToSide2
     }
 
     State s = State.Angled;
-
     
     private final double stationAngle;
     private final double cargoAngle;
+    private final double sideAngle1;
+    private final double sideAngle2;
 
-    public FrontSideAuto(boolean isHeadOn, double cargoAngle, double stationAngle)
+    public FrontSideAuto(boolean isHeadOn, double cargoAngle, double stationAngle, double sideAngle1, double sideAngle2)
     {
         super(new Path[]
         {});
         this.stationAngle = stationAngle;
         this.cargoAngle = cargoAngle;
+        this.sideAngle1 = sideAngle1;
+        this.sideAngle2 = sideAngle2;
 
         if (isHeadOn) s = State.DriveToFrontHeadOn;
     }
@@ -149,26 +152,53 @@ public class FrontSideAuto extends AutoModeBase
             {
                 DoOffset();
                 spearsClosed = false;
-                s = State.DriveToRocket;
+                // s = State.BackupFromStation;
+                s = State.Complete;
             }
         }
-        if (s == State.DriveToRocket)
+        if (s == State.BackupFromStation)
         {
-            if (GetDist() > .5)
-                outputSetPoint = ManipulatorSetPoint.hatch_mid_front;
-            DriveStraight(3);
-            if (DriveOnTarget(3))
+            DriveStraight(.25);
+            if (DriveOnTarget(.25))
             {
                 DoOffset();
-                s = State.PlaceRocket;
+                s = State.TurnToSide;
             }
         }
-        if (s == State.PlaceRocket)
+        if (s == State.TurnToSide)
+        {
+            TurnToTarget(sideAngle1);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.DriveToSide;
+            }
+        }
+        if (s == State.DriveToSide)
+        {
+            DriveStraight(4.3);
+            if (DriveOnTarget(4.3))
+            {
+                DoOffset();
+                s = State.TurnToSide2;
+            }
+        }
+        if (s == State.TurnToSide2)
+        {
+            TurnToTarget(sideAngle2);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.PlaceSide;
+            }  
+        }
+        if (s == State.PlaceSide)
         {
             isWaiting = true;
             if (state.isSpearsClosed())
             {
                 DoOffset();
+                spearsClosed = true;
                 s = State.Complete;
             }
         }
