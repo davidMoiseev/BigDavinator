@@ -4,6 +4,7 @@ import org.hotteam67.Path;
 import org.hotteam67.HotPathFollower;
 
 import frc.robot.RobotState;
+import frc.robot.auto.modes.FrontSideAuto.State;
 import frc.robot.constants.ManipulatorSetPoint;
 
 public class DoubleSideAuto extends AutoModeBase
@@ -35,7 +36,7 @@ public class DoubleSideAuto extends AutoModeBase
         useAutoPipeline = true;
         if (s == State.DriveToFirst)
         {
-            /*
+            
             DriveStraight(4.75);
             if (DriveOnTarget(4.75))
             {
@@ -47,12 +48,6 @@ public class DoubleSideAuto extends AutoModeBase
                 oopCount++;
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_low_front;
-                */
-            TurnToTarget(10);
-            if (TurnOnTarget())
-            {
-                
-            }
         }
         if (s == State.TurnToFirst)
         {
