@@ -12,17 +12,19 @@ public class FrontSideAuto extends AutoModeBase
 {
     enum State
     {
-        DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide, BackupFromStation, TurnToStation, TurnToStation2
+        DriveToFront, PlaceFront, DriveToStation, Pickup, DriveToSide, PlaceSide, Complete, TurnToSide, BackupFromStation, TurnToStation, TurnToStation2, TurnToFront, DriveOffHab, TurnToFront2, DriveToRocket, PlaceRocket
     }
 
-    State s = State.DriveToFront;
+    State s = State.DriveOffHab;
     private final double stationAngle;
+    private final double cargoAngle;
 
-    public FrontSideAuto(double stationAngle)
+    public FrontSideAuto(double cargoAngle, double stationAngle)
     {
         super(new Path[]
         {});
         this.stationAngle = stationAngle;
+        this.cargoAngle = cargoAngle;
     }
 
     @Override
@@ -31,8 +33,6 @@ public class FrontSideAuto extends AutoModeBase
         return s == State.Complete;
     }
 
-    int oopCount = 0;
-
     @Override
     public void Update()
     {
@@ -40,14 +40,38 @@ public class FrontSideAuto extends AutoModeBase
 
         useAutoPipeline = true;
 
+        if (s == State.DriveOffHab)
+        {
+            DriveStraight(1.5);
+            if (DriveOnTarget(1.5))
+            {
+                DoOffset();
+                s = State.TurnToFront;
+            }
+        }
+        if (s == State.TurnToFront)
+        {
+            outputSetPoint = ManipulatorSetPoint.hatch_low_front;
+            TurnToTarget(cargoAngle);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.DriveToFront;
+            }
+        }
         if (s == State.DriveToFront)
         {
-            if (oopCount < 15)
-                oopCount++;
-            else
-                outputSetPoint = ManipulatorSetPoint.hatch_low_front;
-            DriveStraight(3);
-            if (DriveOnTarget(3))
+            DriveStraight(1.5);
+            if (DriveOnTarget(1.5))
+            {
+                DoOffset();
+                s = State.TurnToFront2;
+            }
+        }
+        if (s == State.TurnToFront2)
+        {
+            TurnToTarget(0);
+            if (TurnOnTarget())
             {
                 DoOffset();
                 s = State.PlaceFront;
@@ -107,6 +131,25 @@ public class FrontSideAuto extends AutoModeBase
             {
                 DoOffset();
                 spearsClosed = false;
+                s = State.DriveToRocket;
+            }
+        }
+        if (s == State.DriveToRocket)
+        {
+            outputSetPoint = ManipulatorSetPoint.hatch_mid_front;
+            DriveStraight(3);
+            if (DriveOnTarget(3))
+            {
+                DoOffset();
+                s = State.PlaceRocket;
+            }
+        }
+        if (s == State.PlaceRocket)
+        {
+            isWaiting = true;
+            if (state.isSpearsClosed())
+            {
+                DoOffset();
                 s = State.Complete;
             }
         }

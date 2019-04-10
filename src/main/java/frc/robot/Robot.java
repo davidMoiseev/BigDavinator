@@ -80,21 +80,31 @@ public class Robot extends TimedRobot
         // driveTrain.initUsbCam();
     }
 
+    boolean offHAB2 = false;
+
     private void Control()
     {
         teleopCommandProvider.Update();
+        if (!useHAB2) offHAB2 = true;
 
         if (driver.getButtonB())
         {
-            if (quitAutonTimer < 25)
-                quitAutonTimer++;
+            if (!offHAB2 && useHAB2)
+            {
+                offHAB2 = true;
+            }
             else
-                quitAuton = true;
+            {
+                if (quitAutonTimer < 25)
+                    quitAutonTimer++;
+                else
+                    quitAuton = true;
+            }
         }
         else
             quitAutonTimer = 0;
         // May have to invert driveturn/drivespeed
-        if (!autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
+        if (offHAB2 && !autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
         {
             AutoModeBase autonCommandProvider = autoRunner.Run();
 
@@ -117,13 +127,13 @@ public class Robot extends TimedRobot
                 manipulator.Update(teleopCommandProvider, autonCommandProvider.ManipulatorSetPoint());
                 driveTrain.Update(teleopCommandProvider);
                 autonCommandProvider.SetSpearsClosed(teleopCommandProvider.SpearsClosed());
-                //driveTrain.SetBrakeMode(false);
+                // driveTrain.SetBrakeMode(false);
             }
             else
             {
                 manipulator.Update(autonCommandProvider);
                 driveTrain.Update(autonCommandProvider);
-                //driveTrain.SetBrakeMode(true);
+                // driveTrain.SetBrakeMode(true);
             }
         }
         else
@@ -131,7 +141,7 @@ public class Robot extends TimedRobot
             quitAuton = true;
             manipulator.Update(teleopCommandProvider);
             driveTrain.Update(teleopCommandProvider);
-            //driveTrain.SetBrakeMode(false);
+            // driveTrain.SetBrakeMode(false);
         }
     }
 
@@ -190,6 +200,7 @@ public class Robot extends TimedRobot
      * Whether the dashboard has already told us to configure the pigeon
      */
     boolean pigeonInitializing = false;
+    boolean useHAB2 = false;
 
     @Override
     public void disabledPeriodic()
@@ -208,12 +219,35 @@ public class Robot extends TimedRobot
             NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("stream").setDouble(2);
             pigeonInitializing = true;
 
-            HotLogger.Setup("Auto State", "Turn Rate", "ENCODER JUMP HAPPENED", "H_DRIVE", "matchNumber", "Has Reset Occured",
-                    "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues, Manipulator.LoggerTags,
-                    Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags, TeleopCommandProvider.LoggerTags, SweetTurn.LoggerTags);
+            HotLogger.Setup("Auto State", "Turn Rate", "ENCODER JUMP HAPPENED", "H_DRIVE", "matchNumber",
+                    "Has Reset Occured", "Compressor Current", DriveTrain.LoggerTags, HotPathFollower.LoggerValues,
+                    Manipulator.LoggerTags, Arm.LoggerTags, Elevator.LoggerTags, Wrist.LoggerTags,
+                    TeleopCommandProvider.LoggerTags, SweetTurn.LoggerTags);
 
-            autoRunner.Select(Auto.RightFrontSideCargoShip);
+            int auto = (int) SmartDashboard.getNumber("Auto Selector", 0);
+            boolean isLeft = (SmartDashboard.getNumber("Side Selector", 0) == 0) ? true : false;
+            AutoRunner.Auto auton = null;
+            switch (auto)
+            {
+            case 0:
+                auton = (isLeft) ? Auto.RocketLeft : Auto.RocketRight;
+                break;
+            case 1:
+                auton = (isLeft) ? Auto.LeftFrontCargo : Auto.RightFrontCargo;
+                break;
+            case 2:
+                auton = (isLeft) ? Auto.LeftFrontCargo : Auto.RightFrontCargo;
+                break;
+            case 4:
+                auton = null;
+                break;
+            }
+
+            autoRunner.Select(auton);
+
             quitAuton = true;
+
+            useHAB2 = SmartDashboard.getBoolean("HAB", false);
         }
 
         /**

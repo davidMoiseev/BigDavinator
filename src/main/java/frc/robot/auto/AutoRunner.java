@@ -15,9 +15,10 @@ public class AutoRunner
 {
     public static enum Auto
     {
-        RocketHatchLeft(() -> new RocketAuto(20, -35, -90, -10)),
-        RocketHatchRight(() -> new RocketAuto(-20, 35, 90, 10)),
-        RightFrontSideCargoShip(() -> new FrontSideAuto(45));
+        RocketLeft(() -> new RocketAuto(20, -35, -90, -10)),
+        RocketRight(() -> new RocketAuto(-20, 35, 90, 10)),
+        RightFrontCargo(() -> new FrontSideAuto(32, 45)),
+        LeftFrontCargo(() -> new FrontSideAuto(-32, -45));
 
         public final Supplier<AutoModeBase> Initializer;
         private Auto(Supplier<AutoModeBase> initializer)
@@ -28,19 +29,12 @@ public class AutoRunner
 
     AutoModeBase auton = null;
 
-    public static SendableChooser<Auto> BuildAutonChooser()
-    {
-        SendableChooser<Auto> autonChooser = new SendableChooser<>();
-        for (Auto auto : Auto.values())
-        {
-            autonChooser.addOption(auto.name(), auto);
-        }
-        return autonChooser;
-    }
-
     public void Select(Auto auto)
     {
-        auton = auto.Initializer.get();
+        if (auto != null)
+            auton = auto.Initializer.get();
+        else
+            auton = null;
     }
 
     public AutoModeBase Run()
