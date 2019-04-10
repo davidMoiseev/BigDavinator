@@ -9,15 +9,19 @@ import frc.robot.constants.ManipulatorSetPoint;
 public class DoubleSideAuto extends AutoModeBase
 {
     private final double sideAngle;
-    public DoubleSideAuto(double sideAngle, Path pathToStation, Path pathToSecondHatch)
+    private final double playerStationAngle;
+    private final double secondHatchAngle;
+    public DoubleSideAuto(double sideAngle, double playerStationAngle, double secondHatchAngle)
     {
-        super(new Path[] {pathToStation, pathToSecondHatch});
+        super(new Path[] {});
         this.sideAngle = sideAngle;
+        this.playerStationAngle = playerStationAngle;
+        this.secondHatchAngle = secondHatchAngle;
     }
 
     enum State
     {
-        DriveToFirst, TurnToFirst, PlaceFirst, DrivetoPickup, Pickup, DriveToSecond, PlaceSecond, Complete
+        DriveToFirst, TurnToFirst, PlaceFirst, DrivetoPickup, Pickup, DriveToSecond, PlaceSecond, Complete, BackupFromFirst, TurnToPickup, TurnToSecond, BackupFromPickup, TurnToSecond1, TurnToPickup1
     }
     State s = State.DriveToFirst;
 
@@ -28,23 +32,32 @@ public class DoubleSideAuto extends AutoModeBase
         RobotState state = RobotState.getInstance();
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
 
+        useAutoPipeline = true;
         if (s == State.DriveToFirst)
         {
-            if (oopCount < 25)
-                oopCount++;
-            else
-                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            DriveStraight(60);
-            if (DriveOnTarget(60))
+            /*
+            DriveStraight(4.75);
+            if (DriveOnTarget(4.75))
             {
                 DoOffset();
                 s = State.TurnToFirst;
+            }
+
+            if (oopCount < 25)
+                oopCount++;
+            else
+                outputSetPoint = ManipulatorSetPoint.hatch_low_front;
+                */
+            TurnToTarget(10);
+            if (TurnOnTarget())
+            {
+                
             }
         }
         if (s == State.TurnToFirst)
         {
             TurnToTarget(sideAngle);
-            if (TurnOnTarget() || interrupted)
+            if (TurnOnTarget())
             {
                 DoOffset();
                 s = State.PlaceFirst;
@@ -58,17 +71,42 @@ public class DoubleSideAuto extends AutoModeBase
             {
                 DoOffset();
                 spearsClosed = true;
+                s = State.BackupFromFirst;
+            }
+        }
+        if (s == State.BackupFromFirst)
+        {
+            DriveStraight(-.25);
+            if (DriveOnTarget(-.25))
+            {
+                DoOffset();
+                s = State.TurnToPickup1;
+            }
+        }
+        if (s == State.TurnToPickup1)
+        {
+            TurnToTarget(playerStationAngle);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                outputSetPoint = ManipulatorSetPoint.hatch_out_back;
                 s = State.DrivetoPickup;
             }
         }
         if (s == State.DrivetoPickup)
         {
-            FollowPath(0, true);
-            if (pathFollower.getPoints() > 30)
+            DriveStraight(-5.2);
+
+            if (DriveOnTarget(-5.2))
             {
-                outputSetPoint = ManipulatorSetPoint.hatch_out_front;
+                DoOffset();
+                s = State.TurnToPickup;
             }
-            if (pathFollower.GetState() == HotPathFollower.State.Complete || (pathFollower.getPoints() > 70 && actionsState.isVisionCanSeeTarget()) || interrupted)
+        }
+        if (s == State.TurnToPickup)
+        {
+            TurnToTarget(0);
+            if (TurnOnTarget())
             {
                 DoOffset();
                 s = State.Pickup;
@@ -82,20 +120,44 @@ public class DoubleSideAuto extends AutoModeBase
             {
                 DoOffset();
                 spearsClosed = false;
+                s = State.Complete;
+            }
+        }
+        if (s == State.BackupFromPickup)
+        {
+            DriveStraight(1.5);
+            if (DriveOnTarget(1.5))
+            {
+                s = State.TurnToSecond1;
+                DoOffset();
+            }
+        }
+        if (s == State.TurnToSecond1)
+        {
+            TurnToTarget(secondHatchAngle);
+            if (TurnOnTarget())
+            {
                 s = State.DriveToSecond;
+                outputSetPoint = ManipulatorSetPoint.hatch_low_front;
+                DoOffset();
             }
         }
         if (s == State.DriveToSecond)
         {
-            FollowPath(1, false);
-            if (pathFollower.getPoints() > 30)
+            DriveStraight(3);
+            if (DriveOnTarget(3))
             {
-                outputSetPoint = ManipulatorSetPoint.hatch_low_back;
-            }
-            if (pathFollower.GetState() == HotPathFollower.State.Complete || interrupted)
-            {
+                s = State.TurnToSecond;
                 DoOffset();
+            }
+        }
+        if (s == State.TurnToSecond)
+        {
+            TurnToTarget(0);
+            if (TurnOnTarget())
+            {
                 s = State.PlaceSecond;
+                DoOffset();
             }
         }
         if (s == State.PlaceSecond)

@@ -82,27 +82,32 @@ public class Robot extends TimedRobot
 
     boolean offHAB2 = false;
 
+    boolean bButtonPrev = false;
+
     private void Control()
     {
         teleopCommandProvider.Update();
-        if (!useHAB2) offHAB2 = true;
+        if (!useHAB2)
+            offHAB2 = true;
 
-        if (driver.getButtonB())
+
+        if (driver.getButtonB() && !bButtonPrev)
         {
             if (!offHAB2 && useHAB2)
             {
                 offHAB2 = true;
             }
-            else
+            else if (offHAB2)
             {
-                if (quitAutonTimer < 25)
-                    quitAutonTimer++;
-                else
+                quitAutonTimer++;
+                if (quitAutonTimer > 3)
                     quitAuton = true;
             }
         }
         else
             quitAutonTimer = 0;
+
+        bButtonPrev = driver.getButtonB();
         // May have to invert driveturn/drivespeed
         if (offHAB2 && !autoRunner.IsComplete() && autoRunner.AutoSelected() && !quitAuton)
         {
@@ -136,12 +141,17 @@ public class Robot extends TimedRobot
                 // driveTrain.SetBrakeMode(true);
             }
         }
-        else
+        else if (autoRunner.IsComplete() || !autoRunner.AutoSelected())
         {
             quitAuton = true;
             manipulator.Update(teleopCommandProvider);
             driveTrain.Update(teleopCommandProvider);
             // driveTrain.SetBrakeMode(false);
+        }
+        else
+        {
+            manipulator.Update(teleopCommandProvider);
+            driveTrain.Update(teleopCommandProvider);
         }
     }
 
@@ -233,7 +243,7 @@ public class Robot extends TimedRobot
                 auton = (isLeft) ? Auto.RocketLeft : Auto.RocketRight;
                 break;
             case 1:
-                auton = (isLeft) ? Auto.LeftFrontCargo : Auto.RightFrontCargo;
+                auton = (isLeft) ? Auto.RightSideCargo : Auto.LeftSideCargo;
                 break;
             case 2:
                 auton = (isLeft) ? Auto.LeftFrontCargo : Auto.RightFrontCargo;

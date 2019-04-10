@@ -136,7 +136,8 @@ public class FrontSideAuto extends AutoModeBase
         }
         if (s == State.DriveToRocket)
         {
-            outputSetPoint = ManipulatorSetPoint.hatch_mid_front;
+            if (GetDist() > .5)
+                outputSetPoint = ManipulatorSetPoint.hatch_mid_front;
             DriveStraight(3);
             if (DriveOnTarget(3))
             {
