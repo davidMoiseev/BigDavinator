@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 
@@ -35,8 +36,9 @@ public class Wrist extends MotionMagicActuator
     public Wrist(int primaryCAN_ID/* , int secondaryCAN_ID */)
     {
         super(primaryCAN_ID/* , secondaryCAN_ID */);
-        
-        wristCan = new CANifier(WiringIDs.CANIFIER_WRIST);
+
+        if (WiringIDs.IS_PRACTICE_BOT)
+            wristCan = new CANifier(WiringIDs.CANIFIER_WRIST);
 
         setNominalOutputForward(WristConstants.nominalOutputForward);
         setNominalOutputReverse(WristConstants.nominalOutputReverse);
@@ -65,8 +67,16 @@ public class Wrist extends MotionMagicActuator
     {
         super.initialize();
 
-        primaryTalon.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 20);
-        primaryTalon.configRemoteFeedbackFilter(WiringIDs.CANIFIER_WRIST, RemoteSensorSource.CANifier_Quadrature, 0);
+        if (WiringIDs.IS_PRACTICE_BOT)
+        {
+            primaryTalon.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 20);
+            primaryTalon.configRemoteFeedbackFilter(WiringIDs.CANIFIER_WRIST, RemoteSensorSource.CANifier_Quadrature,
+                    0);
+        }
+        else
+        {
+            primaryTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 20);
+        }
     }
 
     private static void Log(String tag, double value)
@@ -80,7 +90,10 @@ public class Wrist extends MotionMagicActuator
     {
         Log("Wirst Position ticks", getSensorValue());
         Log("A Wirst Position degree", getPosition());
-        SmartDashboard.putNumber("A WristCan Degree", - wristCan.getQuadraturePosition() * WristConstants.TICKS_TO_DEGREES);
+        if (WiringIDs.IS_PRACTICE_BOT)
+            SmartDashboard.putNumber("A WristCan Degree",
+                    -wristCan.getQuadraturePosition() * WristConstants.TICKS_TO_DEGREES);
+
         Log("Wirst Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
@@ -90,23 +103,32 @@ public class Wrist extends MotionMagicActuator
         Log("Wrist Bus Voltage", primaryTalon.getBusVoltage());
         Log("Wrist Output Voltage", primaryTalon.getMotorOutputVoltage());
         Log("Wrist Current", primaryTalon.getOutputCurrent());
-        Log("Wrist CANifier Voltage", wristCan.getBusVoltage());
+
+        if (WiringIDs.IS_PRACTICE_BOT)
+            Log("Wrist CANifier Voltage", wristCan.getBusVoltage());
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Wrist CANifier Voltage", "Wirst Position ticks", "A Wirst Position degree", "Wirst Power", "Wirst Error",
-                    "Wirst target", "Wrist Bus Voltage", "Wrist Output Voltage", "Wrist Current"));
+            Arrays.asList("Wrist CANifier Voltage", "Wirst Position ticks", "A Wirst Position degree", "Wirst Power",
+                    "Wirst Error", "Wirst target", "Wrist Bus Voltage", "Wrist Output Voltage", "Wrist Current"));
 
     public void setPosition(double angle)
     {
         previousEncoderValue = (int) (angle / WristConstants.TICKS_TO_DEGREES);
-        wristCan.setQuadraturePosition(previousEncoderValue, 100);
+        if (WiringIDs.IS_PRACTICE_BOT)
+            wristCan.setQuadraturePosition(previousEncoderValue, 100);
+        else
+            primaryTalon.setSelectedSensorPosition(previousEncoderValue);
     }
 
     @Override
     public void zeroSensors()
     {
-        wristCan.setQuadraturePosition(0, WristConstants.timeoutms);
+        previousEncoderValue = 0;
+        if (WiringIDs.IS_PRACTICE_BOT)
+            wristCan.setQuadraturePosition(0, WristConstants.timeoutms);
+        else
+            primaryTalon.setSelectedSensorPosition(0);
     }
 
     @Override
@@ -133,7 +155,7 @@ public class Wrist extends MotionMagicActuator
 
     public void checkEncoder()
     {
-        checkEncoder((int)(40.0 / WristConstants.TICKS_TO_DEGREES));
+        checkEncoder((int) (40.0 / WristConstants.TICKS_TO_DEGREES));
     }
 
 }

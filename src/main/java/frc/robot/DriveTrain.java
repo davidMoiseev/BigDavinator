@@ -201,7 +201,7 @@ public class DriveTrain implements IPigeonWrapper
         return xyz_dps[1];
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Drive turn", "Vision Drive", "Drive leftDrive", "Drive rightDrive",
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Accel X", "Accel Y", "Accel Z", "Drive turn", "Vision Drive", "Drive leftDrive", "Drive rightDrive",
             "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
             "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
@@ -228,6 +228,12 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive currentPitch", xyz_dps[1]);
         SmartDashboard.putNumber("Drive currentVelocityRight", rightMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("Drive currentVelocityLeft", leftMotor.getEncoder().getVelocity());
+
+        short[] accelerometer = new short[] {0, 0, 0};
+        pigeon.getBiasedAccelerometer(accelerometer);
+        HotLogger.Log("Accel X", String.valueOf(accelerometer[0]));
+        HotLogger.Log("Accel Y", String.valueOf(accelerometer[1]));
+        HotLogger.Log("Accel Z", String.valueOf(accelerometer[2]));
 
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);
