@@ -62,7 +62,8 @@ public class HotLogger
         }
 
         logScheduler.stop();
-        LogQueue.RestartQueue(headerBuilder.toString());
+        LogThread.SetHeader(headerBuilder.toString());
+        LogQueue.RestartQueue();
         logScheduler.startPeriodic(LOG_PERIOD_SECONDS);
     }
 
@@ -146,6 +147,12 @@ public class HotLogger
     private static class LogThread
     {
         private static FileWriter fileWriter = null;
+        private static String headerToOutput = null;
+
+        public static synchronized void SetHeader(String header)
+        {
+            headerToOutput = header;
+        }
 
         /**
          * Function called only by logging thread
@@ -154,9 +161,35 @@ public class HotLogger
         {
             try
             {
-                String output = LogQueue.FlushQueue();
+                List<LogRow> logQueue = LogQueue.FlushQueue();
 
-                if (output.trim().isEmpty())
+                if (logQueue == null || logQueue.size() == 0)
+                    return;
+
+                StringBuilder output;
+                
+                if (headerToOutput != null)
+                {
+                    output = new StringBuilder(headerToOutput);
+                    output.append("\n");
+                }
+                else
+                    output = new StringBuilder();
+    
+                for (int i = 0; i < logQueue.size(); ++i)
+                {
+                    LogRow row = logQueue.get(i);
+                    output.append(row.TimeStamp).append(DELIMITER);
+                    for (Map.Entry<String, String> e : row.Values.entrySet())
+                    {
+                        output.append(e.getValue()).append(DELIMITER);
+                    }
+                    if (i + 1 < logQueue.size())
+                        output.append("\n");
+                }
+
+
+                if (output.toString().trim().isEmpty())
                     return;
                 String fileName = LOGS_DIRECTORY
                         + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LogQueue.GetDate()) + ".txt";
@@ -235,31 +268,14 @@ public class HotLogger
          * Log structures shared between threads
          */
         private static List<LogRow> logQueue = new ArrayList<>();
-        private static String headerToOutput = "";
         private static Date logDate = new Date();
 
-        private static synchronized String FlushQueue()
+        private static synchronized List<LogRow> FlushQueue()
         {
-            if (logQueue.size() == 0)
-                return "";
-
-            StringBuilder output = new StringBuilder(headerToOutput);
-            output.append("\n");
-
-            for (int i = 0; i < logQueue.size(); ++i)
-            {
-                LogRow row = logQueue.get(i);
-                output.append(row.TimeStamp).append(DELIMITER);
-                for (Map.Entry<String, String> e : row.Values.entrySet())
-                {
-                    output.append(e.getValue()).append(DELIMITER);
-                }
-                if (i + 1 < logQueue.size())
-                    output.append("\n");
-            }
-            headerToOutput = "";
+            List<LogRow> tmpQueue = new ArrayList<>();
+            tmpQueue.addAll(logQueue);
             logQueue.clear();
-            return output.toString();
+            return tmpQueue;
         }
 
         private static synchronized Date GetDate()
@@ -272,9 +288,8 @@ public class HotLogger
             logQueue.add(row);
         }
 
-        public static synchronized void RestartQueue(String header)
+        public static synchronized void RestartQueue()
         {
-            headerToOutput = header;
             logDate = new Date();
             logQueue.clear();
         }
