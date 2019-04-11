@@ -153,6 +153,7 @@ public class Robot extends TimedRobot
         }
     }
 
+    private int autonomousStartTimer = 0;
     @Override
     public void autonomousInit()
     {
@@ -161,6 +162,7 @@ public class Robot extends TimedRobot
         driveTrain.zeroMotors();
         profileFinished = false;
         quitAutonTimer = 0;
+        autonomousStartTimer = 0;
     }
 
     boolean quitAuton = true;
@@ -168,6 +170,11 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
+        if (autonomousStartTimer < 50)
+        {
+            autonomousStartTimer++;
+            teleopCommandProvider.Rumble();
+        }
         Control();
     }
 
