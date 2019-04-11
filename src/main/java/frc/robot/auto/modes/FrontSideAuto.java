@@ -54,8 +54,8 @@ public class FrontSideAuto extends AutoModeBase
                 oopCount++;
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_low_front;
-            DriveStraight(4.3);
-            if (DriveOnTarget(4.3))
+            DriveStraight(2);
+            if (DriveOnTarget(2))
             {
                 DoOffset();
                 s = State.PlaceFront;

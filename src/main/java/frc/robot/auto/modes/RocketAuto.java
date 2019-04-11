@@ -53,11 +53,19 @@ public class RocketAuto extends AutoModeBase
 
         if (s == State.DriveOffHab)
         {   
+            /*
             DriveStraight(1.5);
             if (DriveOnTarget(1.5))
             {
                 DoOffset();
                 s = State.TurnToRocketFirst;
+            }
+            */
+            TurnToTarget(30);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.Complete;
             }
         }
         if (s == State.TurnToRocketFirst)
