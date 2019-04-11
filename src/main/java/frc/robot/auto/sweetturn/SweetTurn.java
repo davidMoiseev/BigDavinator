@@ -50,6 +50,7 @@ public class SweetTurn
 	public double SweetTurnOutput(double target, double MinErrorToExit, double maxSpeed, double currentHeading,
 			double currentTurnSpeed)
 	{
+		if (WiringIDs.IS_PRACTICE_BOT) target *= -1;
 		double absError = Math.abs(target - currentHeading);
 		double maxPct;
 		double rampDownStart;

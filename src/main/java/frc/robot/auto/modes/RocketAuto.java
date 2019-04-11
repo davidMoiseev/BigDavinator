@@ -59,9 +59,9 @@ public class RocketAuto extends AutoModeBase
             {
                 DoOffset();
                 s = State.TurnToRocketFirst;
-            }
+            } 
             */
-            TurnToTarget(30);
+            TurnToTarget(90);
             if (TurnOnTarget())
             {
                 DoOffset();

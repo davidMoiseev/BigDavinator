@@ -100,7 +100,7 @@ public class Robot extends TimedRobot
             else if (offHAB2)
             {
                 quitAutonTimer++;
-                if (quitAutonTimer > 4)
+                if (quitAutonTimer > 1)
                     quitAuton = true;
             }
         }

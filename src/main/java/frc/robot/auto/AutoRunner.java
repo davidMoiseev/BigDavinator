@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotCommandProvider;
 import frc.robot.auto.modes.AutoModeBase;
 import frc.robot.auto.modes.RocketAuto;
+import frc.robot.constants.WiringIDs;
 import frc.robot.auto.modes.DoubleSideAuto;
 import frc.robot.auto.modes.FrontSideAuto;
 import frc.robot.auto.Paths;
