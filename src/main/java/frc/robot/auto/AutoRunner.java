@@ -22,8 +22,8 @@ public class AutoRunner
         LeftFrontCargoOuter(() -> new FrontSideAuto(false, -32, -45, -15, -90)),
         RightFrontCargoHeadOn(() -> new FrontSideAuto(true, 32, 45, 15, 90)),
         LeftFrontCargoHeadOn(() -> new FrontSideAuto(true, -32, -45, -15, -90)),
-        LeftSideCargo(() -> new DoubleSideAuto(90, 20, 45)),
-        RightSideCargo(() -> new DoubleSideAuto(-90, -55, -5));
+        LeftSideCargo(() -> new DoubleSideAuto(-15, 90, 20, 45)),
+        RightSideCargo(() -> new DoubleSideAuto(15, -90, -55, -5));
 
         public final Supplier<AutoModeBase> Initializer;
         private Auto(Supplier<AutoModeBase> initializer)

@@ -9,22 +9,24 @@ import frc.robot.constants.ManipulatorSetPoint;
 
 public class DoubleSideAuto extends AutoModeBase
 {
-    private final double sideAngle;
+    private final double sideAngle1;
+    private final double sideAngle2;
     private final double playerStationAngle;
     private final double secondHatchAngle;
-    public DoubleSideAuto(double sideAngle, double playerStationAngle, double secondHatchAngle)
+    public DoubleSideAuto(double sideAngle1, double sideAngle2, double playerStationAngle, double secondHatchAngle)
     {
         super(new Path[] {});
-        this.sideAngle = sideAngle;
+        this.sideAngle1 = sideAngle1;
+        this.sideAngle2 = sideAngle2;
         this.playerStationAngle = playerStationAngle;
         this.secondHatchAngle = secondHatchAngle;
     }
 
     enum State
     {
-        DriveToFirst, TurnToFirst, PlaceFirst, DrivetoPickup, Pickup, DriveToSecond, PlaceSecond, Complete, BackupFromFirst, TurnToPickup, TurnToSecond, BackupFromPickup, TurnToSecond1, TurnToPickup1
+        DriveToFirst, TurnToFirst2, PlaceFirst, DrivetoPickup, Pickup, DriveToSecond, PlaceSecond, Complete, BackupFromFirst, TurnToPickup, TurnToSecond, BackupFromPickup, TurnToSecond1, TurnToPickup1, TurnToFirst1, DriveOffHAB
     }
-    State s = State.DriveToFirst;
+    State s = State.DriveOffHAB;
 
     int oopCount = 0;
     @Override
@@ -34,14 +36,32 @@ public class DoubleSideAuto extends AutoModeBase
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
 
         useAutoPipeline = true;
+        if (s == State.DriveOffHAB)
+        {
+            DriveStraight(1.5);
+            if (DriveOnTarget(1.5))
+            {
+                DoOffset();
+                s = State.TurnToFirst1;
+            }
+        }
+        if (s == State.TurnToFirst1)
+        {
+            TurnToTarget(sideAngle1);
+            if (TurnOnTarget())
+            {
+                DoOffset();
+                s = State.DriveToFirst;
+            }
+        }
         if (s == State.DriveToFirst)
         {
             
-            DriveStraight(4.75);
-            if (DriveOnTarget(4.75))
+            DriveStraight(4);
+            if (DriveOnTarget(4))
             {
                 DoOffset();
-                s = State.TurnToFirst;
+                s = State.TurnToFirst2;
             }
 
             if (oopCount < 25)
@@ -49,9 +69,9 @@ public class DoubleSideAuto extends AutoModeBase
             else
                 outputSetPoint = ManipulatorSetPoint.hatch_low_front;
         }
-        if (s == State.TurnToFirst)
+        if (s == State.TurnToFirst2)
         {
-            TurnToTarget(sideAngle);
+            TurnToTarget(sideAngle2);
             if (TurnOnTarget())
             {
                 DoOffset();
