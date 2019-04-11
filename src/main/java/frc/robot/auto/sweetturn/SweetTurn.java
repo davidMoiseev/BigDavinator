@@ -7,6 +7,7 @@ import java.util.List;
 import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.WiringIDs;
 
 public class SweetTurn
 {
@@ -170,7 +171,8 @@ public class SweetTurn
 		SmartDashboard.putNumber("AAA Sweet Heading", currentHeading);
 		SmartDashboard.putNumber("AAA Target", target);
 
-		return -sweetTurnDirection * sweetTurnRate;
+		if (WiringIDs.IS_PRACTICE_BOT) sweetTurnDirection *= -1;
+		return sweetTurnDirection * sweetTurnRate;
 	}
 
 	public boolean TurnComplete()

@@ -172,6 +172,7 @@ public class HotLogger
                 {
                     output = new StringBuilder(headerToOutput);
                     output.append("\n");
+                    headerToOutput = null;
                 }
                 else
                     output = new StringBuilder();

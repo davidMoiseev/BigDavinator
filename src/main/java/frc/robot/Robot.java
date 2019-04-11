@@ -100,12 +100,10 @@ public class Robot extends TimedRobot
             else if (offHAB2)
             {
                 quitAutonTimer++;
-                if (quitAutonTimer > 3)
+                if (quitAutonTimer > 4)
                     quitAuton = true;
             }
         }
-        else
-            quitAutonTimer = 0;
 
         bButtonPrev = driver.getButtonB();
         // May have to invert driveturn/drivespeed
