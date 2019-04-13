@@ -77,6 +77,11 @@ public class Wrist extends MotionMagicActuator
         {
             primaryTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 20);
         }
+        
+        primaryTalon.configPeakCurrentDuration(0);
+        primaryTalon.configPeakCurrentLimit(30);
+        primaryTalon.configContinuousCurrentLimit(25);
+        primaryTalon.enableCurrentLimit(true);
     }
 
     private static void Log(String tag, double value)

@@ -80,6 +80,11 @@ public class Arm extends MotionMagicActuator
             primaryTalon.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 20);
             primaryTalon.configRemoteFeedbackFilter(WiringIDs.CANIFIER_ARM, RemoteSensorSource.CANifier_Quadrature, 0);
         }
+
+        primaryTalon.configPeakCurrentDuration(0);
+        primaryTalon.configPeakCurrentLimit(30);
+        primaryTalon.configContinuousCurrentLimit(25);
+        primaryTalon.enableCurrentLimit(true);
     }
 
     private static void Log(String input, double value)
@@ -93,7 +98,8 @@ public class Arm extends MotionMagicActuator
     {
         Log("Arm Position ticks", getSensorValue());
         Log("Arm Position degrees", getPosition());
-        SmartDashboard.putNumber("ARM CAN DEGREE", -armCan.getQuadraturePosition() * ArmConstants.TICKS_TO_DEGREES);
+        if (WiringIDs.IS_PRACTICE_BOT)
+            SmartDashboard.putNumber("ARM CAN DEGREE", -armCan.getQuadraturePosition() * ArmConstants.TICKS_TO_DEGREES);
         Log("Arm Power", primaryTalon.getMotorOutputPercent());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
@@ -103,7 +109,8 @@ public class Arm extends MotionMagicActuator
         Log("Arm Bus Voltage", primaryTalon.getBusVoltage());
         Log("Arm Output Voltage", primaryTalon.getMotorOutputVoltage());
         Log("Arm Current", primaryTalon.getOutputCurrent());
-        Log("Arm CANifier Voltage", armCan.getBusVoltage());
+        if (WiringIDs.IS_PRACTICE_BOT)
+            Log("Arm CANifier Voltage", armCan.getBusVoltage());
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
