@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.hotteam67.HotController;
@@ -711,7 +713,6 @@ public class Manipulator
     {
         if (setPoint != null)
             RobotState.Actions.getInstance().setArmIsBack(getArmSide(setPoint.armAngle()) == RobotSide.BACK);
-
         armPigeon.CalibratePigeon();
         if (robotCommand.ARMREZERO() && !zeroingArm)
         {

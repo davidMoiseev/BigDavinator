@@ -13,6 +13,7 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.IPigeonWrapper;
+import frc.robot.constants.WiringIDs;
 
 /**
  * Add your docs here.
@@ -136,7 +137,8 @@ public class ArmPigeon implements IPigeonWrapper
 
     public double GetAngle()
     {
-        return angle;
+        if (WiringIDs.IS_PRACTICE_BOT) return angle;
+        return angle + 11;
     }
 
     public void RestartCalibration()

@@ -36,7 +36,8 @@ public class Arm extends MotionMagicActuator
     {
         super(primaryCAN_ID/* , secondaryCAN_ID */);
 
-        armCan = new CANifier(WiringIDs.CANIFIER_ARM);
+        if (WiringIDs.IS_PRACTICE_BOT)
+            armCan = new CANifier(WiringIDs.CANIFIER_ARM);
 
         setNominalOutputForward(ArmConstants.nominalOutputForward);
         setNominalOutputReverse(ArmConstants.nominalOutputReverse);
@@ -63,7 +64,10 @@ public class Arm extends MotionMagicActuator
     @Override
     public void zeroSensors()
     {
-        armCan.setQuadraturePosition(0, ArmConstants.timeoutms);
+        if (WiringIDs.IS_PRACTICE_BOT)
+            armCan.setQuadraturePosition(0, ArmConstants.timeoutms);
+        else
+            primaryTalon.setSelectedSensorPosition(0);
     }
 
     @Override
@@ -71,8 +75,11 @@ public class Arm extends MotionMagicActuator
     {
         super.initialize();
 
-        primaryTalon.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 20);
-        primaryTalon.configRemoteFeedbackFilter(WiringIDs.CANIFIER_ARM, RemoteSensorSource.CANifier_Quadrature, 0);
+        if (WiringIDs.IS_PRACTICE_BOT)
+        {
+            primaryTalon.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 20);
+            primaryTalon.configRemoteFeedbackFilter(WiringIDs.CANIFIER_ARM, RemoteSensorSource.CANifier_Quadrature, 0);
+        }
     }
 
     private static void Log(String input, double value)
@@ -117,7 +124,10 @@ public class Arm extends MotionMagicActuator
     public void setPosition(double angle)
     {
         previousEncoderValue = (int) (angle / ArmConstants.TICKS_TO_DEGREES);
-        armCan.setQuadraturePosition(previousEncoderValue, 100);
+        if (WiringIDs.IS_PRACTICE_BOT)
+            armCan.setQuadraturePosition(previousEncoderValue, 100);
+        else
+            primaryTalon.setSelectedSensorPosition(0);
     }
 
     public boolean reachedTarget()
@@ -133,6 +143,6 @@ public class Arm extends MotionMagicActuator
 
     public void checkEncoder()
     {
-        checkEncoder((int)(25.0 / ArmConstants.TICKS_TO_DEGREES));
+        checkEncoder((int) (25.0 / ArmConstants.TICKS_TO_DEGREES));
     }
 }
