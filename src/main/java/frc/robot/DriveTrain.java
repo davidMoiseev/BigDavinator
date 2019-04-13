@@ -201,9 +201,10 @@ public class DriveTrain implements IPigeonWrapper
         return xyz_dps[1];
     }
 
-    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Pigeon Error", "Accel X", "Accel Y", "Accel Z", "Drive turn", "Vision Drive", "Drive leftDrive", "Drive rightDrive",
-            "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
-            "Drive currentVelocityLeft", "Drive currentVelocityRight"));
+    public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Pigeon Error", "Accel X", "Accel Y",
+            "Accel Z", "Drive turn", "Vision Drive", "Drive leftDrive", "Drive rightDrive", "Drive rightEncoder",
+            "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch", "Drive currentVelocityLeft",
+            "Drive currentVelocityRight"));
 
     public boolean canseeTarget()
     {
@@ -229,7 +230,8 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive currentVelocityRight", rightMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("Drive currentVelocityLeft", leftMotor.getEncoder().getVelocity());
 
-        short[] accelerometer = new short[] {0, 0, 0};
+        short[] accelerometer = new short[]
+        { 0, 0, 0 };
         pigeon.getBiasedAccelerometer(accelerometer);
         HotLogger.Log("Accel X", String.valueOf(accelerometer[0]));
         HotLogger.Log("Accel Y", String.valueOf(accelerometer[1]));
@@ -445,7 +447,7 @@ public class DriveTrain implements IPigeonWrapper
             {
                 arcadeDrive(command);
             }
-            //hDriveMotor.set(command.HDrive());
+            // hDriveMotor.set(command.HDrive());
         }
 
         if (climbDeployed)
@@ -454,7 +456,8 @@ public class DriveTrain implements IPigeonWrapper
             rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
         if (command.ClimberDeploy()
-                && robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep
+                && (robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep
+                        || robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep_hab2)
                 && robotState.getElevatorPosition()
                         + ElevatorConstants.allowableErrorInches >= ManipulatorSetPoint.climb_prep.elevatorHeight())
         {
@@ -546,7 +549,8 @@ public class DriveTrain implements IPigeonWrapper
         robotState.setLeftDriveEncoder(leftEncoderValue);
         robotState.setRightDriveEncoder(rightEncoderValue);
         robotState.setHeading(-xyz_dps[0]);
-        double[] speeds = new double[] { 0, 0, 0};
+        double[] speeds = new double[]
+        { 0, 0, 0 };
         pigeon.getRawGyro(speeds);
         robotState.setTurnSpeed(speeds[2]);
         robotActionsState.setVisionCanSeeTarget(vmotion.canSeeTarget());

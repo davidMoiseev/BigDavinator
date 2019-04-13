@@ -49,7 +49,9 @@ public enum ManipulatorSetPoint implements IManipulatorSetPoint
     // Deploy the climber only at climber_prep, and then operator goes to climber_down
     climb_prep(28.5, -90, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
     climber_down(-.75, -90, -90, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
-    climber_on(25.5, -144, -30, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK);
+    climber_on(25.5, -144, -30, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    climb_prep_hab2(28.5, -90, 0, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK),
+    climb_down_hab2(14.5, -90, 0, FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK);
 
     // STILL NEED WRIST AND ARM SET FOR CLIMBER
 

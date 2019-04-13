@@ -115,11 +115,13 @@ public class TeleopCommandProvider extends RobotCommandProvider
         }
         if (isLeftTriggerPressed && !isRightTriggerPressed)
         {
-            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climb_prep;
+            backTargetPosition = ManipulatorSetPoint.climb_prep;
+            frontTargetPosition = ManipulatorSetPoint.climb_prep_hab2;
         }
         else if (isRightTriggerPressed && isLeftTriggerPressed)
         {
-            frontTargetPosition = backTargetPosition = ManipulatorSetPoint.climber_down;
+            backTargetPosition = ManipulatorSetPoint.climber_down;
+            frontTargetPosition = ManipulatorSetPoint.climb_down_hab2;
         }
         else if (isRightTriggerPressed && !isLeftTriggerPressed)
         {
