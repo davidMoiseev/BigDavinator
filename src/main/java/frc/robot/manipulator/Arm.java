@@ -134,7 +134,7 @@ public class Arm extends MotionMagicActuator
         if (WiringIDs.IS_PRACTICE_BOT)
             armCan.setQuadraturePosition(previousEncoderValue, 100);
         else
-            primaryTalon.setSelectedSensorPosition(0);
+            primaryTalon.setSelectedSensorPosition(previousEncoderValue);
     }
 
     public boolean reachedTarget()

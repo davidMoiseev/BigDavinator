@@ -137,8 +137,9 @@ public class ArmPigeon implements IPigeonWrapper
 
     public double GetAngle()
     {
-        if (WiringIDs.IS_PRACTICE_BOT) return angle;
-        return angle + 11;
+        //if (WiringIDs.IS_PRACTICE_BOT) return angle;
+        //return angle + 11;
+        return angle;
     }
 
     public void RestartCalibration()
