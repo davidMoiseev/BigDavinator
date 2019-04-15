@@ -13,6 +13,7 @@ import java.util.Map;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Add your docs here.
@@ -29,7 +30,8 @@ public class HotLogger
 
     private static boolean onNewRow = true;
     private static Map<String, String> currentRow = new LinkedHashMap<String, String>();
-    private static double currentRowTime;
+    private static double currentRowTimeFPGA;
+    private static double currentRowTimeMatch;
 
     private static Notifier logScheduler = new Notifier(LogThread::WriteToFile);
 
@@ -92,7 +94,8 @@ public class HotLogger
 
         if (onNewRow)
         {
-            currentRowTime = Timer.getFPGATimestamp();
+            currentRowTimeFPGA = Timer.getFPGATimestamp();
+            currentRowTimeMatch = Timer.getMatchTime();
         }
 
         if (!currentRow.get(key).equals(EMPTY))
@@ -104,7 +107,7 @@ public class HotLogger
         else
             currentRow.put(key, value);
 
-        if (Timer.getFPGATimestamp() - currentRowTime > ROW_TIMEOUT_SECONDS)
+        if (Timer.getFPGATimestamp() - currentRowTimeFPGA > ROW_TIMEOUT_SECONDS)
         {
             PushCurrentRow();
         }
@@ -119,7 +122,7 @@ public class HotLogger
             {
                 newMap.put(currentEntry.getKey(), currentEntry.getValue());
             }
-            LogRow row = new LogRow(newMap, String.valueOf(currentRowTime));
+            LogRow row = new LogRow(newMap, String.valueOf(currentRowTimeMatch));
             LogQueue.PushToQueue(row);
         }
         catch (Exception ignored)
