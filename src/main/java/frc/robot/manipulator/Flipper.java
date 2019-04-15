@@ -82,14 +82,15 @@ public class Flipper
 
     public void displaySensorsValue()
     {
-        SmartDashboard.putNumber("FrontFlipper Position", getPosition());
-        HotLogger.Log("FrontFlipper Position", getPosition());
-        SmartDashboard.putNumber("FrontFlipper Power", flipper.getMotorOutputPercent());
-        HotLogger.Log("FrontFlipper Power", flipper.getMotorOutputPercent());
-        SmartDashboard.putBoolean("FrontFlipper Reached", reachedTarget());
-        HotLogger.Log("FrontFlipper Reached", reachedTarget() ? "True" : "False");
-        SmartDashboard.putNumber("A Flipper Error", flipper.getClosedLoopError());
-        SmartDashboard.putNumber("A flipper output", flipper.getMotorOutputPercent());
+        String flipperName = isBack ? "backFlipper" : "frontFlipper";
+        SmartDashboard.putNumber(flipperName + " Position", getPosition());
+        HotLogger.Log(flipperName + " Position", getPosition());
+        // SmartDashboard.putNumber("FrontFlipper Power", flipper.getMotorOutputPercent());
+        HotLogger.Log(flipperName + " Power", flipper.getMotorOutputPercent());
+        // SmartDashboard.putBoolean("FrontFlipper Reached", reachedTarget());
+        HotLogger.Log(flipperName + " Reached", reachedTarget() ? "True" : "False");
+        // SmartDashboard.putNumber("A Flipper Error", flipper.getClosedLoopError());
+        // SmartDashboard.putNumber("A flipper output", flipper.getMotorOutputPercent());
     }
 
     public boolean reachedTarget()

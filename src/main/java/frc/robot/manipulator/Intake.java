@@ -65,7 +65,7 @@ public class Intake
 
     public void writeDashboard()
     {
-        SmartDashboard.putNumber("Outputspeed", Outspeed);
-        SmartDashboard.putNumber("Inputspeed", Inputspeed);
+        // SmartDashboard.putNumber("Outputspeed", Outspeed);
+        // SmartDashboard.putNumber("Inputspeed", Inputspeed);
     }
 }

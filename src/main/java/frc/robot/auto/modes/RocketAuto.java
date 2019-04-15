@@ -46,7 +46,7 @@ public class RocketAuto extends AutoModeBase
     public void Update()
     {
         HotLogger.Log("Auto State", s.name());
-        SmartDashboard.putString("Auto State", s.name());
+        // SmartDashboard.putString("Auto State", s.name());
         useAutoPipeline = true;
         RobotState state = RobotState.getInstance();
         RobotState.Actions actionsState = RobotState.Actions.getInstance();
@@ -178,8 +178,8 @@ public class RocketAuto extends AutoModeBase
             turnDrive = 0;
         }
 
-        SmartDashboard.putNumber("AAA LEFTDRIVE2", LeftDrive);
-        SmartDashboard.putNumber("AAA RIGHTDRIVE2", RightDrive);
+        // SmartDashboard.putNumber("AAA LEFTDRIVE2", LeftDrive);
+        // SmartDashboard.putNumber("AAA RIGHTDRIVE2", RightDrive);
     }
 
 }

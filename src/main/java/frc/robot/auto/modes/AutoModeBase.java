@@ -77,7 +77,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         double currentSpeed = RobotState.getInstance().getTurnSpeed();
 
         SmartDashboard.putNumber("currentHeading", currentHeading);
-        SmartDashboard.putNumber("currentSpeed", currentSpeed);
+        // SmartDashboard.putNumber("currentSpeed", currentSpeed);
 
         if (!sweetTurn.TurnComplete())
         {
@@ -87,7 +87,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         else
             turnDrive = 0;
 
-        SmartDashboard.putNumber("AAA AUTO TURN", turnDrive);
+        // SmartDashboard.putNumber("AAA AUTO TURN", turnDrive);
         HotLogger.Log("Turn Rate", currentSpeed);
     }
 
@@ -120,7 +120,7 @@ public abstract class AutoModeBase extends RobotCommandProvider
         RightDrive = desiredDrive;
         turnDrive = desiredTurn;
 
-        SmartDashboard.putNumber("AAA DRIVE ERROR", error);
+        // SmartDashboard.putNumber("AAA DRIVE ERROR", error);
 
         if (DriveOnTarget(target))
         {
@@ -128,8 +128,8 @@ public abstract class AutoModeBase extends RobotCommandProvider
             RightDrive = 0;
             turnDrive = 0;
         }
-        SmartDashboard.putNumber("AAA DRIVE LEFT", LeftDrive);
-        SmartDashboard.putNumber("AAA DRIVE RIGHT", RightDrive);
+        // SmartDashboard.putNumber("AAA DRIVE LEFT", LeftDrive);
+        // SmartDashboard.putNumber("AAA DRIVE RIGHT", RightDrive);
     }
 
     public double GetDist()

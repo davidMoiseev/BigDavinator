@@ -8,8 +8,11 @@
 package frc.robot.manipulator;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU_Faults;
 import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
+
+import org.hotteam67.HotLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.IPigeonWrapper;
@@ -88,9 +91,9 @@ public class ArmPigeon implements IPigeonWrapper
             }
             else
             {
-                SmartDashboard.putNumber("x", x);
-                SmartDashboard.putNumber("y", y);
-                SmartDashboard.putNumber("z", z);
+                // SmartDashboard.putNumber("x", x);
+                // SmartDashboard.putNumber("y", y);
+                // SmartDashboard.putNumber("z", z);
                 // This converts the G values to radians then to degress
                 currentAngle = Math.atan(z / ((Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)))));
                 currentAngle = Math.toDegrees(currentAngle) - 90;
@@ -133,6 +136,10 @@ public class ArmPigeon implements IPigeonWrapper
                 loops++;
             }
         }
+
+        HotLogger.Log("Arm Pigeon Error", pigeon.getLastError().name());
+        HotLogger.Log("Arm Pigeon Reset", pigeon.hasResetOccurred());
+        HotLogger.Log("Arm Pigeon Status", pigeon.getState().name());
     }
 
     public double GetAngle()

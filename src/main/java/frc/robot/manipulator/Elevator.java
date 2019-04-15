@@ -76,7 +76,6 @@ public class Elevator extends MotionMagicActuator
 
     private static void Log(String input, double value)
     {
-        SmartDashboard.putNumber(input, value);
         HotLogger.Log(input, value);
     }
 
@@ -85,8 +84,11 @@ public class Elevator extends MotionMagicActuator
     {
         Log("Elevator Position ticks", getSensorValue());
         Log("Elevator Position inches", getPosition());
+        SmartDashboard.putNumber("Elevator Position", getPosition());
         Log("Elevator Power", primaryTalon.getMotorOutputPercent());
         Log("Elevator Error", getError());
+        HotLogger.Log("Elevator Reset", primaryTalon.hasResetOccurred());
+        HotLogger.Log("Elevator Error Code", primaryTalon.getLastError().name());
         if (primaryTalon.getControlMode() == ControlMode.MotionMagic)
         {
             Log("Elevator target", primaryTalon.getClosedLoopTarget());
@@ -97,7 +99,7 @@ public class Elevator extends MotionMagicActuator
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Elevator Position ticks", "Elevator Position inches", "Elevator Power", "Elevator Error",
+            Arrays.asList("Elevator Reset", "Elevator Error Code", "Elevator Position ticks", "Elevator Position inches", "Elevator Power", "Elevator Error",
                     "Elevator target", "Elevator Bus Voltage", "Elevator Output Voltage", "Elevator Current"));
 
     @Override
@@ -124,6 +126,6 @@ public class Elevator extends MotionMagicActuator
 
 	public void checkEncoder()
 	{
-        checkEncoder((int)(12.0 / ElevatorConstants.TICKS_TO_INCHES));
+        Update((int)(12.0 / ElevatorConstants.TICKS_TO_INCHES));
 	}
 }

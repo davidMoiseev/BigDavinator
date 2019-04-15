@@ -89,13 +89,13 @@ public class Arm extends MotionMagicActuator
 
     private static void Log(String input, double value)
     {
-        SmartDashboard.putNumber(input, value);
         HotLogger.Log(input, value);
     }
 
     @Override
     public void displaySensorsValue()
     {
+        SmartDashboard.putNumber("Arm Position", getPosition());
         Log("Arm Position ticks", getSensorValue());
         Log("Arm Position degrees", getPosition());
         if (WiringIDs.IS_PRACTICE_BOT)
@@ -109,12 +109,14 @@ public class Arm extends MotionMagicActuator
         Log("Arm Bus Voltage", primaryTalon.getBusVoltage());
         Log("Arm Output Voltage", primaryTalon.getMotorOutputVoltage());
         Log("Arm Current", primaryTalon.getOutputCurrent());
+        HotLogger.Log("Arm Reset", primaryTalon.hasResetOccurred());
+        HotLogger.Log("Arm Error Code", primaryTalon.getLastError().name());
         if (WiringIDs.IS_PRACTICE_BOT)
             Log("Arm CANifier Voltage", armCan.getBusVoltage());
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Arm CANifier Voltage", "Arm Position ticks", "Arm Position degrees", "Arm Power",
+            Arrays.asList("Arm Reset", "Arm Error Code", "Arm CANifier Voltage", "Arm Position ticks", "Arm Position degrees", "Arm Power",
                     "Arm Error", "Arm target", "Arm Bus Voltage", "Arm Output Voltage", "Arm Current"));
 
     @Override
@@ -150,6 +152,6 @@ public class Arm extends MotionMagicActuator
 
     public void checkEncoder()
     {
-        checkEncoder((int) (25.0 / ArmConstants.TICKS_TO_DEGREES));
+        Update((int) (25.0 / ArmConstants.TICKS_TO_DEGREES));
     }
 }

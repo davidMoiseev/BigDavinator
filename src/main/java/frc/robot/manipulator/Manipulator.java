@@ -439,20 +439,20 @@ public class Manipulator
         if (elevTarget < elevator.getPosition() - ELEVATOR_TOLERANCE && Math.abs(arm.getPosition()) > 90
                 && Math.abs(armTarget - arm.getPosition()) > ARM_TOLERANCE)
         {
-            SmartDashboard.putBoolean("elevator_collision", true);
+            // SmartDashboard.putBoolean("elevator_collision", true);
             HotLogger.Log("elevator_collision", 1);
             elevTarget = prevElevHeight;
         }
         else
         {
-            SmartDashboard.putBoolean("elevator_collision", false);
+            // SmartDashboard.putBoolean("elevator_collision", false);
             HotLogger.Log("elevator_collision", 0);
         }
 
         double wristY = getWristY(arm.getPosition(), wrist.getPosition(), elevator.getPosition());
         double targetWristY = getWristY(armTarget, wristTarget, elevTarget);
 
-        SmartDashboard.putNumber("wristY", wristY);
+        // SmartDashboard.putNumber("wristY", wristY);
         double flipperY = 25;
 
         // Flipper waiting
@@ -460,13 +460,13 @@ public class Manipulator
         {
             if (targetWristY > flipperY && wristY < flipperY)
             {
-                SmartDashboard.putNumber("flipper_collision", 0);
+                // SmartDashboard.putNumber("flipper_collision", 0);
                 HotLogger.Log("flipper_collision", 0);
                 frontFlipperTarget = prevFrontFlipperAngle;
             }
             else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() > 100)
             {
-                SmartDashboard.putNumber("flipper_collision", 1);
+                // SmartDashboard.putNumber("flipper_collision", 1);
                 HotLogger.Log("flipper_collision", 1);
                 armTarget = prevArmAngle;
                 wristTarget = prevWristAngle;
@@ -474,7 +474,7 @@ public class Manipulator
             }
             else if (targetWristY < flipperY && wristY < flipperY)
             {
-                SmartDashboard.putNumber("flipper_collision", 2);
+                // SmartDashboard.putNumber("flipper_collision", 2);
                 HotLogger.Log("flipper_collision", 2);
                 armTarget = 90;
                 wristTarget = 90;
@@ -483,7 +483,7 @@ public class Manipulator
             }
             else
             {
-                SmartDashboard.putNumber("flipper_collision", 6);
+                // SmartDashboard.putNumber("flipper_collision", 6);
                 HotLogger.Log("flipper_collision", 6);
             }
 
@@ -492,13 +492,13 @@ public class Manipulator
         {
             if (targetWristY > flipperY && wristY < flipperY)
             {
-                SmartDashboard.putNumber("flipper_collision", 3);
+                // SmartDashboard.putNumber("flipper_collision", 3);
                 HotLogger.Log("flipper_collision", 3);
                 backFlipperTarget = prevBackFlipperAngle;
             }
             else if (targetWristY < flipperY && wristY > flipperY && arm.getPosition() < -100)
             {
-                SmartDashboard.putNumber("flipper_collision", 4);
+                // SmartDashboard.putNumber("flipper_collision", 4);
                 HotLogger.Log("flipper_collision", 4);
                 armTarget = prevArmAngle;
                 wristTarget = prevWristAngle;
@@ -506,7 +506,7 @@ public class Manipulator
             }
             else if (targetWristY < flipperY && wristY < flipperY)
             {
-                SmartDashboard.putNumber("flipper_collision", 5);
+                // SmartDashboard.putNumber("flipper_collision", 5);
                 HotLogger.Log("flipper_collision", 5);
                 armTarget = -90;
                 wristTarget = -90;
@@ -515,7 +515,7 @@ public class Manipulator
             }
             else
             {
-                SmartDashboard.putNumber("flipper_collision", 7);
+                // SmartDashboard.putNumber("flipper_collision", 7);
                 HotLogger.Log("flipper_collision", 7);
             }
         }
@@ -537,28 +537,28 @@ public class Manipulator
         if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative < -110)
         {
             armTarget = prevArmAngle;
-            SmartDashboard.putNumber("arm_collision", 0);
+            // SmartDashboard.putNumber("arm_collision", 0);
             HotLogger.Log("arm_collision", 0);
         }
         // arm Clockwise wrist clockwise
         else if (arm.getPosition() + ARM_TOLERANCE < armTarget && wristAngleRelative > 110)
         {
             wristTarget = prevWristAngle;
-            SmartDashboard.putNumber("arm_collision", 1);
+            // SmartDashboard.putNumber("arm_collision", 1);
             HotLogger.Log("arm_collision", 1);
         }
         // arm counterclockwise wrist counterclockwise
         else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative < -110)
         {
             wristTarget = prevWristAngle;
-            SmartDashboard.putNumber("arm_collision", 2);
+            // SmartDashboard.putNumber("arm_collision", 2);
             HotLogger.Log("arm_collision", 2);
         }
         // arm clockwise wrist clockwise
         else if (arm.getPosition() - ARM_TOLERANCE > armTarget && wristAngleRelative > 110)
         {
             armTarget = prevArmAngle;
-            SmartDashboard.putNumber("arm_collision", 3);
+            // SmartDashboard.putNumber("arm_collision", 3);
             HotLogger.Log("arm_collision", 3);
         }
 
@@ -583,22 +583,22 @@ public class Manipulator
 
         // frontFlipper.control(frontFlipperTarget != 0)
 
-        SmartDashboard.putNumber("elevatorTarget", elevTarget);
+        // SmartDashboard.putNumber("elevatorTarget", elevTarget);
         HotLogger.Log("elevatorTarget", elevTarget);
-        SmartDashboard.putNumber("armTarget", armTarget);
+        // SmartDashboard.putNumber("armTarget", armTarget);
         HotLogger.Log("armTarget", armTarget);
-        SmartDashboard.putNumber("wristTarget", wristTarget);
+        // SmartDashboard.putNumber("wristTarget", wristTarget);
         HotLogger.Log("wristTarget", wristTarget);
         /*
          * SmartDashboard.putNumber("wristHolding", holdingWrist);
          * SmartDashboard.putNumber("armHolding", holdingArm);
          */
-        SmartDashboard.putNumber("frontFlipperTarget", frontFlipperTarget);
+        // SmartDashboard.putNumber("frontFlipperTarget", frontFlipperTarget);
         HotLogger.Log("frontFlipperTarget", frontFlipperTarget);
-        SmartDashboard.putNumber("backFlipperTarget", backFlipperTarget);
+        // SmartDashboard.putNumber("backFlipperTarget", backFlipperTarget);
         HotLogger.Log("backFlipperTarget", backFlipperTarget);
-        SmartDashboard.putBoolean("frontFlipperOnTarget", flipperOnTarget(frontFlipper, frontFlipperTarget));
-        SmartDashboard.putBoolean("backFlipperOnTarget", flipperOnTarget(backFlipper, backFlipperTarget));
+        // SmartDashboard.putBoolean("frontFlipperOnTarget", flipperOnTarget(frontFlipper, frontFlipperTarget));
+        // SmartDashboard.putBoolean("backFlipperOnTarget", flipperOnTarget(backFlipper, backFlipperTarget));
         // frontFlipper.setTarget(frontFlipperTarget);
         // backFlipper.setTarget(backFlipperTarget);
     }
@@ -618,9 +618,9 @@ public class Manipulator
             IManipulatorSetPoint wristTarget, IManipulatorSetPoint frontFlipperTarget,
             IManipulatorSetPoint backFlipperTarget)
     {
-        SmartDashboard.putNumber("elevatorTarget", elevTarget.elevatorHeight());
-        SmartDashboard.putNumber("armTarget", armTarget.armAngle());
-        SmartDashboard.putNumber("wristTarget", wristTarget.wristAngle());
+        // SmartDashboard.putNumber("elevatorTarget", elevTarget.elevatorHeight());
+        // SmartDashboard.putNumber("armTarget", armTarget.armAngle());
+        // SmartDashboard.putNumber("wristTarget", wristTarget.wristAngle());
 
         setTargets(elevTarget.elevatorHeight(), armTarget.armAngle(), wristTarget.wristAngle(),
                 frontFlipperTarget.frontFlipper(), backFlipperTarget.backFlipper());
@@ -657,10 +657,10 @@ public class Manipulator
         double yBottom = heightManipulator(elevHeight, armAngle, wristAngle)
                 - 13.5 / 2 * Math.sin(Math.toRadians(wristAngle));
 
-        SmartDashboard.putNumber("xTop", xTop);
-        SmartDashboard.putNumber("yTop", yTop);
-        SmartDashboard.putNumber("xBottom", xBottom);
-        SmartDashboard.putNumber("yBottom", yBottom);
+        // SmartDashboard.putNumber("xTop", xTop);
+        // SmartDashboard.putNumber("yTop", yTop);
+        // SmartDashboard.putNumber("xBottom", xBottom);
+        // SmartDashboard.putNumber("yBottom", yBottom);
 
         if ((yBottom < 44 && Math.abs(xBottom) < 5) || (yTop < 44 && Math.abs(xTop) < 5))
         {
@@ -772,11 +772,11 @@ public class Manipulator
             intake.Update(robotCommand);
         }
 
-        SmartDashboard.putString("hatchPlacer State", hatchPlacer.getState().name());
-        SmartDashboard.putString("hatchGrabber State", hatchGrabber.getState().name());
+        // SmartDashboard.putString("hatchPlacer State", hatchPlacer.getState().name());
+        // SmartDashboard.putString("hatchGrabber State", hatchGrabber.getState().name());
 
-        SmartDashboard.putBoolean("AAA Manual Wrist", robotCommand.UseManualWrist());
-        SmartDashboard.putNumber("AAA Manual Wrist Value", robotCommand.ManualWrist());
+        // SmartDashboard.putBoolean("AAA Manual Wrist", robotCommand.UseManualWrist());
+        // SmartDashboard.putNumber("AAA Manual Wrist Value", robotCommand.ManualWrist());
 
         if (robotCommand.UseManualWrist())
         {
@@ -867,8 +867,8 @@ public class Manipulator
 
         intakePneumatics.Update(robotCommand);
 
-        SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
-        SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());
+        // SmartDashboard.putNumber("frontFlipper", frontFlipper.getPosition());
+        // SmartDashboard.putNumber("backFlipper", backFlipper.getPosition());
 
         if (!holdingElevator)
             prevElevHeight = elevator.getPosition();

@@ -209,8 +209,8 @@ public class TeleopCommandProvider extends RobotCommandProvider
         boolean right = operator.getPOV() == 90;
         boolean left = operator.getPOV() == 45;
 
-        SmartDashboard.putBoolean("RIGHT", right);
-        SmartDashboard.putBoolean("LEFT", left);
+        // SmartDashboard.putBoolean("RIGHT", right);
+        // SmartDashboard.putBoolean("LEFT", left);
 
         if (right)
         {

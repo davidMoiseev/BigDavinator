@@ -454,7 +454,7 @@ public class VisionMotion
         distanceHorizontal = distance * Math.tan(targetAngle);
         angle2 = Math.atan((distance - targetVisDistance) / distanceHorizontal);
         angle1 = ((Math.PI / 2) - targetAngle) - angle2;
-        SmartDashboard.putNumber("distance", distance);
+        // SmartDashboard.putNumber("distance", distance);
         return true;
     }
 
@@ -489,7 +489,7 @@ public class VisionMotion
             // distance);
         }
 
-        SmartDashboard.putNumber("vt", vt);
+        // SmartDashboard.putNumber("vt", vt);
     }
 
     public boolean targetReached(double distanceTarget, double pipeline)

@@ -168,9 +168,9 @@ public class SweetTurn
 			}
 		}
 
-		SmartDashboard.putString("AAA Sweet Turn State", sweetTurnState.name());
-		SmartDashboard.putNumber("AAA Sweet Heading", currentHeading);
-		SmartDashboard.putNumber("AAA Target", target);
+		// SmartDashboard.putString("AAA Sweet Turn State", sweetTurnState.name());
+		// SmartDashboard.putNumber("AAA Sweet Heading", currentHeading);
+		// SmartDashboard.putNumber("AAA Target", target);
 
 		if (WiringIDs.IS_PRACTICE_BOT) sweetTurnDirection *= -1;
 		return sweetTurnDirection * sweetTurnRate;

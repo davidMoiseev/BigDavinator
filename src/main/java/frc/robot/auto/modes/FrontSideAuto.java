@@ -202,7 +202,7 @@ public class FrontSideAuto extends AutoModeBase
                 s = State.Complete;
             }
         }
-        SmartDashboard.putString("Auto Mode", s.name());
+        // SmartDashboard.putString("Auto Mode", s.name());
     }
 
 }

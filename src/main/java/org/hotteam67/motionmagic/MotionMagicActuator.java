@@ -322,11 +322,11 @@ public abstract class MotionMagicActuator implements IMotionMagicActuator
         this.nominalOutputForward = nominalOutputForward;
     }
 
-    public void checkEncoder(int encoderValueChangeLimit)
+    public void Update(int encoderValueChangeLimit)
     {
         if (primaryTalon.hasResetOccurred())
         {
-            SmartDashboard.putBoolean("Has Reset Occured", true);
+            // SmartDashboard.putBoolean("Has Reset Occured", true);
             HotLogger.Log("Has Reset Occured", 1);
             currentEncoderValue = currentEncoderValue + previousEncoderValue;
             primaryTalon.setSelectedSensorPosition(currentEncoderValue);

@@ -86,7 +86,6 @@ public class Wrist extends MotionMagicActuator
 
     private static void Log(String tag, double value)
     {
-        SmartDashboard.putNumber(tag, value);
         HotLogger.Log(tag, value);
     }
 
@@ -95,6 +94,9 @@ public class Wrist extends MotionMagicActuator
     {
         Log("Wirst Position ticks", getSensorValue());
         Log("A Wirst Position degree", getPosition());
+        HotLogger.Log("Wrist Reset", primaryTalon.hasResetOccurred());
+        HotLogger.Log("Wrist Error Code", primaryTalon.getLastError().name());
+        SmartDashboard.putNumber("Wrist Position", getPosition());
         if (WiringIDs.IS_PRACTICE_BOT)
             SmartDashboard.putNumber("A WristCan Degree",
                     -wristCan.getQuadraturePosition() * WristConstants.TICKS_TO_DEGREES);
@@ -114,7 +116,7 @@ public class Wrist extends MotionMagicActuator
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(
-            Arrays.asList("Wrist CANifier Voltage", "Wirst Position ticks", "A Wirst Position degree", "Wirst Power",
+            Arrays.asList("Wrist Reset", "Wrist Error Code", "Wrist CANifier Voltage", "Wirst Position ticks", "A Wirst Position degree", "Wirst Power",
                     "Wirst Error", "Wirst target", "Wrist Bus Voltage", "Wrist Output Voltage", "Wrist Current"));
 
     public void setPosition(double angle)
@@ -160,7 +162,7 @@ public class Wrist extends MotionMagicActuator
 
     public void checkEncoder()
     {
-        checkEncoder((int) (40.0 / WristConstants.TICKS_TO_DEGREES));
+        Update((int) (40.0 / WristConstants.TICKS_TO_DEGREES));
     }
 
 }

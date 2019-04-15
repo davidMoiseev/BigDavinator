@@ -202,9 +202,9 @@ public class DriveTrain implements IPigeonWrapper
     }
 
     public static final List<String> LoggerTags = new ArrayList<>(Arrays.asList("Pigeon Error", "Accel X", "Accel Y",
-            "Accel Z", "Drive turn", "Vision Drive", "Drive leftDrive", "Drive rightDrive", "Drive rightEncoder",
-            "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch", "Drive currentVelocityLeft",
-            "Drive currentVelocityRight"));
+            "Accel Z", "Drive turn", "Vision Drive", "Drive Left Current", "Drive Right Current", "Drive leftDrive",
+            "Drive rightDrive", "Drive rightEncoder", "Drive leftEncoder", "Drive currentYaw", "Drive currentPitch",
+            "Drive currentVelocityLeft", "Drive currentVelocityRight"));
 
     public boolean canseeTarget()
     {
@@ -226,9 +226,13 @@ public class DriveTrain implements IPigeonWrapper
         SmartDashboard.putNumber("Drive rightEncoder", rightEncoderValue);
         SmartDashboard.putNumber("Drive leftEncoder", leftEncoderValue);
         SmartDashboard.putNumber("Drive currentYaw", xyz_dps[0]);
-        SmartDashboard.putNumber("Drive currentPitch", xyz_dps[1]);
-        SmartDashboard.putNumber("Drive currentVelocityRight", rightMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Drive currentVelocityLeft", leftMotor.getEncoder().getVelocity());
+        HotLogger.Log("Drive Pigeon Reset", pigeon.hasResetOccurred());
+        HotLogger.Log("Drive Pigeon Status", pigeon.getState().name());
+        // SmartDashboard.putNumber("Drive currentPitch", xyz_dps[1]);
+        // SmartDashboard.putNumber("Drive currentVelocityRight",
+        // rightMotor.getEncoder().getVelocity());
+        // SmartDashboard.putNumber("Drive currentVelocityLeft",
+        // leftMotor.getEncoder().getVelocity());
 
         short[] accelerometer = new short[]
         { 0, 0, 0 };
@@ -238,6 +242,8 @@ public class DriveTrain implements IPigeonWrapper
         HotLogger.Log("Accel Z", String.valueOf(accelerometer[2]));
 
         HotLogger.Log("Pigeon Error", pigeon.getLastError().name());
+        HotLogger.Log("Drive Left Current", leftMotor.getOutputCurrent());
+        HotLogger.Log("Drive Right Current", rightMotor.getOutputCurrent());
 
         /*
          * SmartDashboard.putNumber("motorType", leftMotor.getMotorType().value);

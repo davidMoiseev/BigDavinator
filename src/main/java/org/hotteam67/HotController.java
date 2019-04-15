@@ -11,6 +11,8 @@
 
 package org.hotteam67;
 
+import java.lang.reflect.Method;
+
 /**
  * Add your docs here.
  */
@@ -361,5 +363,4 @@ public class HotController extends Joystick
         int value = getPOV();
         return value;
     }
-
 }

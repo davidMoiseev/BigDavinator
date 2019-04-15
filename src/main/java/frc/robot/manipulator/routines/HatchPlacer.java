@@ -188,8 +188,8 @@ public class HatchPlacer extends ManipulatorRoutineBase
             newElevatorHeight = (newElevatorHeight > 33) ? 33 : newElevatorHeight;
         }
 
-        SmartDashboard.putNumber("New Arm Angle", Math.toDegrees(newArmAngle));
-        SmartDashboard.putNumber("New Elevator Height", newElevatorHeight);
+        // SmartDashboard.putNumber("New Arm Angle", Math.toDegrees(newArmAngle));
+        // SmartDashboard.putNumber("New Elevator Height", newElevatorHeight);
 
         return new ManualManipulatorSetPoint(Math.toDegrees(newArmAngle), setPoint.wristAngle(), newElevatorHeight,
                 setPoint.frontFlipper(), setPoint.backFlipper());
