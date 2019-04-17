@@ -25,7 +25,7 @@ public class VisionMotion
     public static final double PLACE_AREA_FRONT = 5.36;
 
     //public static final double PICKUP_AREA_BACK = .857;
-    public static final double PICKUP_AREA_BACK = .9;
+    public static final double PICKUP_AREA_BACK = .7; //earlier = .9
     public static final double PICKUP_AREA_FRONT = .9;
 
     Vision backCamera = new Vision("limelight-front", Vision.X_BACK, Vision.HEIGHT_BACK);
@@ -175,8 +175,11 @@ public class VisionMotion
         double max = .2;
         if (RobotState.getInstance().isSpearsClosed())
             max = .6;
-        if (getCamera().getTA() < .2)
+        if (getCamera().getTA() < .15)
+        {
             max = 1;
+            output = 1;
+        }
         if (output > max)
             output = max;
         else if (output < .1)
