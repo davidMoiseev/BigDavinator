@@ -22,7 +22,7 @@ public class ArmConstants
     public static final double peakOutputReverse = -1;
     public static final int motionCruiseVelocity = 10000;
     public static final int motionAcceleration = 10000;
-    public static final boolean sensorPhase = true;
+    public static final boolean sensorPhase = (!WiringIDs.IS_PRACTICE_BOT);
     public static final int timeoutms = 100;
     public static final int slotIdx = 0;
     public static final int pidIdx = 0;
