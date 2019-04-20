@@ -858,6 +858,16 @@ public class Manipulator
                         output.wristAngle(), output.elevatorHeight(), output.frontFlipper(), output.backFlipper());
             }
 
+            if (robotCommand.FlipperCarry()
+                    && (robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_high_back
+                            || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_mid_back
+                            || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_high_front
+                            || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.hatch_mid_front))
+            {
+                output = new ManualManipulatorSetPoint(output.armAngle(), output.wristAngle(), output.elevatorHeight(),
+                        FlipperConstants.CARRY_FRONT, FlipperConstants.CARRY_BACK);
+            }
+
             Control(output);
             robotActionsState.setDesiredManipulatorSetPoint(setPoint);
             robotActionsState.setManipulatorMoving(!onTarget(setPoint));

@@ -135,6 +135,7 @@ public class TeleopCommandProvider extends RobotCommandProvider
             frontTargetPosition = ManipulatorSetPoint.cargo_pickup_front;
             backTargetPosition = ManipulatorSetPoint.cargo_pickup_back;
         }
+        flipperCarry = operator.getButtonLeftStick();
         if (operator.getButtonStart())
         {
             armReZeroTimer++;

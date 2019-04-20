@@ -5,6 +5,12 @@ import frc.robot.constants.ManipulatorSetPoint;
 
 public abstract class RobotCommandProvider
 {
+    protected boolean flipperCarry = false;
+
+    public boolean FlipperCarry()
+    {
+        return flipperCarry;
+    }
 
     protected double manualWrist = 0;
     public double ManualWrist()
