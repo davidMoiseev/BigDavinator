@@ -243,7 +243,8 @@ public class Manipulator
             // else
             {
                 // Same side
-                if (getArmSide(targetPosition.armAngle()) == getArmSide(arm.getPosition()))
+                if (getArmSide(targetPosition.armAngle()) == getArmSide(arm.getPosition())
+                        || (elevator.getPosition() > 30 && Math.abs(arm.getPosition()) < 10))
                 {
                     // Front side
                     if (getArmSide(targetPosition.armAngle()) == RobotSide.FRONT)
