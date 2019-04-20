@@ -597,8 +597,10 @@ public class Manipulator
         HotLogger.Log("frontFlipperTarget", frontFlipperTarget);
         // SmartDashboard.putNumber("backFlipperTarget", backFlipperTarget);
         HotLogger.Log("backFlipperTarget", backFlipperTarget);
-        // SmartDashboard.putBoolean("frontFlipperOnTarget", flipperOnTarget(frontFlipper, frontFlipperTarget));
-        // SmartDashboard.putBoolean("backFlipperOnTarget", flipperOnTarget(backFlipper, backFlipperTarget));
+        // SmartDashboard.putBoolean("frontFlipperOnTarget",
+        // flipperOnTarget(frontFlipper, frontFlipperTarget));
+        // SmartDashboard.putBoolean("backFlipperOnTarget", flipperOnTarget(backFlipper,
+        // backFlipperTarget));
         // frontFlipper.setTarget(frontFlipperTarget);
         // backFlipper.setTarget(backFlipperTarget);
     }
@@ -731,8 +733,7 @@ public class Manipulator
         wrist.checkEncoder();
         elevator.checkEncoder();
 
-        if (setPoint == ManipulatorSetPoint.cargo_pickup_back
-                || setPoint == ManipulatorSetPoint.cargo_pickup_front)
+        if (setPoint == ManipulatorSetPoint.cargo_pickup_back || setPoint == ManipulatorSetPoint.cargo_pickup_front)
         {
             robotCommand.SetSpearsClosed(false);
         }
@@ -773,10 +774,12 @@ public class Manipulator
         }
 
         // SmartDashboard.putString("hatchPlacer State", hatchPlacer.getState().name());
-        // SmartDashboard.putString("hatchGrabber State", hatchGrabber.getState().name());
+        // SmartDashboard.putString("hatchGrabber State",
+        // hatchGrabber.getState().name());
 
         // SmartDashboard.putBoolean("AAA Manual Wrist", robotCommand.UseManualWrist());
-        // SmartDashboard.putNumber("AAA Manual Wrist Value", robotCommand.ManualWrist());
+        // SmartDashboard.putNumber("AAA Manual Wrist Value",
+        // robotCommand.ManualWrist());
 
         if (robotCommand.UseManualWrist())
         {
@@ -801,8 +804,8 @@ public class Manipulator
 
         if (setPoint != null)
         {
-            if (setPoint == ManipulatorSetPoint.hatch_pickup_front
-                    && !RobotState.getInstance().isSpearsClosed() && !grabHatch)
+            if (setPoint == ManipulatorSetPoint.hatch_pickup_front && !RobotState.getInstance().isSpearsClosed()
+                    && !grabHatch)
             {
                 setPoint = ManipulatorSetPoint.hatch_low_front;
             }
@@ -844,6 +847,16 @@ public class Manipulator
 
             output = CreateBumpedFlipperSetPoint(output, robotCommand.FrontFlipperBumpCount(),
                     robotCommand.BackFlipperBumpCount());
+
+            SmartDashboard.putNumber("DrivePitch", robotState.getDrivePitch());
+
+            if (Math.abs(robotState.getDrivePitch()) > 5
+                    && robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_rocketHigh_back
+                    || robotCommand.ManipulatorSetPoint() == ManipulatorSetPoint.cargo_rocketHigh_front)
+            {
+                output = new ManualManipulatorSetPoint(output.armAngle() - robotState.getDrivePitch(),
+                        output.wristAngle(), output.elevatorHeight(), output.frontFlipper(), output.backFlipper());
+            }
 
             Control(output);
             robotActionsState.setDesiredManipulatorSetPoint(setPoint);

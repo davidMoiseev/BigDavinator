@@ -17,6 +17,23 @@ public class RobotState
     }
 
     /**
+     * @return the drivePitch
+     */
+    public double getDrivePitch()
+    {
+        return drivePitch;
+    }
+
+    /**
+     * @param drivePitch
+     *                       the drivePitch to set
+     */
+    public void setPitch(double drivePitch)
+    {
+        this.drivePitch = drivePitch;
+    }
+
+    /**
      * @return the climberDeployed
      */
     public boolean isClimberDeployed()
@@ -68,6 +85,9 @@ public class RobotState
     private double visionArea = 0;
 
     private boolean climberDeployed = false;
+
+    private double drivePitch = 0;
+
     /**
      * @return the visionArea
      */
