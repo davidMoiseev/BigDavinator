@@ -202,6 +202,12 @@ public class TeleopCommandProvider extends RobotCommandProvider
             LeftDrive *= -1;
         }
 
+        if (RobotState.getInstance().isClimberDeployed())
+        {
+            RightDrive *= 0.5;
+            LeftDrive *= 0.5;
+        }
+
         HDrive = ((driver.getRawAxis(3) - driver.getRawAxis(2)) / 2.0);
 
         boolean up = operator.getPOV() == 180;

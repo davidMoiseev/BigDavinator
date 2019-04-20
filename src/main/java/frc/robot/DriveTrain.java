@@ -461,6 +461,7 @@ public class DriveTrain implements IPigeonWrapper
             leftClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.LeftDrive());
             rightClimbMotor.set(ControlMode.PercentOutput, 1.5 * command.RightDrive());
         }
+
         if (command.ClimberDeploy()
                 && (robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep
                         || robotActionsState.getDesiredManipulatorSetPoint() == ManipulatorSetPoint.climb_prep_hab2)
@@ -560,5 +561,6 @@ public class DriveTrain implements IPigeonWrapper
         pigeon.getRawGyro(speeds);
         robotState.setTurnSpeed(speeds[2]);
         robotActionsState.setVisionCanSeeTarget(vmotion.canSeeTarget());
+        robotState.setClimberDeployed(climbDeployed);
     }
 }

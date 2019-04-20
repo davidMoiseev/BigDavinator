@@ -19,7 +19,12 @@ import frc.robot.constants.WiringIDs;
 
 public class VisionMotion
 {
-    //public static final double PLACE_AREA_BACK = 3.8;
+    /**
+     *
+     */
+
+    private static final double MINIMUM_PICKUP_SLOW_AREA = .15;
+    // public static final double PLACE_AREA_BACK = 3.8;
     public static final double PLACE_AREA_BACK = 4.05;
     //public static final double PLACE_AREA_FRONT = 7;
     public static final double PLACE_AREA_FRONT = 5.36;
@@ -153,7 +158,7 @@ public class VisionMotion
         if (!canSeeTarget())
             return autoDriveLast;
 
-        double k_p = .2;
+        double k_p = .1;
         double targetArea;
         if (RobotState.getInstance().isSpearsClosed())
             targetArea = useBackCamera ? PICKUP_AREA_BACK : PICKUP_AREA_FRONT;
@@ -175,10 +180,10 @@ public class VisionMotion
         double max = .2;
         if (RobotState.getInstance().isSpearsClosed())
             max = .6;
-        if (getCamera().getTA() < .15)
+        if (getCamera().getTA() < MINIMUM_PICKUP_SLOW_AREA)
         {
             max = 1;
-            output = 1;
+            output = .5;
         }
         if (output > max)
             output = max;

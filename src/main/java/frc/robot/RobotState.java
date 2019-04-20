@@ -17,6 +17,23 @@ public class RobotState
     }
 
     /**
+     * @return the climberDeployed
+     */
+    public boolean isClimberDeployed()
+    {
+        return climberDeployed;
+    }
+
+    /**
+     * @param climberDeployed
+     *                            the climberDeployed to set
+     */
+    public void setClimberDeployed(boolean climberDeployed)
+    {
+        this.climberDeployed = climberDeployed;
+    }
+
+    /**
      * @return the turnSpeed
      */
     public double getTurnSpeed()
@@ -50,6 +67,7 @@ public class RobotState
     private double visionY = 0;
     private double visionArea = 0;
 
+    private boolean climberDeployed = false;
     /**
      * @return the visionArea
      */

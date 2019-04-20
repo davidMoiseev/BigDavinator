@@ -18,10 +18,10 @@ abstract class ManipulatorRoutineBase
     public boolean onTarget(IManipulatorSetPoint setPoint)
     {
         return (Math.abs(setPoint.armAngle() - robotState.getArmPosition()) <= ArmConstants.allowableErrorDegrees
-                && Math.abs(
-                        setPoint.wristAngle() - robotState.getWristPosition()) <= WristConstants.allowableErrorDegrees
-                && Math.abs(setPoint.elevatorHeight()
-                        - robotState.getElevatorPosition()) <= ElevatorConstants.allowableErrorInches);
+                && 
+                Math.abs(setPoint.wristAngle() - robotState.getWristPosition()) <= WristConstants.allowableErrorDegrees
+                && 
+                Math.abs(setPoint.elevatorHeight() - robotState.getElevatorPosition()) <= ElevatorConstants.allowableErrorInches);
     }
 
     public boolean onTarget(double arm, double wrist, double elevator)
